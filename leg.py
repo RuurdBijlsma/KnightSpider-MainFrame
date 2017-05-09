@@ -1,4 +1,4 @@
-from arm import Arm
+from actuator import Actuator
 
 
 class Leg(object):
@@ -10,10 +10,10 @@ class Leg(object):
 
     def __init__(self, serial_connection):
         self.serial_connection = serial_connection
-        self.kinematic_arm = Arm(['z', [65, 0., 0.], 'y', [100, 0., 0.], 'y', [65, 0., 0.]])
+        self.actuator = Actuator(['z', [65, 0., 0.], 'y', [100, 0., 0.], 'y', [65, 0., 0.]])
 
     def move_to(self, point):
-        angles = self.kinematic_arm.inverse_kinematics(point)
+        angles = self.actuator.inverse_kinematics(point)
         self.rotate_servo(self.GAMMA_ID, angles[0])
         self.rotate_servo(self.ALPHA_ID, angles[1])
         self.rotate_servo(self.BETA_ID, angles[2])

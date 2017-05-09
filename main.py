@@ -1,4 +1,4 @@
-from arm import Arm
+from actuator import Actuator
 from leg import Leg
 from point import Point3D
 from pyax12.connection import Connection
