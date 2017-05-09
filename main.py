@@ -1,6 +1,18 @@
-from ik import Arm
+from arm import Arm
+from leg import Leg
+from point import Point3D
+from pyax12.connection import Connection
+import time
 
-arm = Arm(['z', [80, 0., 0.], 'y', [80, 0., 0.], 'y', [40, 0., 0.]])
-angles = arm.inverseKinematics(-180, 50, -60)
-print("Angles", angles)
-print("Position", arm.forwardKinematics(angles))
+# Connect to the serial port
+serial_connection = Connection(port="/dev/ttyUSB0", baudrate=57600)
+
+dynamixel_id = 1
+
+# Go to 0°
+serial_connection.goto(dynamixel_id, 0, speed=512, degrees=True)
+time.sleep(1)    # Wait 1 second
+
+leg = Leg(serial_connection)
+
+leg.move_to(Point3D(-180, 50, -60))

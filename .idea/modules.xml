@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/KnightSpider.iml" filepath="$PROJECT_DIR$/.idea/KnightSpider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/KnightSpider-MainFrame.iml" filepath="$PROJECT_DIR$/.idea/KnightSpider-MainFrame.iml" />
     </modules>
   </component>
 </project>
