@@ -2,6 +2,8 @@ import tinyik
 import numpy
 from point import Point3D
 
+# Todo: X Y Z in arm definition fixen
+# modulo 360 doen voor angles
 
 class Actuator:
     def __init__(self, armDefinition):
