@@ -5,7 +5,7 @@ from pyax12.connection import Connection
 import time
 
 # Connect to the serial port
-serial_connection = Connection(port="/dev/ttyUSB0", baudrate=57600)
+serial_connection = Connection(port="/dev/serial0", baudrate=57600)
 
 leg = Leg(serial_connection)
 
