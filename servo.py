@@ -17,8 +17,9 @@ class Servo(object):
         angle = int(angle)
 
         print(angle)
+        print(self.id)
 
-        self.serial_connection.goto(id, angle, speed=self.ROTATION_SPEED, degrees=True)
+        self.serial_connection.goto(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
 
 
 
