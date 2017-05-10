@@ -5,7 +5,7 @@ from pyax12.connection import Connection
 import time
 
 # Connect to the serial port
-serial_connection = Connection(port="/dev/serial0", baudrate=1000000)
+serial_connection = Connection(port="/dev/serial0", baudrate=576000)
 
 # allow the connection to initialize
 time.sleep(1)
