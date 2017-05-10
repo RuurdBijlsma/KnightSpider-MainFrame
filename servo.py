@@ -14,7 +14,7 @@ class Servo(object):
         elif angle > self.max_angle:
             angle = self.max_angle
 
-        print("moving to " + angle)
+        print(angle)
 
         self.serial_connection.goto(id, angle, speed=self.ROTATION_SPEED, degrees=True)
 
