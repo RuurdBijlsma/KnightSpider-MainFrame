@@ -1,3 +1,6 @@
+import time
+
+
 class Servo(object):
 
     ROTATION_SPEED = 512
@@ -22,6 +25,8 @@ class Servo(object):
             self.serial_connection.goto(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
         except ValueError as e:
             print("Error moving servo", e)
+
+        time.sleep(0.1)
 
 
 
