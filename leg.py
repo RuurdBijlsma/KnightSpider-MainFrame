@@ -3,9 +3,9 @@ from servo import Servo
 
 
 class Leg(object):
-    ALPHA_ID = 1
-    BETA_ID = 2
-    GAMMA_ID = 3
+    ALPHA_ID = 2
+    BETA_ID = 3
+    GAMMA_ID = 1
 
     def __init__(self, serial_connection):
         self.serial_connection = serial_connection
