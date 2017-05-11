@@ -18,13 +18,5 @@ class Leg(object):
         angles = self.actuator.inverse_kinematics(point)
 
         self.gamma.rotate(angles[0])
-
-        # Rotate using old method
-        self.rotate_servo(self.GAMMA_ID, angles[0])
-
-
         self.alpha.rotate(angles[1])
         self.beta.rotate(angles[2])
-
-    def rotate_servo(self, id, angle):
-        self.serial_connection.goto(id, angle, speed=512, degrees=True)
