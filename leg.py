@@ -16,7 +16,7 @@ class Leg(object):
 
     def move_to(self, point):
         angles = self.actuator.inverse_kinematics(point)
-
+        print("angles", angles)
         self.gamma.rotate(angles[0])
         self.alpha.rotate(angles[1])
         self.beta.rotate(angles[2])
