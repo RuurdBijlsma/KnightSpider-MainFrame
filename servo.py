@@ -18,7 +18,10 @@ class Servo(object):
 
         print("Rotating servo {0} to {1}".format(self.id, angle))
 
-        self.serial_connection.goto(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
+        try:
+            self.serial_connection.goto(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
+        except ValueError as e:
+            print("Error moving servo", e)
 
 
 
