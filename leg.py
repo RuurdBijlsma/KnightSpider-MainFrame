@@ -9,7 +9,7 @@ class Leg(object):
 
     def __init__(self, serial_connection):
         self.serial_connection = serial_connection
-        self.actuator = Actuator(['z', [65, 0., 0.], 'y', [100, 0., 0.], 'y', [65, 0., 0.]])
+        self.actuator = Actuator(['y', [80, 0., 0.], 'z', [80, 0., 0.], 'z', [120, 0., 0.]])
         self.alpha = Servo(serial_connection, self.ALPHA_ID, -90, 90)
         self.beta = Servo(serial_connection, self.BETA_ID, -90, 90)
         self.gamma = Servo(serial_connection, self.GAMMA_ID, -90, 90)
