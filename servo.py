@@ -26,7 +26,7 @@ class Servo(object):
         except ValueError as e:
             print("Error moving servo", e)
 
-        time.sleep(0.1)
+        time.sleep(1)
 
 
 
