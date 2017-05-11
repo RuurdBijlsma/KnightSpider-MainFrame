@@ -25,4 +25,4 @@ class Actuator:
 
     @staticmethod
     def change_format(pos):
-        return (-pos[0], -pos[2], -pos[1])
+        return (pos[0], -pos[2], -pos[1])
