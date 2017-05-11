@@ -12,6 +12,6 @@ time.sleep(1)
 
 leg = Leg(serial_connection)
 
-leg.move_to(Point3D(-180, 50, -60))
+leg.move_to(Point3D(-90, 30, -70))
 
 serial_connection.close()
