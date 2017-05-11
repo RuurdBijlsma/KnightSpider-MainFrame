@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/KnightSpider.iml" filepath="$PROJECT_DIR$/.idea/KnightSpider.iml" />
+      <module fileurl="file://C:\Users\ruurd\PycharmProjects\KnightSpider-MainFrame\.idea\KnightSpider.iml" filepath="C:\Users\ruurd\PycharmProjects\KnightSpider-MainFrame\.idea\KnightSpider.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/KnightSpider-MainFrame.iml" filepath="$PROJECT_DIR$/.idea/KnightSpider-MainFrame.iml" />
+      <module fileurl="file://C:\Users\ruurd\PycharmProjects\KnightSpider-MainFrame\.idea\KnightSpider-MainFrame.iml" filepath="C:\Users\ruurd\PycharmProjects\KnightSpider-MainFrame\.idea\KnightSpider-MainFrame.iml" />
     </modules>
   </component>
 </project>

@@ -2,11 +2,18 @@ import tinyik
 import numpy
 from point import Point3D
 
+
 # Todo: X Y Z in arm definition fixen
 # modulo 360 doen voor angles
 
 class Actuator:
     def __init__(self, armDefinition):
+        for i, val in enumerate(armDefinition): #Fix axes
+            if (armDefinition[i] == "z"):
+                armDefinition[i] = "y"
+            elif (armDefinition[i] == "y"):
+                armDefinition[i] = "z"
+
         self._arm = tinyik.Actuator(armDefinition)
 
     def inverse_kinematics(self, point):
