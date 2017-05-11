@@ -5,4 +5,4 @@ class Point3D(object):
         self.z = z
 
     def __str__(self):
-        return "x:{0}, y:{1}, z:{2}".format(self.x, self.y, self.z);
+        return "x:{0}, y:{1}, z:{2}".format(self.x, self.y, self.z)
