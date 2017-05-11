@@ -12,7 +12,7 @@ class Leg(object):
         self.actuator = Actuator(['y', [80, 0., 0.], 'z', [80, 0., 0.], 'z', [120, 0., 0.]])
         self.alpha = Servo(serial_connection, self.ALPHA_ID, -90, 90)
         self.beta = Servo(serial_connection, self.BETA_ID, -90, 90)
-        self.gamma = Servo(serial_connection, self.GAMMA_ID, -90, 90)
+        self.gamma = Servo(serial_connection, self.GAMMA_ID, -160, 10)
 
     def move_to(self, point):
         angles = self.actuator.inverse_kinematics(point)
