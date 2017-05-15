@@ -24,11 +24,11 @@ class Leg(object):
         self.beta.rotate(angles[2])
 
     def shutdown(self):
-        self.gamma.rotate(0)
+        self.gamma.rotate(-65)
         self.alpha.rotate(-150)
         self.beta.rotate(150)
 
     def engage(self):
-        self.gamma.rotate(0)
+        self.gamma.rotate(-65)
         self.alpha.rotate(0)
         self.beta.rotate(60)
