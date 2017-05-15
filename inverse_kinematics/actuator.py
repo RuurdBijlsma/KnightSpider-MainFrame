@@ -1,18 +1,17 @@
-import tinyik
+from inverse_kinematics.core import TinyActuator
 import numpy
 from point import Point3D
 
 
-
 class Actuator:
-    def __init__(self, arm_definition):
-        for i, val in enumerate(arm_definition): #Fix axes
-            if (arm_definition[i] == "z"):
-                arm_definition[i] = "y"
-            elif (arm_definition[i] == "y"):
-                arm_definition[i] = "z"
+    def __init__(self, armDefinition, max_angles=None, min_angles=None):
+        for i, val in enumerate(armDefinition):  # Fix axes
+            if (armDefinition[i] == "z"):
+                armDefinition[i] = "y"
+            elif (armDefinition[i] == "y"):
+                armDefinition[i] = "z"
 
-        self._arm = tinyik.Actuator(arm_definition)
+        self._arm = TinyActuator(armDefinition, max_angles=numpy.deg2rad(max_angles), min_angles=numpy.deg2rad(min_angles))
 
     def inverse_kinematics(self, point):
         self._arm.ee = Actuator.change_format([point.x, point.y, point.z])

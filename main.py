@@ -1,9 +1,8 @@
-from actuator import Actuator
-from leg import Leg
-from point import Point3D
-from pyax12.connection import Connection
 import time
-import sys
+
+from pyax12.connection import Connection
+
+from leg import Leg
 
 # Connect to the serial port
 serial_connection = Connection(port="/dev/serial0", baudrate=1000000)
