@@ -22,7 +22,7 @@ class ServoReadings(object):
 
 class Servo(object):
 
-    ROTATION_SPEED = 512
+    ROTATION_SPEED = 1000
 
     def __init__(self, serial_connection, id, min_angle=150, max_angle=150, flip_angles = False):
         self.flip_angles = flip_angles
@@ -35,7 +35,7 @@ class Servo(object):
             self.min_angle = 150
         self.id = id
 
-    def rotate(self, angle):
+    def rotate_to(self, angle):
         if angle < self.min_angle:
             angle = self.min_angle
         elif angle > self.max_angle:
@@ -51,14 +51,17 @@ class Servo(object):
         try:
             self.serial_connection.goto(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
         except ValueError as e:
-            print("Error moving servo", e)
+            print("Error moving servo:", e)
             # raise e
 
     def get_readings(self):
-        return ServoReadings(
-            position=self.serial_connection.get_present_position(self.id),
-            speed=self.serial_connection.get_present_speed(self.id),
-            load=self.serial_connection.get_present_load(self.id),
-            voltage=self.serial_connection.get_present_voltage(self.id),
-            temperature=self.serial_connection.get_present_temperature(self.id),
-        )
+        try:
+            return ServoReadings(
+                position=self.serial_connection.get_present_position(self.id),
+                speed=self.serial_connection.get_present_speed(self.id),
+                load=self.serial_connection.get_present_load(self.id),
+                voltage=self.serial_connection.get_present_voltage(self.id),
+                temperature=self.serial_connection.get_present_temperature(self.id),
+            )
+        except TypeError as e:
+            print("Error reading from servo:", e)
