@@ -17,21 +17,22 @@ class ServoReadings(object):
             self.speed,
             self.position,
             self.id
-            )
+        )
 
 
 class Servo(object):
 
     ROTATION_SPEED = 1000
 
-    def __init__(self, serial_connection, id, min_angle=150, max_angle=150, flip_angles = False):
+    def __init__(self, serial_connection, id, offset_angle=0, min_angle=150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
         self.serial_connection = serial_connection
         self.max_angle = max_angle
-        if(self.max_angle > 150):
+        self.offset_angle = offset_angle
+        if (self.max_angle > 150):
             self.max_angle = 150
         self.min_angle = min_angle
-        if(self.min_angle > 150):
+        if (self.min_angle > 150):
             self.min_angle = 150
         self.id = id
 
@@ -41,8 +42,10 @@ class Servo(object):
         elif angle > self.max_angle:
             angle = self.max_angle
 
-        if(self.flip_angles):
+        if (self.flip_angles):
             angle *= -1
+
+        angle += self.offset_angle
 
         angle = int(angle)
 
