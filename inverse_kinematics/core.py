@@ -58,4 +58,5 @@ class TinyActuator(object):
 
     @ee.setter
     def ee(self, position):
-        self.angles = self._ik.solve(self.angles, position)
+        # self.angles = self._ik.solve(self.angles, position)
+        self.angles = self._ik.solve([0,0,0], position)

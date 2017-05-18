@@ -24,7 +24,7 @@ class Servo(object):
 
     ROTATION_SPEED = 1000
 
-    def __init__(self, serial_connection, id, offset_angle=0, min_angle=150, max_angle=150, flip_angles=False):
+    def __init__(self, serial_connection, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
         self.serial_connection = serial_connection
         self.max_angle = max_angle
@@ -32,8 +32,8 @@ class Servo(object):
         if (self.max_angle > 150):
             self.max_angle = 150
         self.min_angle = min_angle
-        if (self.min_angle > 150):
-            self.min_angle = 150
+        if (self.min_angle < -150):
+            self.min_angle = -150
         self.id = id
 
     def rotate_to(self, angle):
