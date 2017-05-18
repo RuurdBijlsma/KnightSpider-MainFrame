@@ -23,7 +23,7 @@ print('Socket now listening')
 
 
 def get_servo_info():
-    return
+    return "dit komt in de battery\n"
 
 
 # Function for handling connections. This will be used to create threads
