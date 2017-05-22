@@ -1,5 +1,6 @@
 import ax12_serial
 import time
+from servo import Servo
 
 try:
     import RPi.GPIO as GPIO
@@ -8,13 +9,19 @@ except:
 
 ax12_serial.init()
 
-print(ax12_serial.read_temperature(3))
+servo3 = Servo(None, 3)
+servo3.rotate_to(40)
 
-for _ in range(0,5):
-    ax12_serial.rotate_to(3, 60)
-    time.sleep(0.5)
-    ax12_serial.rotate_to(3, -60)
-    time.sleep(0.5)
+time.sleep(0.1)
+print("pos", ax12_serial.read_position(3))
+
+print(servo3.get_readings())
+
+# for _ in range(0,5):
+#     ax12_serial.rotate_to(3, 60)
+#     time.sleep(0.5)
+#     ax12_serial.rotate_to(3, -60)
+#     time.sleep(0.5)
 
 # # Connect to the serial port
 # GPIO.setwarnings(False)

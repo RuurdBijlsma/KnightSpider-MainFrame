@@ -1,8 +1,7 @@
 import sys
+import RPi.GPIO as GPIO
 from threading import Lock
-
 from pyax12.connection import Connection
-
 from lib.memes.ax12 import Ax12
 
 module = sys.modules[__name__]
@@ -10,6 +9,7 @@ mutex = Lock()
 
 def init(port='/dev/serial0', baudrate=1000000, timeout=0.1,
                  waiting_time=0.02, rpi_gpio=True):
+    GPIO.setwarnings(False)
     module.pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
     Ax12.port = module.pyax12_connection.serial_connection
     module.memes_connection = Ax12()
@@ -26,6 +26,21 @@ def run_with_lock(action):
 
 def read_temperature(id):
     return run_with_lock(lambda: module.memes_connection.readTemperature(id))
+
+def read_load(id):
+    return run_with_lock(lambda: module.memes_connection.readLoad(id))
+
+def read_voltage(id):
+    return run_with_lock(lambda: module.memes_connection.readVoltage(id))
+
+def read_position(id):
+    return run_with_lock(lambda: module.memes_connection.readPosition(id))
+
+def read_speed(id):
+    return run_with_lock(lambda: module.memes_connection.readSpeed(id))
+
+def read_moving_status(id):
+    return run_with_lock(lambda: module.memes_connection.readMovingStatus(id))
 
 def rotate_to(id, angle, speed=1023, degrees=True):
     return run_with_lock(lambda: module.pyax12_connection.goto(id, angle, speed, degrees))

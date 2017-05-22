@@ -190,7 +190,6 @@ class Ax12:
             elif(length == 0):
                 return error
             else:
-                print("length" + str(length))
                 if(length > 1):
                     reply = Ax12.port.read(2)
                     returnValue = (reply[1]<<8) + (reply[0]<<0)
