@@ -29,15 +29,18 @@ z = 100
 #     leg.beta.rotate_to(70)
 #     time.sleep(1)
 
-s12 = Servo(serial_connection, 12, 0, -150, 150)
+s12 = Servo(serial_connection, 3, 0, -150, 150)
 
 move_delay = 1.5
 
-s12.rotate_to(-60)
-time.sleep(move_delay)
-s12.rotate_to(60)
-
-serial_connection.get_present_temperature(12)
+while True:
+    print("bfore read emperure")
+    print("meme temp", serial_connection.readTemperature(3))
+    # print("READ TEMPERATURE", serial_connection.get_present_temperature(3))
+    s12.rotate_to(-60)
+    time.sleep(move_delay)
+    s12.rotate_to(60)
+    time.sleep(move_delay)
 
 # leg.move_to(Point3D(280, -1, 0))
 # time.sleep(move_delay)
