@@ -1,14 +1,31 @@
-from memes.ax12 import Ax12
+import sys
+from threading import Lock
+
 from pyax12.connection import Connection
 
-pyax12_connection = None
-memes_connection = None
+from lib.memes.ax12 import Ax12
+
+module = sys.modules[__name__]
+mutex = Lock()
 
 def init(port='/dev/serial0', baudrate=1000000, timeout=0.1,
                  waiting_time=0.02, rpi_gpio=True):
-    pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
-    Ax12.port = pyax12_connection.serial_connection
-    memes_connection = Ax12()
+    module.pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
+    Ax12.port = module.pyax12_connection.serial_connection
+    module.memes_connection = Ax12()
+
+def run_with_lock(action):
+    mutex.acquire()
+    try:
+        return action()
+    except Exception as e:
+        print(e)
+    finally:
+        mutex.release() 
+
 
 def read_temperature(id):
-    memes_connection.readTemperature(id)
+    return run_with_lock(lambda: module.memes_connection.readTemperature(id))
+
+def rotate_to(id, angle, speed=1023, degrees=True):
+    return run_with_lock(lambda: module.pyax12_connection.goto(id, angle, speed, degrees))

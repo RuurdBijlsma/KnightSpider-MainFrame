@@ -1,5 +1,6 @@
-from inverse_kinematics.core import TinyActuator
 import numpy
+
+from lib.inverse_kinematics.core import TinyActuator
 from point import Point3D
 
 

@@ -1,7 +1,7 @@
-from inverse_kinematics.actuator import Actuator
-from point import Point3D
-
 import websockets.server
+
+from lib.inverse_kinematics.actuator import Actuator
+from point import Point3D
 
 
 def on_message(protocol, message):

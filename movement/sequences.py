@@ -1,5 +1,5 @@
+from movement.stance import Stance
 from point import Point3D
-from stance import Stance
 
 step_length = 100
 step_delay = 0.3

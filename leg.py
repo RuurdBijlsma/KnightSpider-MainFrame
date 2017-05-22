@@ -1,8 +1,8 @@
 import math
 
-from inverse_kinematics.actuator import Actuator
-from servo import Servo
+from lib.inverse_kinematics.actuator import Actuator
 from point import Point3D
+from servo import Servo
 
 
 def rotate(origin, point, angle):
