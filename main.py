@@ -16,7 +16,7 @@ serial_connection = Connection(port="/dev/serial0", baudrate=1000000, rpi_gpio=T
 # allow the connection to initialize
 time.sleep(1)
 
-leg = Leg(serial_connection)
+leg = Leg(serial_connection, 0)
 
 x = 200
 y = -50
