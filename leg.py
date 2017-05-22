@@ -24,7 +24,7 @@ class Leg(object):
     ALPHA_ID = 6
     BETA_ID = 16
 
-    def __init__(self, angle, serial_connection):
+    def __init__(self, serial_connection, angle, gamma_id, alpha_id, beta_id):
         self.serial_connection = serial_connection
         self.actuator = Actuator(['y', [77, 0., 0.], 'z', [80, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
