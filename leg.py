@@ -29,10 +29,10 @@ class Leg(object):
         self.actuator = Actuator(['y', [77, 0., 0.], 'z', [80, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
                                  min_angles=[-150, -150, -150])
-        self.gamma = Servo(serial_connection, self.GAMMA_ID, offset_angle=0, min_angle=-60, max_angle=60)
-        self.alpha = Servo(serial_connection, self.ALPHA_ID, offset_angle=0, min_angle=-140, max_angle=70,
+        self.gamma = Servo(serial_connection, gamma_id, offset_angle=0, min_angle=-60, max_angle=60)
+        self.alpha = Servo(serial_connection, alpha_id, offset_angle=0, min_angle=-140, max_angle=70,
                            flip_angles=True)
-        self.beta = Servo(serial_connection, self.BETA_ID, offset_angle=0, min_angle=-90, max_angle=140)
+        self.beta = Servo(serial_connection, beta_id, offset_angle=0, min_angle=-90, max_angle=140)
 
         self.ground_height_offset = 0
         self.angle = angle

@@ -20,7 +20,10 @@ class LegMover(object):
         while (True):
             if (self.cancel):
                 break
-            self.execute_stance_sequence(stance_delay_tuples)
+            try:
+                self.execute_stance_sequence(stance_delay_tuples)
+            except Exception:
+                print("nee")
 
     def execute_stance_sequence(self, stance_delay_tuples):
         for stance, delay in stance_delay_tuples:

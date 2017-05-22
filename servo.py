@@ -22,7 +22,7 @@ class ServoReadings(object):
 
 class Servo(object):
 
-    ROTATION_SPEED = 1000
+    ROTATION_SPEED = 400
 
     def __init__(self, serial_connection, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
