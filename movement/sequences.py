@@ -8,37 +8,37 @@ tip_distance = 150
 
 sequences = {
     'walking': [
-        (Stance(
+        Stance(
             front_left_point=Point3D(tip_distance, 0, step_length / 2),
             mid_left_point=Point3D(tip_distance, 0, -step_length / 2),
             back_left_point=Point3D(tip_distance, 0, step_length / 2),
             front_right_point=Point3D(tip_distance, 0, -step_length / 2),
             mid_right_point=Point3D(tip_distance, 0, step_length / 2),
             back_right_point=Point3D(tip_distance, 0, -step_length / 2)
-        ), step_delay),
-        (Stance(
+        ),
+        Stance(
             front_left_point=Point3D(tip_distance, 0, -step_length),
             mid_left_point=Point3D(tip_distance, step_height, 0),
             back_left_point=Point3D(tip_distance, 0, -step_length),
             front_right_point=Point3D(tip_distance, step_height, 0),
             mid_right_point=Point3D(tip_distance, 0, -step_length),
             back_right_point=Point3D(tip_distance, step_height, 0)
-        ), step_delay),
-        (Stance(
+        ),
+        Stance(
             front_left_point=Point3D(tip_distance, 0, -step_length / 2),
             mid_left_point=Point3D(tip_distance, 0, step_length / 2),
             back_left_point=Point3D(tip_distance, 0, -step_length / 2),
             front_right_point=Point3D(tip_distance, 0, step_length / 2),
             mid_right_point=Point3D(tip_distance, 0, -step_length / 2),
             back_right_point=Point3D(tip_distance, 0, step_length / 2)
-        ), step_delay),
-        (Stance(
+        ),
+        Stance(
             front_left_point=Point3D(tip_distance, step_height, 0),
             mid_left_point=Point3D(tip_distance, 0, -step_length),
             back_left_point=Point3D(tip_distance, step_height, 0),
             front_right_point=Point3D(tip_distance, 0, -step_length),
             mid_right_point=Point3D(tip_distance, step_height, 0),
             back_right_point=Point3D(tip_distance, 0, -step_length)
-        ), step_delay),
+        ),
     ]
 }
