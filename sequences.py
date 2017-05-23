@@ -17,11 +17,11 @@ sequences = {
             back_right_point=Point3D(tip_distance, 0, -step_length / 2)
         ), step_delay),
         (Stance(
-            front_left_point=Point3D(tip_distance, 0, 0),
+            front_left_point=Point3D(tip_distance, 0, -step_length),
             mid_left_point=Point3D(tip_distance, step_height, 0),
-            back_left_point=Point3D(tip_distance, 0, 0),
+            back_left_point=Point3D(tip_distance, 0, -step_length),
             front_right_point=Point3D(tip_distance, step_height, 0),
-            mid_right_point=Point3D(tip_distance, 0, 0),
+            mid_right_point=Point3D(tip_distance, 0, -step_length),
             back_right_point=Point3D(tip_distance, step_height, 0)
         ), step_delay),
         (Stance(
@@ -34,11 +34,11 @@ sequences = {
         ), step_delay),
         (Stance(
             front_left_point=Point3D(tip_distance, step_height, 0),
-            mid_left_point=Point3D(tip_distance, 0, 0),
+            mid_left_point=Point3D(tip_distance, 0, -step_length),
             back_left_point=Point3D(tip_distance, step_height, 0),
-            front_right_point=Point3D(tip_distance, 0, 0),
+            front_right_point=Point3D(tip_distance, 0, -step_length),
             mid_right_point=Point3D(tip_distance, step_height, 0),
-            back_right_point=Point3D(tip_distance, 0, 0)
+            back_right_point=Point3D(tip_distance, 0, -step_length)
         ), step_delay),
     ]
 }
