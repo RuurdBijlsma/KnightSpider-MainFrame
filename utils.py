@@ -1,3 +1,6 @@
+import math
+
+
 def rotate(origin, point, angle):
     """
     Rotate a point counterclockwise by a given angle around a given origin.
