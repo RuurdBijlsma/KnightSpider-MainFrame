@@ -30,7 +30,7 @@ class Leg(object):
         return Point3D(x, point.y, z)
 
     def move_to_normalized(self, point):
-        self.move_to(self.point_to_normalized(point))
+        return self.move_to(self.point_to_normalized(point))
 
     def get_servo_positions(self):
         gamma_angle = self.gamma.info.angle

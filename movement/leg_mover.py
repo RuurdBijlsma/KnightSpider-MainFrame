@@ -12,25 +12,16 @@ class LegMover(object):
         self.cancel = False
 
     def set_stance(self, stance):
-        # todo promise van leg move fixen en hier implemteren
         def promise(resolve):
-            legs = []
+            promises = []
             for xp, dict in stance.points.items():
                 for yp, point in dict.items():
                     leg = self.spider.legs[xp][yp]
-                    legs.append(leg)
                     point = Point3D(point.x, point.y - self.ground_clearance, point.z)
-                    leg.move_to_normalized(point)
+                    promises.append(leg.move_to_normalized(point))
 
-            legs_to_do = len(legs)
-            for xp, dict in stance.points.items():
-                for yp, point in dict.items():
-                    leg = self.spider.legs[xp][yp]
-                    point = Point3D(point.x, point.y - self.ground_clearance, point.z)
-                    if (self.check_leg(leg, point)):
-                        legs_to_do = legs_to_do - 1
-                    if (legs_to_do == 0):
-                        resolve()
+            Promise.wait_all(promises)
+            resolve()
 
         return Promise(promise)
 
