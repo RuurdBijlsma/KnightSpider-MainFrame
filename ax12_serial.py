@@ -31,11 +31,13 @@ def read_load(id):
     return run_with_lock(lambda: module.memes_connection.readLoad(id))
 
 def read_voltage(id):
-    return run_with_lock(lambda: module.memes_connection.readVoltage(id))
+    return run_with_lock(lambda: module.memes_connection.readVoltage(id)) / 10
 
+# map to degrees
 def read_position(id):
-    return run_with_lock(lambda: module.memes_connection.readPosition(id))
+    return round((run_with_lock(lambda: module.memes_connection.readPosition(id)) - 512) / 3.41, 2)
 
+# kaput
 def read_speed(id):
     return run_with_lock(lambda: module.memes_connection.readSpeed(id))
 
@@ -44,3 +46,6 @@ def read_moving_status(id):
 
 def rotate_to(id, angle, speed=1023, degrees=True):
     return run_with_lock(lambda: module.pyax12_connection.goto(id, angle, speed, degrees))
+
+def control_table(id):
+    return run_with_lock(lambda: module.pyax12_connection.print_control_table(id))

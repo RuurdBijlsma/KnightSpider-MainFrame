@@ -631,7 +631,7 @@ class Ax12:
         outData.append(Ax12.AX_PRESENT_POSITION_L)
         outData.append(Ax12.AX_INT_READ)
         outData.append(checksum)
-        Ax12.port.write(bytes(outData, "utf-8"))
+        Ax12.port.write(outData)
         sleep(Ax12.TX_DELAY_TIME)
         return self.readData(id)
 

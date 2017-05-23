@@ -3,36 +3,18 @@ import math
 from lib.inverse_kinematics.actuator import Actuator
 from point import Point3D
 from servo import Servo
-
-
-def rotate(origin, point, angle):
-    """
-    Rotate a point counterclockwise by a given angle around a given origin.
-
-    The angle should be given in radians.
-    """
-    ox, oy = origin
-    px, py = point
-
-    qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-    qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-    return qx, qy
+from utils import rotate
 
 
 class Leg(object):
-    GAMMA_ID = 15
-    ALPHA_ID = 6
-    BETA_ID = 16
-
-    def __init__(self, serial_connection, angle, gamma_id, alpha_id, beta_id):
-        self.serial_connection = serial_connection
+    def __init__(self, angle, gamma_id, alpha_id, beta_id):
         self.actuator = Actuator(['y', [77, 0., 0.], 'z', [80, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
                                  min_angles=[-150, -150, -150])
-        self.gamma = Servo(serial_connection, gamma_id, offset_angle=0, min_angle=-60, max_angle=60)
-        self.alpha = Servo(serial_connection, alpha_id, offset_angle=0, min_angle=-140, max_angle=70,
+        self.gamma = Servo(gamma_id, offset_angle=0, min_angle=-60, max_angle=60)
+        self.alpha = Servo(alpha_id, offset_angle=0, min_angle=-140, max_angle=70,
                            flip_angles=True)
-        self.beta = Servo(serial_connection, beta_id, offset_angle=0, min_angle=-90, max_angle=140)
+        self.beta = Servo(beta_id, offset_angle=0, min_angle=-90, max_angle=140)
 
         self.ground_height_offset = 0
         self.angle = angle
@@ -61,3 +43,10 @@ class Leg(object):
     def engage(self):
         print("am enage")
         self.move_to(Point3D(180, -70, 0))
+
+    def get_readings(self):
+        return [
+            self.gamma.get_readings(),
+            self.alpha.get_readings(),
+            self.beta.get_readings()
+        ]
