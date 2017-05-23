@@ -1,4 +1,4 @@
-from leg_mover import LegMover
+from movement.leg_mover import LegMover
 
 
 class Spider(object):

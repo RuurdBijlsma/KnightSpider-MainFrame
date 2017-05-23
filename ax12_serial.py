@@ -1,14 +1,51 @@
-from memes.ax12 import Ax12
+import sys
+import RPi.GPIO as GPIO
+from threading import Lock
 from pyax12.connection import Connection
+from lib.memes.ax12 import Ax12
 
-pyax12_connection = None
-memes_connection = None
+module = sys.modules[__name__]
+mutex = Lock()
 
 def init(port='/dev/serial0', baudrate=1000000, timeout=0.1,
                  waiting_time=0.02, rpi_gpio=True):
-    pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
-    Ax12.port = pyax12_connection.serial_connection
-    memes_connection = Ax12()
+    GPIO.setwarnings(False)
+    module.pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
+    Ax12.port = module.pyax12_connection.serial_connection
+    module.memes_connection = Ax12()
+
+def run_with_lock(action):
+    mutex.acquire()
+    try:
+        return action()
+    except Exception as e:
+        print(e)
+    finally:
+        mutex.release() 
+
 
 def read_temperature(id):
-    memes_connection.readTemperature(id)
+    return run_with_lock(lambda: module.memes_connection.readTemperature(id))
+
+def read_load(id):
+    return run_with_lock(lambda: module.memes_connection.readLoad(id))
+
+def read_voltage(id):
+    return run_with_lock(lambda: module.memes_connection.readVoltage(id)) / 10
+
+# map to degrees
+def read_position(id):
+    return round((run_with_lock(lambda: module.memes_connection.readPosition(id)) - 512) / 3.41, 2)
+
+# kaput
+def read_speed(id):
+    return run_with_lock(lambda: module.memes_connection.readSpeed(id))
+
+def read_moving_status(id):
+    return run_with_lock(lambda: module.memes_connection.readMovingStatus(id))
+
+def rotate_to(id, angle, speed=1023, degrees=True):
+    return run_with_lock(lambda: module.pyax12_connection.goto(id, angle, speed, degrees))
+
+def control_table(id):
+    return run_with_lock(lambda: module.pyax12_connection.print_control_table(id))

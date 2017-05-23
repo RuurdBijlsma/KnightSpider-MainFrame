@@ -1,9 +1,10 @@
 import time
+
 from pyax12.connection import Connection
+
 from leg import Leg
-from sequences import sequences
+from movement.sequences import sequences
 from spider import Spider
-from point import Point3D
 
 try:
     import RPi.GPIO as GPIO
