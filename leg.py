@@ -1,7 +1,11 @@
 import math
+import sched
+
+import time
 
 from lib.inverse_kinematics.actuator import Actuator
 from point import Point3D
+from promise.promise import Promise
 from servo import Servo
 from utils import rotate
 
@@ -28,14 +32,40 @@ class Leg(object):
     def move_to_normalized(self, point):
         self.move_to(self.point_to_normalized(point))
 
+    def get_servo_positions(self):
+        gamma_angle = self.gamma.info.angle
+        alpha_angle = self.alpha.info.angle
+        beta_angle = self.beta.info.angle
+        return self.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
+
+    def check_distance(self, target_pos, distance_threshold=5):
+        return self.get_servo_positions().distance_to(target_pos) < distance_threshold
+
     def move_to(self, point):
-        point.y += self.ground_height_offset
-        assert (point.y < 0)
-        angles = self.actuator.inverse_kinematics(point)
-        # print("angles", point, angles)
-        self.gamma.rotate_to(angles[0])
-        self.alpha.rotate_to(angles[1])
-        self.beta.rotate_to(angles[2])
+        def promise(resolve):
+            point.y += self.ground_height_offset
+            assert (point.y < 0)
+            angles = self.actuator.inverse_kinematics(point)
+            # print("angles", point, angles)
+            self.gamma.rotate_to(angles[0])
+            self.alpha.rotate_to(angles[1])
+            self.beta.rotate_to(angles[2])
+
+            # Check if leg reached point
+            s = sched.scheduler(time.time, time.sleep)
+            timer_delay = 0.2
+            first_check_delay = 0.1
+
+            def timer():
+                if (self.check_distance(point)):
+                    resolve()
+
+                s.enter(timer_delay, 1, timer)
+
+            s.enter(first_check_delay, 1, timer)
+            s.run()
+
+        return Promise(promise)
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

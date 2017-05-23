@@ -11,16 +11,8 @@ class LegMover(object):
         self.ground_clearance = ground_clearance
         self.cancel = False
 
-    def get_leg_position(self, leg):
-        gamma_angle = leg.gamma.info.angle
-        alpha_angle = leg.alpha.info.angle
-        beta_angle = leg.beta.info.angle
-        return leg.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
-
-    def check_leg(self, leg, target_pos, distance_threshold=5):
-        return self.get_leg_position(leg).distance_to(target_pos) < distance_threshold
-
     def set_stance(self, stance):
+        # todo promise van leg move fixen en hier implemteren
         def promise(resolve):
             legs = []
             for xp, dict in stance.points.items():
@@ -30,27 +22,15 @@ class LegMover(object):
                     point = Point3D(point.x, point.y - self.ground_clearance, point.z)
                     leg.move_to_normalized(point)
 
-            # Check if leg reached point
-            s = sched.scheduler(time.time, time.sleep)
-            timer_delay = 0.2
-
             legs_to_do = len(legs)
-
-            def timer():
-                global legs_to_do
-                for xp, dict in stance.points.items():
-                    for yp, point in dict.items():
-                        leg = self.spider.legs[xp][yp]
-                        point = Point3D(point.x, point.y - self.ground_clearance, point.z)
-                        if (self.check_leg(leg, point)):
-                            legs_to_do = legs_to_do - 1
-                        if (legs_to_do == 0):
-                            resolve()
-
-                s.enter(timer_delay, 1, timer)
-
-            s.enter(timer_delay, 1, timer)
-            s.run()
+            for xp, dict in stance.points.items():
+                for yp, point in dict.items():
+                    leg = self.spider.legs[xp][yp]
+                    point = Point3D(point.x, point.y - self.ground_clearance, point.z)
+                    if (self.check_leg(leg, point)):
+                        legs_to_do = legs_to_do - 1
+                    if (legs_to_do == 0):
+                        resolve()
 
         return Promise(promise)
 
