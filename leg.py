@@ -40,28 +40,23 @@ class Leg(object):
     def check_distance(self, target_pos, distance_threshold=5):
         return self.get_servo_positions().distance_to(target_pos) < distance_threshold
 
-    def move_to(self, point, on_complete=lambda: ()):
+    def move_to(self, point, on_done=lambda: ()):
         point.y += self.ground_height_offset
         assert (point.y < 0)
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
-        self.gamma.rotate_to(angles[0])
-        self.alpha.rotate_to(angles[1])
-        self.beta.rotate_to(angles[2])
 
-        # Check if leg reached point
-        s = sched.scheduler(time.time, time.sleep)
-        timer_delay = 0.2
-        first_check_delay = 0.1
+        servos_to_do = 3
 
-        def timer():
-            if (self.check_distance(point)):
-                on_complete()
+        def on_done_callback():
+            global servos_to_do
+            servos_to_do = servos_to_do - 1
+            if(servos_to_do==0):
+                on_done()
 
-            s.enter(timer_delay, 1, timer)
-
-        s.enter(first_check_delay, 1, timer)
-        s.run()
+        self.gamma.rotate_to(angles[0], on_done_callback)
+        self.alpha.rotate_to(angles[1], on_done_callback)
+        self.beta.rotate_to(angles[2], on_done_callback)
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

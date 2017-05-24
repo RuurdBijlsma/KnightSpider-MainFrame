@@ -1,4 +1,8 @@
+import sched
 import time
+
+import math
+
 import ax12_serial
 
 
@@ -22,6 +26,9 @@ class ServoReadings(object):
 
 class Servo(object):
     ROTATION_SPEED = 400
+    ANGLE_THRESHOLD = math.radians(3)
+    TIMER_DELAY = 0.2
+    FIRST_TIMER_DELAY = 0.1
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -34,7 +41,7 @@ class Servo(object):
             self.min_angle = -150
         self.id = id
 
-    def rotate_to(self, angle):
+    def rotate_to(self, angle, on_done=lambda: ()):
         if angle < self.min_angle:
             angle = self.min_angle
         elif angle > self.max_angle:
@@ -53,7 +60,21 @@ class Servo(object):
             ax12_serial.rotate_to(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
         except ValueError as e:
             print("Error moving servo:", e)
-            # raise e
+
+        # Check if servo reached angle
+        s = sched.scheduler(time.time, time.sleep)
+
+        def timer():
+            if (abs(self.get_angle() - angle) < self.ANGLE_THRESHOLD):
+                on_done()
+
+            s.enter(self.TIMER_DELAY, 1, timer)
+
+        s.enter(self.FIRST_TIMER_DELAY, 1, timer)
+        s.run()
+
+    def get_angle(self):
+        return 50
 
     def get_readings(self):
         try:
