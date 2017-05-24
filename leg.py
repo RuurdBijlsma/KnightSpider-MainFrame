@@ -5,7 +5,6 @@ import time
 
 from lib.inverse_kinematics.actuator import Actuator
 from point import Point3D
-from promise.promise import Promise
 from servo import Servo
 from utils import rotate
 
@@ -29,8 +28,8 @@ class Leg(object):
         x, z = rotate(origin, tip_point, math.radians(self.angle))
         return Point3D(x, point.y, z)
 
-    def move_to_normalized(self, point):
-        return self.move_to(self.point_to_normalized(point))
+    def move_to_normalized(self, point, on_done=lambda: ()):
+        return self.move_to(self.point_to_normalized(point), on_done)
 
     def get_servo_positions(self):
         gamma_angle = self.gamma.info.angle
@@ -41,31 +40,28 @@ class Leg(object):
     def check_distance(self, target_pos, distance_threshold=5):
         return self.get_servo_positions().distance_to(target_pos) < distance_threshold
 
-    def move_to(self, point):
-        def promise(resolve):
-            point.y += self.ground_height_offset
-            assert (point.y < 0)
-            angles = self.actuator.inverse_kinematics(point)
-            # print("angles", point, angles)
-            self.gamma.rotate_to(angles[0])
-            self.alpha.rotate_to(angles[1])
-            self.beta.rotate_to(angles[2])
+    def move_to(self, point, on_complete=lambda: ()):
+        point.y += self.ground_height_offset
+        assert (point.y < 0)
+        angles = self.actuator.inverse_kinematics(point)
+        # print("angles", point, angles)
+        self.gamma.rotate_to(angles[0])
+        self.alpha.rotate_to(angles[1])
+        self.beta.rotate_to(angles[2])
 
-            # Check if leg reached point
-            s = sched.scheduler(time.time, time.sleep)
-            timer_delay = 0.2
-            first_check_delay = 0.1
+        # Check if leg reached point
+        s = sched.scheduler(time.time, time.sleep)
+        timer_delay = 0.2
+        first_check_delay = 0.1
 
-            def timer():
-                if (self.check_distance(point)):
-                    resolve()
+        def timer():
+            if (self.check_distance(point)):
+                on_complete()
 
-                s.enter(timer_delay, 1, timer)
+            s.enter(timer_delay, 1, timer)
 
-            s.enter(first_check_delay, 1, timer)
-            s.run()
-
-        return Promise(promise)
+        s.enter(first_check_delay, 1, timer)
+        s.run()
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

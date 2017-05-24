@@ -1,8 +1,4 @@
-import sched
-import time
-
 from point import Point3D
-from promise.promise import Promise
 
 
 class LegMover(object):
@@ -11,28 +7,31 @@ class LegMover(object):
         self.ground_clearance = ground_clearance
         self.cancel = False
 
-    def set_stance(self, stance):
-        def promise(resolve):
-            promises = []
-            for xp, dict in stance.points.items():
-                for yp, point in dict.items():
-                    leg = self.spider.legs[xp][yp]
-                    point = Point3D(point.x, point.y - self.ground_clearance, point.z)
-                    promises.append(leg.move_to_normalized(point))
+    def set_stance(self, stance, on_done):
+        legs_to_do = 0
 
-            Promise.wait_all(promises)
-            resolve()
+        for xp, dict in stance.points.items():
+            for yp, point in dict.items():
+                leg = self.spider.legs[xp][yp]
+                point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
-        return Promise(promise)
+                legs_to_do = legs_to_do + 1
+
+                def on_done_callback():
+                    global legs_to_do
+                    legs_to_do = legs_to_do - 1
+                    if (legs_to_do == 0):
+                        on_done()
+
+                leg.move_to_normalized(point, on_done_callback)
 
     def execute_stance_sequence_indefinitely(self, stance_list, index=None):
         if (index == None or index == -1):
             index = len(stance_list) - 1
 
         if (not self.cancel):
-            self.set_stance(stance_list[index]).then(
-                lambda: self.execute_stance_sequence_indefinitely(stance_list, index - 1)
-            )
+            self.set_stance(stance_list[index],
+                            lambda: self.execute_stance_sequence_indefinitely(stance_list, index - 1))
         else:
             self.cancel = False
 
@@ -40,7 +39,7 @@ class LegMover(object):
         stance, *remaining_stances = stance_list
 
         if (not self.cancel):
-            self.set_stance(stance).then(lambda: self.execute_stance_sequence(remaining_stances))
+            self.set_stance(stance, lambda: self.execute_stance_sequence(remaining_stances))
         else:
             self.cancel = False
 
