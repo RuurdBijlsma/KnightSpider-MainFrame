@@ -1,8 +1,9 @@
 import time
 import ax12_serial
 
+
 class ServoReadings(object):
-    def __init__(self, id, position = -1, load = -1, voltage = -1, temperature = -1):
+    def __init__(self, id, position=-1, load=-1, voltage=-1, temperature=-1):
         self.id = id
         self.temperature = temperature
         self.voltage = voltage
@@ -20,7 +21,6 @@ class ServoReadings(object):
 
 
 class Servo(object):
-
     ROTATION_SPEED = 400
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
