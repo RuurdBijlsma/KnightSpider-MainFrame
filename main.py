@@ -24,7 +24,7 @@ legs = [
     Leg(30, 41, 42, 43),
 ]
 
-legs[3].move_to_normalized(Point3D(200, -30, -20))
+legs[2].move_to_normalized(Point3D(200, -30, -20))
 time.sleep(1)
 
 print_leg(legs[2])
