@@ -29,43 +29,35 @@ class Leg(object):
         x, z = rotate(origin, tip_point, math.radians(self.angle))
         return Point3D(x, point.y, z)
 
-    def move_to_normalized(self, point):
-        return self.move_to(self.point_to_normalized(point))
+    def move_to_normalized(self, point, on_done=lambda: ()):
+        return self.move_to(self.point_to_normalized(point), on_done)
 
     def get_servo_positions(self):
-        # gamma_angle = self.gamma.info.angle
-        # alpha_angle = self.alpha.info.angle
-        # beta_angle = self.beta.info.angle
+        gamma_angle = self.gamma.info.angle
+        alpha_angle = self.alpha.info.angle
+        beta_angle = self.beta.info.angle
         return self.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
 
     def check_distance(self, target_pos, distance_threshold=5):
         return self.get_servo_positions().distance_to(target_pos) < distance_threshold
 
-    def move_to(self, point):
-        # def promise(resolve):
+    def move_to(self, point, on_done=lambda: ()):
         point.y += self.ground_height_offset
         assert (point.y < 0)
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
-        self.gamma.rotate_to(angles[0])
-        self.alpha.rotate_to(angles[1])
-        self.beta.rotate_to(angles[2])
 
-            # Check if leg reached point
-        #     s = sched.scheduler(time.time, time.sleep)
-        #     timer_delay = 0.2
-        #     first_check_delay = 0.1
-        #
-        #     def timer():
-        #         if (self.check_distance(point)):
-        #             resolve()
-        #
-        #         s.enter(timer_delay, 1, timer)
-        #
-        #     s.enter(first_check_delay, 1, timer)
-        #     s.run()
-        #
-        # return Promise(promise)
+        servos_to_do = 3
+
+        def on_done_callback():
+            global servos_to_do
+            servos_to_do = servos_to_do - 1
+            if(servos_to_do==0):
+                on_done()
+
+        self.gamma.rotate_to(angles[0], on_done_callback)
+        self.alpha.rotate_to(angles[1], on_done_callback)
+        self.beta.rotate_to(angles[2], on_done_callback)
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))
