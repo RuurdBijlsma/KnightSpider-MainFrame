@@ -8,19 +8,18 @@ class LegMover(object):
         self.cancel = False
 
     def set_stance(self, stance, on_done):
-        legs_to_do = 0
+        self.legs_to_do = 0
 
         for xp, dict in stance.points.items():
             for yp, point in dict.items():
                 leg = self.spider.legs[xp][yp]
                 point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
-                legs_to_do = legs_to_do + 1
+                self.legs_to_do = self.legs_to_do + 1
 
                 def on_done_callback():
-                    global legs_to_do
-                    legs_to_do = legs_to_do - 1
-                    if (legs_to_do == 0):
+                    self.legs_to_do = self.legs_to_do - 1
+                    if (self.legs_to_do == 0):
                         on_done()
 
                 leg.move_to_normalized(point, on_done_callback)

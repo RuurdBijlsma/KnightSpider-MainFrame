@@ -46,12 +46,11 @@ class Leg(object):
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
 
-        servos_to_do = 3
+        self.servos_to_do = 3
 
         def on_done_callback():
-            global servos_to_do
-            servos_to_do = servos_to_do - 1
-            if(servos_to_do==0):
+            self.servos_to_do -= 1
+            if (self.servos_to_do == 0):
                 on_done()
 
         self.gamma.rotate_to(angles[0], on_done_callback)
