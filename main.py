@@ -9,30 +9,49 @@ try:
 except:
     pass
 
-ax12_serial.init(timeout=0.001)
+ax12_serial.init()
 
-# ax12_serial.scan(3)
+# ax12_serial.scan(12)
+
+def print_leg(leg):
+    for s in leg.get_readings():
+        print(s)
 
 legs = [
     Leg(30, 11, 12, 13),
-    Leg(-30, 1, 3, 4)
+    Leg(0, 21, 22, 23),
+    Leg(-30, 31, 32, 33),
+    Leg(30, 41, 42, 43),
 ]
 
-s = Servo(1)
-result = []
+legs[2].move_to_normalized(Point3D(200, -30, -20))
+time.sleep(1)
 
-start = time.time()
+print_leg(legs[2])
 
-for _ in range(0, 1):
-    result.append(legs[1].get_readings())
+# leg = Leg(-30, 1,2,3)
 
-for l in result:
-    for r in l:
-        print(r)
+# result = []
 
-print("time", time.time() - start)
 
-# Servo(1).rotate_to(30)
+# start = time.time()
+
+
+# Servo(1).rotate_to(-30)
+# Servo(2).rotate_to(-30)
+#
+#
+# print("move")
+# leg.move_to_normalized(Point3D(140, -30, 20))
+# print(leg.get_readings()[0])
+#
+# print(Servo(1).get_readings())
+#
+# print("time", time.time() - start)
+#
+# time.sleep(1)
+#
+# ax12_serial.Ax12.port.close()
 #
 # for leg in legs:
 #     leg.move_to_normalized(Point3D(200, -40, 20))

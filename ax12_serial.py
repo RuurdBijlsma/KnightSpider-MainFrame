@@ -3,8 +3,8 @@ import RPi.GPIO as GPIO
 from threading import Lock
 
 import time
-from pyax12.connection import Connection
 from lib.memes.ax12 import Ax12
+from lib.pyax12.connection import Connection
 
 module = sys.modules[__name__]
 mutex = Lock()

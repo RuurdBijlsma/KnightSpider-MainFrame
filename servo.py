@@ -1,4 +1,5 @@
 import sched
+import threading
 import time
 
 import math
@@ -62,16 +63,13 @@ class Servo(object):
             print("Error moving servo:", e)
 
         # Check if servo reached angle
-        s = sched.scheduler(time.time, time.sleep)
 
         def timer():
             if (abs(self.get_angle() - angle) < self.ANGLE_THRESHOLD):
                 on_done()
 
-            s.enter(self.TIMER_DELAY, 1, timer)
-
-        s.enter(self.FIRST_TIMER_DELAY, 1, timer)
-        s.run()
+        t=threading.Timer(self.TIMER_DELAY, timer)
+        t.start()
 
     def get_angle(self):
         return 50

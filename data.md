@@ -4,7 +4,10 @@
 index is servo ID
 ```
 [
-    float
+    {
+        id: int,
+        angle, float
+    }
 ]
 ```
 

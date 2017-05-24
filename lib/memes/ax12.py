@@ -169,10 +169,7 @@ class Ax12:
 
     def readData(self,id):
         self.direction(Ax12.RPI_DIRECTION_RX)
-        sleep(0.1)
-        #print("bytes at port", Ax12.port.in_waiting)
         reply = Ax12.port.read(5) # [0xff, 0xff, origin, length, error]
-        #print(reply)
         try:
             assert reply[0] == 0xff
         except:

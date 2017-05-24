@@ -11,9 +11,7 @@ ax12_serial.init()
 
 scan = ax12_serial.scan(1)
 
-print(scan)
-
-new_id = 13
+new_id = 53
 
 ax12_serial.reprogram_id(scan[0], new_id)
 
