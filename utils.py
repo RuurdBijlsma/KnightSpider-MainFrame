@@ -1,4 +1,5 @@
 import math
+import subprocess
 from subprocess import check_output
 
 
@@ -14,6 +15,12 @@ def rotate(origin, point, angle):
     qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
     qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return qx, qy
+
+
+def get_cpu_usage():
+    ps = subprocess.Popen(('ps', '-A'), stdout=subprocess.PIPE)
+    output = subprocess.check_output(('grep', 'process_name'), stdin=ps.stdout)
+    ps.wait()
 
 
 def get_cpu_temp():
