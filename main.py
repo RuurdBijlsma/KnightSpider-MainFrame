@@ -3,31 +3,37 @@ import time
 from leg import Leg
 from servo import Servo
 from point import Point3D
+from subprocess import check_output
 
 try:
     import RPi.GPIO as GPIO
 except:
     pass
 
-ax12_serial.init()
-
-# ax12_serial.scan(12)
-
 def print_leg(leg):
     for s in leg.get_readings():
         print(s)
 
-legs = [
-    Leg(30, 11, 12, 13),
-    Leg(0, 21, 22, 23),
-    Leg(-30, 31, 32, 33),
-    Leg(30, 41, 42, 43),
-]
+ax12_serial.init()
 
-legs[2].move_to_normalized(Point3D(200, -30, -20))
-time.sleep(1)
+# ax12_serial.scan(4)
 
-print_leg(legs[2])
+leg4 = Leg(30, 41, 42, 43)
+
+leg4.move_to_normalized(Point3D(180, -10, 30))
+print_leg(leg4)
+
+# legs = [
+#     Leg(30, 11, 12, 13),
+#     Leg(0, 21, 22, 23),
+#     Leg(-30, 31, 32, 33),
+#     Leg(30, 41, 42, 43),
+# ]
+
+# legs[2].move_to_normalized(Point3D(200, -30, -20))
+# time.sleep(1)
+#
+# print_leg(legs[2])
 
 # leg = Leg(-30, 1,2,3)
 

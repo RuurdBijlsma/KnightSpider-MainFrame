@@ -1,4 +1,5 @@
 import math
+from subprocess import check_output
 
 
 def rotate(origin, point, angle):
@@ -13,3 +14,13 @@ def rotate(origin, point, angle):
     qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
     qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
     return qx, qy
+
+
+def get_cpu_temp():
+    return round(
+        int(check_output([
+            "cat",
+            "/sys/class/thermal/thermal_zone0/temp"
+        ])) / 1000,
+        2
+    )
