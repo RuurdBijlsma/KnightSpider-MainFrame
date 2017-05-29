@@ -25,6 +25,8 @@ def run_with_lock(action):
     finally:
         mutex.release()
 
+def read_temperature_pyax(id):
+    return run_with_lock(lambda: module.pyax12_connection.read_temperature(id))
 
 def read_temperature(id):
     return run_with_lock(lambda: module.memes_connection.readTemperature(id))

@@ -1,9 +1,10 @@
 import ax12_serial
 import time
+
+import utils
 from leg import Leg
 from servo import Servo
 from point import Point3D
-from subprocess import check_output
 
 try:
     import RPi.GPIO as GPIO
@@ -16,12 +17,18 @@ def print_leg(leg):
 
 ax12_serial.init()
 
+print(utils.get_cpu_usage())
+
 # ax12_serial.scan(4)
 
 leg4 = Leg(30, 41, 42, 43)
 
+print(ax12_serial.read_temperature_pyax(41))
+
 leg4.move_to_normalized(Point3D(180, -10, 30))
-print_leg(leg4)
+# print_leg(leg4)
+
+time.sleep(1)
 
 # legs = [
 #     Leg(30, 11, 12, 13),

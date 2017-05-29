@@ -1,6 +1,8 @@
 import math
 import subprocess
-from subprocess import check_output
+from subprocess import check_output, Popen, PIPE
+
+import psutil
 
 
 def rotate(origin, point, angle):
@@ -18,10 +20,7 @@ def rotate(origin, point, angle):
 
 
 def get_cpu_usage():
-    ps = subprocess.Popen(('ps', '-A'), stdout=subprocess.PIPE)
-    output = subprocess.check_output(('grep', 'process_name'), stdin=ps.stdout)
-    ps.wait()
-
+    return psutil.cpu_percent()
 
 def get_cpu_temp():
     return round(
