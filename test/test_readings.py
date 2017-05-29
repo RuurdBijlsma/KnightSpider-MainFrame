@@ -1,4 +1,4 @@
-import utils
+from reading_worker import Worker
 
-print(utils.get_cpu_temp())
-print(utils.get_cpu_usage())
+background_thread = Worker(frequency=2)
+background_thread.start()
