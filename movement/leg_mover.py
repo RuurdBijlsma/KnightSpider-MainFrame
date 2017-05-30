@@ -7,7 +7,7 @@ class LegMover(object):
         self.ground_clearance = ground_clearance
         self.cancel = False
 
-    def set_stance(self, stance, on_done):
+    def set_stance(self, stance, on_done=lambda:None):
         self.legs_to_do = 0
 
         for xp, dict in stance.points.items():

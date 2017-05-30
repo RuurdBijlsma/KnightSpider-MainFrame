@@ -28,8 +28,7 @@ class ServoReadings(object):
 class Servo(object):
     ROTATION_SPEED = 400
     ANGLE_THRESHOLD = math.radians(3)
-    TIMER_DELAY = 0.2
-    FIRST_TIMER_DELAY = 0.5
+    TIMER_DELAY = 0.5
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -42,7 +41,7 @@ class Servo(object):
             self.min_angle = -150
         self.id = id
 
-    def rotate_to(self, angle, on_done=lambda: ()):
+    def rotate_to(self, angle, on_done=lambda: None):
         if angle < self.min_angle:
             angle = self.min_angle
         elif angle > self.max_angle:

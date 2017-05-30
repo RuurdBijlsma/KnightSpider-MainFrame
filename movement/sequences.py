@@ -1,10 +1,9 @@
 from movement.stance import Stance
 from point import Point3D
 
-step_length = 30
-step_delay = 0.3
-step_height = 30
-tip_distance = 150
+step_length = 0
+step_height = 40
+tip_distance = 200
 
 sequences = {
     'walking': [

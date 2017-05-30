@@ -4,6 +4,7 @@ import time
 
 from leg import Leg
 from movement.sequences import sequences
+import ax12_serial
 
 from point import Point3D
 
@@ -21,10 +22,14 @@ from point import Point3D
 # allow the connection to initialize
 # time.sleep(1)
 
+ax12_serial.init()
+
+from spider import Spider
+
 legs = [
-    Leg(leg_id=1, angle=30),
+    Leg(leg_id=1, angle=-30),
     Leg(leg_id=2, angle=0),
-    Leg(leg_id=3, angle=-30),
+    Leg(leg_id=3, angle=30),
     Leg(leg_id=4, angle=-30),
     Leg(leg_id=5, angle=0),
     Leg(leg_id=6, angle=30),
@@ -32,19 +37,21 @@ legs = [
 
 # angle = 60
 #
-# spider = Spider(front_left_leg=leg1,
-#                 mid_left_leg=leg2,
-#                 back_left_leg=leg3,
-#                 front_right_leg=leg4,
-#                 mid_right_leg=leg5,
-#                 back_right_leg=leg6)
+spider = Spider(front_left_leg=legs[0],
+                mid_left_leg=legs[1],
+                back_left_leg=legs[2],
+                front_right_leg=legs[3],
+                mid_right_leg=legs[4],
+                back_right_leg=legs[5])
 
 # leg1.move_to_normalized(Point3D(150, -50, 0))
 
-for index in range(0, 6):
-    leg1.actuator.inverse_kinematics(Point3D(150, -50, 0))
-
-for index in range(0, 6):
-    leg1.actuator.inverse_kinematics(Point3D(150, -50, 0))
 #
+spider.leg_mover.set_stance(sequences['idle'][0])
 # spider.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
+
+def print_leg(leg):
+    for s in leg.get_readings():
+        print(s)
+
+# print_leg(legs[0])
