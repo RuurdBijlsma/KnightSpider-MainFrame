@@ -12,11 +12,19 @@ class Actuator:
             elif (armDefinition[i] == "y"):
                 armDefinition[i] = "z"
 
-        self._arm = TinyActuator(armDefinition, max_angles=numpy.deg2rad(max_angles), min_angles=numpy.deg2rad(min_angles))
+        self.cache = {}
+
+        self._arm = TinyActuator(armDefinition, max_angles=numpy.deg2rad(max_angles),
+                                 min_angles=numpy.deg2rad(min_angles))
 
     def inverse_kinematics(self, point):
+        if (point in self.cache):
+            return self.cache[point]
+
         self._arm.ee = Actuator.change_format([point.x, point.y, point.z])
-        return numpy.rad2deg(self._arm.angles)
+        angles = numpy.rad2deg(self._arm.angles)
+        self.cache[point] = angles
+        return angles
 
     def forward_kinematics(self, angles):
         self._arm.angles = numpy.deg2rad(angles)

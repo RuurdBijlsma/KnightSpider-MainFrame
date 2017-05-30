@@ -1,7 +1,7 @@
 from movement.stance import Stance
 from point import Point3D
 
-step_length = 50
+step_length = 30
 step_delay = 0.3
 step_height = 30
 tip_distance = 150
@@ -40,5 +40,15 @@ sequences = {
             mid_right_point=Point3D(tip_distance, step_height, 0),
             back_right_point=Point3D(tip_distance, 0, -step_length)
         ),
+    ],
+    'idle': [
+        Stance(
+            front_left_point=Point3D(tip_distance, 0, 0),
+            mid_left_point=Point3D(tip_distance, 0, 0),
+            back_left_point=Point3D(tip_distance, 0, 0),
+            front_right_point=Point3D(tip_distance, 0, 0),
+            mid_right_point=Point3D(tip_distance, 0, 0),
+            back_right_point=Point3D(tip_distance, 0, 0)
+        )
     ]
 }
