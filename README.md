@@ -20,6 +20,7 @@ Edit `/boot/config.txt` and add the following lines at the end:
 enable_uart=1    
 init_uart_clock=16000000
 core_freq=250
+dtoverlay=pi3-miniuart-bt
 ```
 
 Edit `/boot/cmdline.txt` and remove all references to your device    

@@ -1,5 +1,5 @@
 from leg import Leg
-from reading_worker import ReadingUpdater
+from readings_worker import ReadingUpdater
 from spider import Spider
 
 legs = [

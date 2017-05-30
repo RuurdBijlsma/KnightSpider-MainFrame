@@ -8,6 +8,7 @@ import time
 import utils
 from leg import Leg
 from movement.sequences import sequences
+from readings_worker import ReadingsWorker
 from servo import Servo
 from point import Point3D
 from spider import Spider
@@ -17,13 +18,9 @@ try:
 except:
     pass
 
-def print_leg(leg):
-    for s in leg.get_readings():
-        print(s)
+ax12_serial.init()
 
-ax12_serial.init(baudrate=1000000)
-
-# ax12_serial.scan(15)
+# ax12_serial.scan(18)
 
 legs = [
     Leg(-30, 1),
@@ -41,5 +38,13 @@ spoder = Spider(front_left_leg=legs[0],
                 front_right_leg=legs[3],
                 mid_right_leg=legs[4],
                 back_right_leg=legs[5])
+
+ReadingsWorker(frequency=5, spider=spoder).start()
+
+time.sleep(1)
+
+# for leg in spoder.leg_iter:
+#     for r in leg.readings:
+#         print(r)
 
 spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])

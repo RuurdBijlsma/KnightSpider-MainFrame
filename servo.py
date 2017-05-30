@@ -1,4 +1,4 @@
-import sched
+import json
 import threading
 import time
 
@@ -22,6 +22,18 @@ class ServoReadings(object):
             self.load,
             self.position,
             self.id
+        )
+
+    def to_json(self):
+        return json.dumps(
+            {
+                "id": self.id,
+                "temperature": self.temperature,
+                "voltage": self.voltage,
+                "load": self.load,
+                "position": self.position
+            },
+            separators=(",", ":")
         )
 
 
@@ -55,7 +67,7 @@ class Servo(object):
 
         angle = int(angle)
 
-        print("Rotating servo {0} to {1}".format(self.id, angle))
+        # print("Rotating servo {0} to {1}".format(self.id, angle))
 
         try:
             ax12_serial.rotate_to(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
@@ -71,8 +83,16 @@ class Servo(object):
         t=threading.Timer(self.TIMER_DELAY, timer)
         t.start()
 
-    def get_angle(self):
-        return 50
+    def update_readings(self):
+        self._cached_readings = self.get_readings()
+
+    @property
+    def readings(self):
+        return self._cached_readings
+
+    @property
+    def angle(self):
+        return self._cached_readings.position
 
     def get_readings(self):
         try:

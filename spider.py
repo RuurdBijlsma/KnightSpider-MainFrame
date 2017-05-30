@@ -1,3 +1,4 @@
+import utils
 from movement.leg_mover import LegMover
 
 
@@ -17,16 +18,43 @@ class Spider(object):
         }
         self.leg_mover = LegMover(self, ground_clearance=50)
 
+    @property
+    def cpu_temperature(self):
+        return self._cpu_temperature
+
+    @cpu_temperature.setter
+    def cpu_temperature(self, value):
+        self._cpu_temperature = value
+
+
+    @property
+    def cpu_usage(self):
+        return self._cpu_usage
+
+    @cpu_usage.setter
+    def cpu_usage(self, value):
+        self._cpu_usage = value
+
+    def update_readings(self):
+        for leg in self.leg_iter:
+            leg.update_readings()
+
+    @property
+    def leg_iter(self):
+        for value in self.legs.values():
+            for leg in value.values():
+                yield leg
+
     def get_readings(self):
         return {
             'left': {
-                'front': self.legs['left']['front'].get_readings(),
-                'mid': self.legs['left']['mid'].get_readings(),
-                'back': self.legs['left']['back'].get_readings()
+                'front': self.legs['left']['front'].readings,
+                'mid': self.legs['left']['mid'].readings,
+                'back': self.legs['left']['back'].readings
             },
             'right': {
-                'front': self.legs['right']['front'].get_readings(),
-                'mid': self.legs['right']['mid'].get_readings(),
-                'back': self.legs['right']['back'].get_readings()
+                'front': self.legs['right']['front'].readings,
+                'mid': self.legs['right']['mid'].readings,
+                'back': self.legs['right']['back'].readings
             }
         }

@@ -30,9 +30,9 @@ class Leg(object):
         return self.move_to(self.point_to_normalized(point), on_done)
 
     def get_servo_positions(self):
-        gamma_angle = self.gamma.info.angle
-        alpha_angle = self.alpha.info.angle
-        beta_angle = self.beta.info.angle
+        gamma_angle = self.gamma.angle
+        alpha_angle = self.alpha.angle
+        beta_angle = self.beta.angle
         return self.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
 
     def check_distance(self, target_pos, distance_threshold=5):
@@ -54,7 +54,6 @@ class Leg(object):
         self.gamma.rotate_to(angles[0], on_done_callback)
         self.alpha.rotate_to(angles[1], on_done_callback)
         self.beta.rotate_to(angles[2], on_done_callback)
-        print("-----------------")
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))
@@ -63,7 +62,13 @@ class Leg(object):
         print("am enage")
         self.move_to(Point3D(180, -70, 0))
 
-    def get_readings(self):
+    def update_readings(self):
+        self.gamma.update_readings()
+        self.alpha.update_readings()
+        self.beta.update_readings()
+
+    @property
+    def readings(self):
         return [
             self.gamma.get_readings(),
             self.alpha.get_readings(),
