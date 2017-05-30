@@ -16,3 +16,17 @@ class Spider(object):
             }
         }
         self.leg_mover = LegMover(self, ground_clearance=50)
+
+    def get_readings(self):
+        return {
+            'left': {
+                'front': self.legs['left']['front'].get_readings(),
+                'mid': self.legs['left']['mid'].get_readings(),
+                'back': self.legs['left']['back'].get_readings()
+            },
+            'right': {
+                'front': self.legs['right']['front'].get_readings(),
+                'mid': self.legs['right']['mid'].get_readings(),
+                'back': self.legs['right']['back'].get_readings()
+            }
+        }
