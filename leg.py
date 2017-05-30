@@ -26,7 +26,7 @@ class Leg(object):
         x, z = rotate(origin, tip_point, math.radians(self.angle))
         return Point3D(x, point.y, z)
 
-    def move_to_normalized(self, point, on_done=lambda: ()):
+    def move_to_normalized(self, point, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point), on_done)
 
     def get_servo_positions(self):
@@ -38,7 +38,7 @@ class Leg(object):
     def check_distance(self, target_pos, distance_threshold=5):
         return self.get_servo_positions().distance_to(target_pos) < distance_threshold
 
-    def move_to(self, point, on_done=lambda: ()):
+    def move_to(self, point, on_done=lambda: None):
         point.y += self.ground_height_offset
         # assert (point.y < 0)
         angles = self.actuator.inverse_kinematics(point)

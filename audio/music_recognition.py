@@ -6,7 +6,8 @@
 # Blog: http://blog.yjl.im/2012/11/frequency-spectrum-of-sound-using.html
 
 import struct
-import wave
+import sys
+import time
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ import pyaudio
 
 HEIGHT_MULTIPLIER = 10
 
-SAVE = 0.0
+ANIMATE = False
 TITLE = ''
 WIDTH = 1280
 HEIGHT = 720
@@ -28,12 +29,16 @@ CHANNELS = 2
 RATE = 44100
 
 
+def init_animation(line):
+    # This data is a clear frame for animation
+    line.set_ydata(np.zeros(nFFT - 1))
+    return line,
+
+
 def animate(i, line, stream, wf, MAX_y):
     # Read n*nFFT frames from stream, n > 0
     N = max(stream.get_read_available() / nFFT, 1) * nFFT
     data = stream.read(int(N))
-    if SAVE:
-        wf.writeframes(data)
 
     # Unpack data, LRLRLR...
     y = np.array(struct.unpack("%dh" % (N * CHANNELS), data)) / MAX_y
@@ -50,16 +55,38 @@ def animate(i, line, stream, wf, MAX_y):
     temp2 = np.hstack(temp1)
     Y = abs(temp2)
 
-    print(Y_R)
-
     line.set_ydata(Y)
     return line,
 
 
-def init(line):
-    # This data is a clear frame for animation
-    line.set_ydata(np.zeros(nFFT - 1))
-    return line,
+def print_star(n, symbol="="):
+    if (n > 0):
+        sys.stdout.write(symbol)
+        print_star(n - 1)
+    else:
+        sys.stdout.write("\n")
+
+
+def average(list):
+    return sum(list) / len(list)
+
+
+def tick(stream, MAX_y):
+    # Read n*nFFT frames from stream, n > 0
+    N = max(stream.get_read_available() / nFFT, 1) * nFFT
+    data = stream.read(int(N))
+
+    # Unpack data, LRLRLR...
+    y = np.array(struct.unpack("%dh" % (N * CHANNELS), data)) / MAX_y
+    values = np.fft.fft(y, nFFT)
+
+    range_start = 0
+    multiplier = 30
+    range_end = 0.1
+
+    end_index = int(range_end * len(values))
+    print_star(int(average(values[range_start:end_index]) * multiplier))
+    # threading.Timer(1 / FPS, lambda: tick(stream, MAX_y)).start()
 
 
 def main():
@@ -77,53 +104,36 @@ def main():
 
     line, = ax.plot(x_f, np.zeros(nFFT - 1))
 
-    # Change x tick labels for left channel
-    def change_xlabel(evt):
-        labels = [label.get_text().replace(u'\u2212', '')
-                  for label in ax.get_xticklabels()]
-        ax.set_xticklabels(labels)
-        fig.canvas.mpl_disconnect(drawid)
-
-    drawid = fig.canvas.mpl_connect('draw_event', change_xlabel)
-
-    p = pyaudio.PyAudio()
+    py_audio = pyaudio.PyAudio()
     # Used for normalizing signal. If use paFloat32, then it's already -1..1.
     # Because of saving wave, paInt16 will be easier.
-    MAX_y = 2.0 ** (p.get_sample_size(FORMAT) * 8 - 1)
+    MAX_y = 2.0 ** (py_audio.get_sample_size(FORMAT) * 8 - 1)
     MAX_y /= HEIGHT_MULTIPLIER
 
-    frames = None
-    wf = None
-    if SAVE:
-        frames = int(FPS * SAVE)
-        wf = wave.open('temp.wav', 'wb')
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(p.get_sample_size(FORMAT))
-        wf.setframerate(RATE)
+    stream = py_audio.open(format=FORMAT,
+                           channels=CHANNELS,
+                           rate=RATE,
+                           input=True,
+                           frames_per_buffer=BUF_SIZE)
 
-    stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=BUF_SIZE)
+    if (ANIMATE):
+        frames = None
+        wf = None
 
-    ani = animation.FuncAnimation(
-        fig, animate, frames,
-        init_func=lambda: init(line), fargs=(line, stream, wf, MAX_y),
-        interval=1000.0 / FPS, blit=True
-    )
-
-    if SAVE:
-        ani.save('temp.mp4', fps=FPS)
-    else:
+        ani = animation.FuncAnimation(
+            fig, animate, frames,
+            init_func=lambda: init_animation(line), fargs=(line, stream, wf, MAX_y),
+            interval=1000.0 / FPS, blit=True
+        )
         plt.show()
+    else:
+        while (True):
+            tick(stream, MAX_y)
+            time.sleep(1 / FPS)
 
     stream.stop_stream()
     stream.close()
-    p.terminate()
-
-    if SAVE:
-        wf.close()
+    py_audio.terminate()
 
 
 if __name__ == '__main__':

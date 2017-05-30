@@ -3,12 +3,12 @@ from readings_worker import ReadingUpdater
 from spider import Spider
 
 legs = [
-    Leg(30, 11, 12, 13),
-    Leg(0, 21, 22, 23),
-    Leg(-30, 31, 32, 33),
-    Leg(30, 41, 42, 43),
-    Leg(-30, 31, 32, 33),
-    Leg(30, 41, 42, 43),
+    Leg(leg_id=1, angle=-30),
+    Leg(leg_id=2, angle=0),
+    Leg(leg_id=3, angle=30),
+    Leg(leg_id=4, angle=-30),
+    Leg(leg_id=5, angle=0),
+    Leg(leg_id=6, angle=30),
 ]
 
 spider = Spider(
@@ -22,3 +22,5 @@ spider = Spider(
 
 background_thread = ReadingUpdater(frequency=2, spider=spider)
 background_thread.start()
+
+print("blokt nniet")
