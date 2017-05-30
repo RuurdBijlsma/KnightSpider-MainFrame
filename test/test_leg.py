@@ -18,12 +18,12 @@ serial_connection = Connection(port="/dev/serial0", baudrate=1000000, rpi_gpio=T
 # allow the connection to initialize
 time.sleep(1)
 
-leg1 = Leg(serial_connection, gamma_id=1, alpha_id=3, beta_id=4, angle=-30)
-leg2 = Leg(serial_connection, gamma_id=9, alpha_id=10, beta_id=11, angle=0)
-leg3 = Leg(serial_connection, gamma_id=9, alpha_id=10, beta_id=11, angle=0)
-leg4 = Leg(serial_connection, gamma_id=9, alpha_id=10, beta_id=11, angle=0)
-leg5 = Leg(serial_connection, gamma_id=9, alpha_id=10, beta_id=11, angle=0)
-leg6 = Leg(serial_connection, gamma_id=9, alpha_id=10, beta_id=11, angle=0)
+leg1 = Leg( gamma_id=1, alpha_id=3, beta_id=4, angle=-30)
+leg2 = Leg( gamma_id=9, alpha_id=10, beta_id=11, angle=0)
+leg3 = Leg( gamma_id=9, alpha_id=10, beta_id=11, angle=0)
+leg4 = Leg( gamma_id=9, alpha_id=10, beta_id=11, angle=0)
+leg5 = Leg( gamma_id=9, alpha_id=10, beta_id=11, angle=0)
+leg6 = Leg( gamma_id=9, alpha_id=10, beta_id=11, angle=0)
 
 angle = 60
 
