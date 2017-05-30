@@ -8,14 +8,14 @@ from utils import rotate
 
 
 class Leg(object):
-    def __init__(self, angle, gamma_id, alpha_id, beta_id):
+    def __init__(self, angle, leg_id):
         self.actuator = Actuator(['y', [77, 0., 0.], 'z', [80, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
                                  min_angles=[-150, -150, -150])
-        self.gamma = Servo(gamma_id, offset_angle=0, min_angle=-60, max_angle=60)
-        self.alpha = Servo(alpha_id, offset_angle=0, min_angle=-140, max_angle=70,
+        self.gamma = Servo(leg_id * 10 + 1, offset_angle=0, min_angle=-60, max_angle=60)
+        self.alpha = Servo(leg_id * 10 + 2, offset_angle=0, min_angle=-140, max_angle=70,
                            flip_angles=True)
-        self.beta = Servo(beta_id, offset_angle=0, min_angle=-90, max_angle=140)
+        self.beta = Servo(leg_id * 10 + 3, offset_angle=0, min_angle=-90, max_angle=140)
 
         self.ground_height_offset = 0
         self.angle = angle
