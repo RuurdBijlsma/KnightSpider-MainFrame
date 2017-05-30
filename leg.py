@@ -1,11 +1,8 @@
 import math
-import sched
-
-import time
 
 from lib.inverse_kinematics.actuator import Actuator
+
 from point import Point3D
-from promise.promise import Promise
 from servo import Servo
 from utils import rotate
 
