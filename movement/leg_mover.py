@@ -25,7 +25,7 @@ class LegMover(object):
                 leg.move_to_normalized(point, on_done_callback)
 
     def execute_stance_sequence_indefinitely(self, stance_list, index=None):
-        if (index == None or index == -1):
+        if index == None or index == -1:
             index = len(stance_list) - 1
 
         if (not self.cancel):
@@ -37,11 +37,11 @@ class LegMover(object):
     def execute_stance_sequence(self, stance_list):
         stance, *remaining_stances = stance_list
 
-        if (not self.cancel):
+        if not self.cancel:
             self.set_stance(stance, lambda: self.execute_stance_sequence(remaining_stances))
         else:
             self.cancel = False
 
 
-def cancel_sequence(self):
-    self.cancel = True
+    def cancel_sequence(self):
+        self.cancel = True
