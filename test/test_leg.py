@@ -1,12 +1,9 @@
-import time
-
 # from pyax12.connection import Connection
 
-from leg import Leg
 from movement.sequences import sequences
-import ax12_serial
 
-from point import Point3D
+import ax12_serial
+from leg import Leg
 
 # from spider import Spider
 #
@@ -36,7 +33,7 @@ legs = [
 ]
 
 # angle = 60
-#
+
 spider = Spider(front_left_leg=legs[0],
                 mid_left_leg=legs[1],
                 back_left_leg=legs[2],
@@ -47,8 +44,8 @@ spider = Spider(front_left_leg=legs[0],
 # leg1.move_to_normalized(Point3D(150, -50, 0))
 
 #
-spider.leg_mover.set_stance(sequences['idle'][0])
-# spider.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
+# spider.leg_mover.set_stance(sequences['idle'][0])
+spider.leg_mover.execute_stance_sequence_indefinitely(sequences["idle"])
 
 def print_leg(leg):
     for s in leg.get_readings():

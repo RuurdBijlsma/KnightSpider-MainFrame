@@ -26,7 +26,7 @@ class Leg(object):
         x, z = rotate(origin, tip_point, math.radians(self.angle))
         return Point3D(x, point.y, z)
 
-    def move_to_normalized(self, point, on_done=lambda: ()):
+    def move_to_normalized(self, point, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point), on_done)
 
     def get_servo_positions(self):
