@@ -29,7 +29,7 @@ class Servo(object):
     ROTATION_SPEED = 400
     ANGLE_THRESHOLD = math.radians(3)
     TIMER_DELAY = 0.2
-    FIRST_TIMER_DELAY = 0.1
+    FIRST_TIMER_DELAY = 0.5
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -65,7 +65,7 @@ class Servo(object):
         # Check if servo reached angle
 
         def timer():
-            if (abs(self.get_angle() - angle) < self.ANGLE_THRESHOLD):
+            # if (abs(self.get_angle() - angle) < self.ANGLE_THRESHOLD):
                 on_done()
 
         t=threading.Timer(self.TIMER_DELAY, timer)

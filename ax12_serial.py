@@ -9,12 +9,13 @@ from lib.pyax12.connection import Connection
 module = sys.modules[__name__]
 mutex = Lock()
 
-def init(port='/dev/serial0', baudrate=1000000, timeout=0.1,
+def init(port='/dev/serial0', baudrate=1000000, timeout=0.2,
                  waiting_time=0.0002, rpi_gpio=True):
     GPIO.setwarnings(False)
     module.pyax12_connection = Connection(port, baudrate, timeout, waiting_time, rpi_gpio)
     Ax12.port = module.pyax12_connection.serial_connection
     module.memes_connection = Ax12()
+    print("Initialized serial connection at {} bps".format(module.pyax12_connection.serial_connection.baudrate))
 
 def run_with_lock(action):
     mutex.acquire()
@@ -26,7 +27,7 @@ def run_with_lock(action):
         mutex.release()
 
 def read_temperature_pyax(id):
-    return run_with_lock(lambda: module.pyax12_connection.read_temperature(id))
+    return run_with_lock(lambda: module.pyax12_connection.get_present_temperature(id))
 
 def read_temperature(id):
     return run_with_lock(lambda: module.memes_connection.readTemperature(id))

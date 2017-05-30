@@ -50,14 +50,11 @@ class Connection(object):
 
     :param str port: the serial device to connect with (e.g. '/dev/ttyUSB0'
         for Unix users or 'COM1' for windows users).
-    :param int baudrate: the baudrate speed (e.g. 57600).
+    :param int baudrate: the baud rate speed (e.g. 57600).
     :param float timeout: the timeout value for the connection.
     :param float waiting_time: the waiting time (in seconds) between sending
         the instruction packet and the receiving the status packet.
     """
-
-    FLUSH_BYTE_WAIT = 0.0020
-    AFTER_FLUSH_WAIT = 0.003
 
     def __init__(self, port='/dev/ttyUSB0', baudrate=57600, timeout=0.1,
                  waiting_time=0.02, rpi_gpio=False):
@@ -117,13 +114,14 @@ class Connection(object):
 
         if self.rpi_gpio:
             self.serial_connection.flushOutput()
-            # time.sleep(self.FLUSH_BYTE_WAIT * len(instruction_packet_bytes))  # TODO: check instead if the output buffer is empty or make the previous flushOutput synchronous
+            # time.sleep(0.00017 * len(instruction_packet_bytes))  # TODO: check instead if the output buffer is empty or make the previous flushOutput synchronous
             time.sleep(0.0001)
 
-            # Pin 18 = 0V (DATA status = receive data from Dynamixel)
-            gpio.output(18, gpio.LOW)
+            if self.rpi_gpio:
+                # Pin 18 = 0V (DATA status = receive data from Dynamixel)
+                gpio.output(18, gpio.LOW)
 
-            # time.sleep(self.AFTER_FLUSH_WAIT)              # TODO: make a while loop with a timeout instead ?
+            time.sleep(0.0005)              # TODO: make a while loop with a timeout instead ?
         else:
             time.sleep(self.waiting_time)  # TODO: make a while loop with a timeout instead ?
 
@@ -133,13 +131,7 @@ class Connection(object):
         # If you use the USB2Dynamixel device, make sure its switch is set on
         # "TTL" (otherwise status packets won't be readable).
 
-        # t_start = time.time()
-        # while True:
-        #     num_bytes_available = self.serial_connection.inWaiting()
-        #     if num_bytes_available > 0 or time.time() - t_start > self.timeout:
-        #         break
-
-        num_bytes_available = self.serial_connection.in_waiting
+        num_bytes_available = self.serial_connection.inWaiting()
 
         # TODO: not robust...
         status_packet_bytes = self.serial_connection.read(num_bytes_available)
@@ -550,9 +542,9 @@ class Connection(object):
         byte_seq = self.read_data(dynamixel_id, pk.BAUD_RATE, 1)
         raw_value = byte_seq[0]
 
-        baudrate = 2000000 / (raw_value + 1)
+        baud_rate = 2000000 / (raw_value + 1)
 
-        return round(baudrate, 1)
+        return round(baud_rate, 1)
 
 
     def get_return_delay_time(self, dynamixel_id):
@@ -1318,6 +1310,102 @@ class Connection(object):
     # HIGH LEVEL MUTATORS #####################################################
 
 
+    def set_id(self, dynamixel_id, new_id):
+        """Set the *ID* for the specified Dynamixel unit
+        i.e. the unique ID number assigned to actuators for identifying them.
+
+        Different IDs are required for each Dynamixel actuators that are on the
+        same network.
+
+        :param int dynamixel_id: the current unique ID of the Dynamixel unit to
+            update. It must be in range (0, 0xFE).
+        :param int dynamixel_id: the new unique ID assigned to the selected
+            Dynamixel unit. It must be in range (0, 0xFE).
+        """
+        # TODO: check ranges
+
+        self.write_data(dynamixel_id, pk.ID, new_id)
+
+
+    def set_baud_rate(self, dynamixel_id, baudrate, unit="kbps"):
+        """Set the *baud rate* for the specified Dynamixel unit
+        i.e. set the connection speed with the actuator.
+
+        If `unit` is `"internal"` or `"raw"` then the actual speed `bps` (in
+        bauds per second) is:
+
+            bps = 2000000 / (`baudrate` + 1)
+
+        If `unit` is `"bps"` then the actual speed `bps` (in bauds per second)
+        is:
+
+            bps = `baudrate`
+
+        If `unit` is `"kbps"` then the actual speed `bps` (in bauds per second)
+        is:
+
+            bps = `baudrate` * 1000
+
+        E.g. the following arguments will give the same result (200kbps)::
+
+            set_baud_rate(1, baudrate=9, unit="internal")
+            set_baud_rate(1, baudrate=200000, unit="bps")
+
+        :param int dynamixel_id: the current unique ID of the Dynamixel unit to
+            update. It must be in range (0, 0xFE).
+        :param int dynamixel_id: the new baud rate assigned to the selected
+            Dynamixel unit. It must be in range (1, 0xFF).
+        :param bool  unit: define the units of the `baudrate`
+            argument.
+        """
+
+        if unit == "bps":
+            baudrate = int(round(2000000. / baudrate)) - 1
+        elif unit == "kbps":
+            baudrate = int(round(2000. / baudrate)) - 1
+
+        # TODO: check ranges
+
+        self.write_data(dynamixel_id, pk.BAUD_RATE, baudrate)
+
+
+    def set_return_delay_time(self, dynamixel_id, return_delay_time, unit="us"):
+        """Set the *return delay time* for the specified Dynamixel unit
+        i.e. the time for the status packets to return after the instruction
+        packet is sent.
+
+        If `unit` is `"internal"` or `"raw"` then the actual return delay time
+        `rdt` (in µs) will be::
+
+            rdt = 2 * return_delay_time
+
+        If `unit` is `"us"`, `"usec"` or `"microseconds"` then the actual
+        return delay time `rdt` (in µs) will be::
+
+            rdt = return_delay_time
+
+        E.g. the following arguments will give the same result (return delay
+        time = 500µs)::
+
+            set_return_delay_time(1, return_delay_time=250, unit="internal")
+            set_return_delay_time(1, return_delay_time=500, unit="us")
+
+        :param int dynamixel_id: the unique ID of a Dynamixel unit. It must be
+            in range (0, 0xFE).
+        :param int  return_delay_time: the new return delay time. It must be in
+            range (0, 255) i.e. (0, 0xFF) in hexadecimal notation.
+        :param bool  unit: define the units of the `return_delay_time`
+            argument.
+        """
+
+        if unit in ("us", "usec", "microseconds"):
+            return_delay_time = int(round(return_delay_time / 2.))
+
+        # TODO: check ranges
+
+        self.write_data(dynamixel_id, pk.RETURN_DELAY_TIME, return_delay_time)
+
+
     def set_cw_angle_limit(self, dynamixel_id, angle_limit, degrees=False):
         """Set the *clockwise angle limit* of the specified Dynamixel unit to
         the specified `angle_limit`.
@@ -1379,7 +1467,21 @@ class Connection(object):
 
         self.write_data(dynamixel_id, pk.CCW_ANGLE_LIMIT, params)
 
-    ###
+
+    def set_speed(self, dynamixel_id, speed):
+        """Set the *moving speed* for the specified Dynamixel unit.
+
+        :param int dynamixel_id: the unique ID of a Dynamixel unit. It must be
+            in range (0, 0xFE).
+        :param int speed: the new moving speed. It must be in range (0, 1023)
+            i.e. (0, 0x3FF) in hexadecimal notation.
+        """
+        # TODO: check ranges
+
+        params = utils.int_to_little_endian_bytes(speed)
+
+        self.write_data(dynamixel_id, pk.MOVING_SPEED, params)
+
 
     def goto(self, dynamixel_id, position, speed=None, degrees=False):
         """Set the *goal position* and *moving speed* for the specified

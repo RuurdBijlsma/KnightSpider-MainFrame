@@ -1,9 +1,9 @@
 from movement.stance import Stance
 from point import Point3D
 
-step_length = 100
+step_length = 50
 step_delay = 0.3
-step_height = 50
+step_height = 30
 tip_distance = 150
 
 sequences = {

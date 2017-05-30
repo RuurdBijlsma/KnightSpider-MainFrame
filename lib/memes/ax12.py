@@ -251,7 +251,7 @@ class Ax12:
     def setBaudRate(self, id, baudRate):
         self.direction(Ax12.RPI_DIRECTION_TX)
         Ax12.port.flushInput()
-        br = ((2000000/int(baudRate))-1)
+        br = int(((2000000/baudRate)-1))
         checksum = (~(id + Ax12.AX_BD_LENGTH + Ax12.AX_WRITE_DATA + Ax12.AX_BAUD_RATE + br))&0xff
         outData = bytearray()
         outData.append(Ax12.AX_START)

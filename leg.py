@@ -43,7 +43,7 @@ class Leg(object):
 
     def move_to(self, point, on_done=lambda: ()):
         point.y += self.ground_height_offset
-        assert (point.y < 0)
+        # assert (point.y < 0)
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
 
@@ -57,6 +57,7 @@ class Leg(object):
         self.gamma.rotate_to(angles[0], on_done_callback)
         self.alpha.rotate_to(angles[1], on_done_callback)
         self.beta.rotate_to(angles[2], on_done_callback)
+        print("-----------------")
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

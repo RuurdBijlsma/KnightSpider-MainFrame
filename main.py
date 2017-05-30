@@ -1,10 +1,16 @@
+import psutil
+
+
+
 import ax12_serial
 import time
 
 import utils
 from leg import Leg
+from movement.sequences import sequences
 from servo import Servo
 from point import Point3D
+from spider import Spider
 
 try:
     import RPi.GPIO as GPIO
@@ -15,62 +21,25 @@ def print_leg(leg):
     for s in leg.get_readings():
         print(s)
 
-ax12_serial.init()
+ax12_serial.init(baudrate=1000000)
 
-print(utils.get_cpu_usage())
+# ax12_serial.scan(15)
 
-# ax12_serial.scan(4)
-
-leg4 = Leg(30, 41, 42, 43)
-
-print(ax12_serial.read_temperature_pyax(41))
-
-leg4.move_to_normalized(Point3D(180, -10, 30))
-# print_leg(leg4)
-
-time.sleep(1)
-
-# legs = [
-#     Leg(30, 11, 12, 13),
-#     Leg(0, 21, 22, 23),
-#     Leg(-30, 31, 32, 33),
-#     Leg(30, 41, 42, 43),
-# ]
-
-# legs[2].move_to_normalized(Point3D(200, -30, -20))
-# time.sleep(1)
-#
-# print_leg(legs[2])
-
-# leg = Leg(-30, 1,2,3)
-
-# result = []
+legs = [
+    Leg(-30, 11, 12, 13),
+    Leg(0, 21, 22, 23),
+    Leg(30, 31, 32, 33),
+    Leg(-30, 41, 42, 43),
+    Leg(0, 51, 52, 53),
+    Leg(30, 61, 62, 63)
+]
 
 
-# start = time.time()
+spoder = Spider(front_left_leg=legs[0],
+                mid_left_leg=legs[1],
+                back_left_leg=legs[2],
+                front_right_leg=legs[3],
+                mid_right_leg=legs[4],
+                back_right_leg=legs[5])
 
-
-# Servo(1).rotate_to(-30)
-# Servo(2).rotate_to(-30)
-#
-#
-# print("move")
-# leg.move_to_normalized(Point3D(140, -30, 20))
-# print(leg.get_readings()[0])
-#
-# print(Servo(1).get_readings())
-#
-# print("time", time.time() - start)
-#
-# time.sleep(1)
-#
-# ax12_serial.Ax12.port.close()
-#
-# for leg in legs:
-#     leg.move_to_normalized(Point3D(200, -40, 20))
-#
-# print(Servo(1).get_readings())
-#
-# time.sleep(1)
-# for reading in legs[0].get_readings():
-#     print(reading)
+spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
