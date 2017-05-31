@@ -64,6 +64,7 @@ class LegMover(object):
                 back_right_point=back_point
             ),
         ]
+
         self.execute_stance_sequence_indefinitely(stance_sequence, self.current_walk_index)
 
     def set_stance(self, stance, on_done=lambda: None):
