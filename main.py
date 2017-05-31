@@ -44,6 +44,8 @@ time.sleep(1)
 #     for r in leg.readings:
 #         print(r)
 
+print(spoder.get_servo_angles_json())
+
 def find_reading(id):
     for leg in spoder.leg_iter:
         for servo_reading in leg.readings:
@@ -64,6 +66,7 @@ def read_id():
 
 
 threading.Thread(target=read_id).start()
+print(spoder.get_info())
+print(spoder.get_info().to_json())
 
-
-spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
+# spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])

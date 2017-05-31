@@ -44,11 +44,11 @@ spider = Spider(front_left_leg=legs[0],
 
 #
 # spider.leg_mover.set_stance(sequences['idle'][0])
-spider.leg_mover.walk(rotate_angle=math.radians(90), step_height=40, step_length=40, tip_distance=180)
+spider.leg_mover.walk(rotate_angle=0, step_height=40, step_length=40, tip_distance=180)
 
 
 def print_leg(leg):
-    for s in leg.get_readings():
+    for s in leg.get_servo_readings():
         print(s)
 
         # print_leg(legs[0])

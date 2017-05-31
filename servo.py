@@ -5,47 +5,13 @@ import time
 import math
 
 import ax12_serial
-
-
-class ServoReadings(object):
-    def __init__(self, id, position=-1, load=-1, voltage=-1, temperature=-1):
-        self.id = id
-        self.temperature = temperature
-        self.voltage = voltage
-        self.load = load
-        self.position = position
-
-        if voltage < 7.5:
-            print("voltage low: {} at id {}".format(self.voltage, self.id))
-        elif voltage > 11:
-            print("voltage high: {} at id {}".format(self.voltage, self.id))
-
-    def __str__(self):
-        return "Readings for {4}:\nTemperature = {0}\nVoltage = {1}\nLoad = {2}\nPosition = {3}\n".format(
-            self.temperature,
-            self.voltage,
-            self.load,
-            self.position,
-            self.id
-        )
-
-    def to_json(self):
-        return json.dumps(
-            {
-                "id": self.id,
-                "temperature": self.temperature,
-                "voltage": self.voltage,
-                "load": self.load,
-                "position": self.position
-            },
-            separators=(",", ":")
-        )
+from models import ServoReadings
 
 
 class Servo(object):
     ROTATION_SPEED = 400
     ANGLE_THRESHOLD = math.radians(3)
-    TIMER_DELAY = 0.5
+    TIMER_DELAY = 0.2
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles

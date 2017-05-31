@@ -1,6 +1,8 @@
-import utils
-from movement.leg_mover import LegMover
+import json
 
+import utils
+from models import SpiderInfo
+from movement.leg_mover import LegMover
 
 class Spider(object):
     def __init__(self, front_left_leg, mid_left_leg, back_left_leg, back_right_leg, mid_right_leg, front_right_leg):
@@ -45,7 +47,19 @@ class Spider(object):
             for leg in value.values():
                 yield leg
 
-    def get_readings(self):
+    def get_servo_angles(self):
+        result = {}
+
+        for leg in self.leg_iter:
+            for reading in leg.readings:
+                result[reading.id] = reading.position
+
+        return result
+
+    def get_servo_angles_json(self):
+        return json.dumps(self.get_servo_angles(), separators=(",", ":"))
+
+    def get_servo_readings(self):
         return {
             'left': {
                 'front': self.legs['left']['front'].readings,
@@ -58,3 +72,11 @@ class Spider(object):
                 'back': self.legs['right']['back'].readings
             }
         }
+
+    def get_info(self):
+        return SpiderInfo(
+            battery_level=200,
+            slope=20,
+            cpu_usage=utils.get_cpu_usage(),
+            cpu_temperature=utils.get_cpu_temp()
+        )

@@ -4,6 +4,34 @@ class Point3D(object):
         self.y = y
         self.z = z
 
+    def negate_x(self):
+        return Point3D(
+            -self.x,
+            self.y,
+            self.z
+        )
+
+    def negate_y(self):
+        return Point3D(
+            self.x,
+            -self.y,
+            self.z
+        )
+
+    def negate_z(self):
+        return Point3D(
+            self.x,
+            self.y,
+            -self.z
+        )
+
+    def negate(self):
+        return Point3D(
+            -self.x,
+            -self.y,
+            -self.z
+        )
+
     def __str__(self):
         return "x:{0}, y:{1}, z:{2}".format(self.x, self.y, self.z)
 
