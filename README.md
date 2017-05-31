@@ -3,8 +3,6 @@
 Python version >= 3
 
 ### Required packages
-* https://pypi.python.org/pypi/tinyik/1.2.0
-* https://pypi.python.org/pypi/pyax12
 * https://pypi.python.org/pypi/numpy (Must be 1.12 or higher, 
     version in default repository is too low, jessie-backports has a updated version)
 
