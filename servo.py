@@ -1,4 +1,3 @@
-import math
 import threading
 
 import ax12_serial
@@ -7,8 +6,9 @@ from models import ServoReadings
 
 class Servo(object):
     ROTATION_SPEED = 200
-    ANGLE_THRESHOLD = math.radians(3)
-    TIMER_DELAY = 0.05
+    ANGLE_THRESHOLD = 3
+    TIMER_DELAY = 0.4
+    TIMEOUT = 0.5
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -49,15 +49,7 @@ class Servo(object):
         except ValueError as e:
             print("Error moving servo:", e)
 
-        # Check if servo reached angle
-
-
-        def timer():
-            if (abs(self.angle - angle) < self.ANGLE_THRESHOLD):
-                on_done()
-
-        t = threading.Timer(self.TIMER_DELAY, timer)
-        t.start()
+        threading.Timer(self.TIMER_DELAY, on_done).start()
 
     def update_readings(self):
         self._cached_readings = self.get_readings()
@@ -72,13 +64,14 @@ class Servo(object):
 
     def get_readings(self):
         try:
-            return ServoReadings(
+            readings = ServoReadings(
                 position=ax12_serial.read_position(self.id),
                 voltage=ax12_serial.read_voltage(self.id),
                 temperature=ax12_serial.read_temperature(self.id),
                 load=ax12_serial.read_load(self.id),
                 id=self.id,
             )
+            return readings
         except TypeError as e:
             print("Error reading from servo:", e)
             return ServoReadings.empty()
