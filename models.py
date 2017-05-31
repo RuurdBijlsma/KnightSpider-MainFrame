@@ -35,6 +35,17 @@ class ServoReadings(object):
             separators=(",", ":")
         )
 
+    @staticmethod
+    def empty():
+        return ServoReadings(
+            position=-500,
+            voltage=-500,
+            temperature=-500,
+            load=-500,
+            id=-1,
+        )
+
+
 class SpiderInfo(object):
     def __init__(self, battery_level=-1, slope=-1, cpu_usage=-1, cpu_temperature=1):
         self.cpu_temperature = cpu_temperature
