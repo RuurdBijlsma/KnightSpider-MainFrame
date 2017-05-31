@@ -72,4 +72,5 @@ class Leg(object):
         return [
             self.gamma.readings,
             self.alpha.readings,
-            self.beta.readings        ]
+            self.beta.readings
+        ]
