@@ -29,14 +29,11 @@ class Leg(object):
     def move_to_normalized(self, point, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point), on_done)
 
-    def get_servo_positions(self):
+    def get_tip_point(self):
         gamma_angle = self.gamma.angle
         alpha_angle = self.alpha.angle
         beta_angle = self.beta.angle
         return self.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
-
-    def check_distance(self, target_pos, distance_threshold=5):
-        return self.get_servo_positions().distance_to(target_pos) < distance_threshold
 
     def move_to(self, point, on_done=lambda: None):
         point.y += self.ground_height_offset

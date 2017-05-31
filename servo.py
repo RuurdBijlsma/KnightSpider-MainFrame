@@ -1,17 +1,14 @@
-import json
-import threading
-import time
-
 import math
+import threading
 
 import ax12_serial
 from models import ServoReadings
 
 
 class Servo(object):
-    ROTATION_SPEED = 400
+    ROTATION_SPEED = 200
     ANGLE_THRESHOLD = math.radians(3)
-    TIMER_DELAY = 0.2
+    TIMER_DELAY = 0.05
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -23,6 +20,14 @@ class Servo(object):
         if (self.min_angle < -150):
             self.min_angle = -150
         self.id = id
+
+        self._cached_readings = ServoReadings(
+            position=0,
+            voltage=0,
+            temperature=0,
+            load=0,
+            id=id,
+        )
 
     def rotate_to(self, angle, on_done=lambda: None):
         if angle < self.min_angle:
@@ -47,14 +52,15 @@ class Servo(object):
         # Check if servo reached angle
 
         def timer():
-            # if (abs(self.get_angle() - angle) < self.ANGLE_THRESHOLD):
+            if (abs(self.angle - angle) < self.ANGLE_THRESHOLD):
                 on_done()
 
-        t=threading.Timer(self.TIMER_DELAY, timer)
+        t = threading.Timer(self.TIMER_DELAY, timer)
         t.start()
 
     def update_readings(self):
         self._cached_readings = self.get_readings()
+        print("cached readings have been updated")
 
     @property
     def readings(self):

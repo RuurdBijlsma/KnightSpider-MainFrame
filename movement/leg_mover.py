@@ -12,59 +12,78 @@ class LegMover(object):
         self.ground_clearance = ground_clearance
         self.cancel = False
         self.current_walk_index = None
+        self.is_moving = False
 
     def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180):
-        forward_point = Point3D(tip_distance, 0, step_length / 2)
-        back_point = Point3D(tip_distance, 0, -step_length / 2)
-        lifted_point = Point3D(tip_distance, step_height, 0)
+        forward_point_right = Point3D(tip_distance, 0, step_length / 2)
+        back_point_right = Point3D(tip_distance, 0, -step_length / 2)
+        lifted_point_right = Point3D(tip_distance, step_height, 0)
+
+        forward_point_left = forward_point_right.negate_z()
+        back_point_left = back_point_right.negate_z()
+        lifted_point_left = lifted_point_right.negate_z()
 
         rotate_origin = (tip_distance, 0)
-        forward_x, forward_z = utils.rotate(rotate_origin, (forward_point.x, forward_point.z), rotate_angle)
-        back_x, back_z = utils.rotate(rotate_origin, (back_point.x, back_point.z), rotate_angle)
-        lifted_x, lifted_z = utils.rotate(rotate_origin, (lifted_point.x, lifted_point.z), rotate_angle)
+        forward_x, forward_z = utils.rotate(rotate_origin, (forward_point_right.x, forward_point_right.z), rotate_angle)
+        back_x, back_z = utils.rotate(rotate_origin, (back_point_right.x, back_point_right.z), rotate_angle)
+        lifted_x, lifted_z = utils.rotate(rotate_origin, (lifted_point_right.x, lifted_point_right.z), rotate_angle)
 
-        forward_point.x = forward_x
-        forward_point.z = forward_z
-        back_point.x = back_x
-        back_point.z = back_z
-        lifted_point.x = lifted_x
-        lifted_point.z = lifted_z
+        forward_point_right.x = forward_x
+        forward_point_right.z = forward_z
+        back_point_right.x = back_x
+        back_point_right.z = back_z
+        lifted_point_right.x = lifted_x
+        lifted_point_right.z = lifted_z
+
+        rotate_origin = (tip_distance, 0)
+        forward_x, forward_z = utils.rotate(rotate_origin, (forward_point_left.x, forward_point_left.z), rotate_angle)
+        back_x, back_z = utils.rotate(rotate_origin, (back_point_left.x, back_point_left.z), rotate_angle)
+        lifted_x, lifted_z = utils.rotate(rotate_origin, (lifted_point_left.x, lifted_point_left.z), rotate_angle)
+
+        forward_point_left.x = forward_x
+        forward_point_left.z = forward_z
+        back_point_left.x = back_x
+        back_point_left.z = back_z
+        lifted_point_left.x = lifted_x
+        lifted_point_left.z = lifted_z
 
         stance_sequence = [
             Stance(
-                front_left_point=forward_point,
-                mid_left_point=back_point,
-                back_left_point=forward_point,
-                front_right_point=back_point,
-                mid_right_point=forward_point,
-                back_right_point=back_point
+                front_left_point=forward_point_left,
+                mid_left_point=back_point_left,
+                back_left_point=forward_point_left,
+                front_right_point=back_point_right,
+                mid_right_point=forward_point_right,
+                back_right_point=back_point_right
             ),
             Stance(
-                front_left_point=back_point,
-                mid_left_point=lifted_point,
-                back_left_point=back_point,
-                front_right_point=lifted_point,
-                mid_right_point=back_point,
-                back_right_point=lifted_point
+                front_left_point=back_point_left,
+                mid_left_point=lifted_point_left,
+                back_left_point=back_point_left,
+                front_right_point=lifted_point_right,
+                mid_right_point=back_point_right,
+                back_right_point=lifted_point_right
             ),
             Stance(
-                front_left_point=back_point,
-                mid_left_point=forward_point,
-                back_left_point=back_point,
-                front_right_point=forward_point,
-                mid_right_point=back_point,
-                back_right_point=forward_point
+                front_left_point=back_point_left,
+                mid_left_point=forward_point_left,
+                back_left_point=back_point_left,
+                front_right_point=forward_point_right,
+                mid_right_point=back_point_right,
+                back_right_point=forward_point_right
             ),
             Stance(
-                front_left_point=lifted_point,
-                mid_left_point=back_point,
-                back_left_point=lifted_point,
-                front_right_point=back_point,
-                mid_right_point=lifted_point,
-                back_right_point=back_point
+                front_left_point=lifted_point_left,
+                mid_left_point=back_point_left,
+                back_left_point=lifted_point_left,
+                front_right_point=back_point_right,
+                mid_right_point=lifted_point_right,
+                back_right_point=back_point_right
             ),
         ]
 
+        if self.is_moving:
+            self.cancel_sequence()
         self.execute_stance_sequence_indefinitely(stance_sequence, self.current_walk_index)
 
     def set_stance(self, stance, on_done=lambda: None):
@@ -79,7 +98,7 @@ class LegMover(object):
 
                 def on_done_callback():
                     self.legs_to_do = self.legs_to_do - 1
-                    if (self.legs_to_do == 0):
+                    if self.legs_to_do == 0:
                         on_done()
 
                 leg.move_to_normalized(point, on_done_callback)
@@ -90,7 +109,8 @@ class LegMover(object):
 
         self.current_walk_index = index
 
-        if (not self.cancel):
+        if not self.cancel:
+            self.is_moving = True
             self.set_stance(stance_list[index],
                             lambda: self.execute_stance_sequence_indefinitely(stance_list, index - 1))
         else:
@@ -100,9 +120,11 @@ class LegMover(object):
         stance, *remaining_stances = stance_list
 
         if not self.cancel:
+            self.is_moving = True
             self.set_stance(stance, lambda: self.execute_stance_sequence(remaining_stances))
         else:
             self.cancel = False
 
     def cancel_sequence(self):
         self.cancel = True
+        self.is_moving = False
