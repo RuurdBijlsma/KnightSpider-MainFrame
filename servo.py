@@ -51,6 +51,7 @@ class Servo(object):
 
         # Check if servo reached angle
 
+
         def timer():
             if (abs(self.angle - angle) < self.ANGLE_THRESHOLD):
                 on_done()
@@ -60,7 +61,6 @@ class Servo(object):
 
     def update_readings(self):
         self._cached_readings = self.get_readings()
-        print("cached readings have been updated")
 
     @property
     def readings(self):
@@ -81,3 +81,4 @@ class Servo(object):
             )
         except TypeError as e:
             print("Error reading from servo:", e)
+            return ServoReadings.empty()
