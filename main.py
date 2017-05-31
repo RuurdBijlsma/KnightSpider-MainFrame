@@ -1,7 +1,4 @@
-import psutil
-
-
-
+import threading
 import ax12_serial
 import time
 
@@ -21,7 +18,7 @@ except:
 ax12_serial.init()
 
 # ax12_serial.scan(18)
-
+12
 legs = [
     Leg(-30, 1),
     Leg(0, 2),
@@ -46,5 +43,27 @@ time.sleep(1)
 # for leg in spoder.leg_iter:
 #     for r in leg.readings:
 #         print(r)
+
+def find_reading(id):
+    for leg in spoder.leg_iter:
+        for servo_reading in leg.readings:
+            if(servo_reading.id == id):
+                print(servo_reading)
+                return True
+
+    return False
+
+def read_id():
+    while True:
+        try:
+            id = int(input("Enter id: "))
+            if not find_reading(id):
+                print("ID {} not found".format(id))
+        except:
+            pass
+
+
+threading.Thread(target=read_id).start()
+
 
 spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
