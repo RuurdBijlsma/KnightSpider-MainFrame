@@ -9,7 +9,7 @@ from utils import rotate
 
 class Leg(object):
     def __init__(self, angle, leg_id):
-        self.actuator = Actuator(['y', [77, 0., 0.], 'z', [80, 0., 0.], 'z', [115, 0., 0.]],
+        self.actuator = Actuator(['y', [60, 0., 0.], 'z', [70, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
                                  min_angles=[-150, -150, -150])
         self.gamma = Servo(leg_id * 10 + 1, offset_angle=0, min_angle=-60, max_angle=60)
@@ -70,7 +70,6 @@ class Leg(object):
     @property
     def readings(self):
         return [
-            self.gamma.get_readings(),
-            self.alpha.get_readings(),
-            self.beta.get_readings()
-        ]
+            self.gamma.readings,
+            self.alpha.readings,
+            self.beta.readings        ]

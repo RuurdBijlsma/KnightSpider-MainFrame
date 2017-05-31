@@ -15,6 +15,11 @@ class ServoReadings(object):
         self.load = load
         self.position = position
 
+        if voltage < 7.5:
+            print("voltage low: {} at id {}".format(self.voltage, self.id))
+        elif voltage > 11:
+            print("voltage high: {} at id {}".format(self.voltage, self.id))
+
     def __str__(self):
         return "Readings for {4}:\nTemperature = {0}\nVoltage = {1}\nLoad = {2}\nPosition = {3}\n".format(
             self.temperature,
