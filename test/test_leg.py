@@ -47,12 +47,11 @@ spider = Spider(front_left_leg=legs[0],
 ReadingsWorker(frequency=5, spider=spider).start()
 # spider.leg_mover.set_stance(sequences['idle'][0])
 spider.leg_mover.ground_clearance = 100
-spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=70, step_length=40, tip_distance=100)
+spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=70, step_length=30, tip_distance=100)
 
 time.sleep(1)
 
 def print_leg(leg):
     for s in leg.get_readings():
         print(s)
-
         # print_leg(legs[0])

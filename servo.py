@@ -60,8 +60,6 @@ class Servo(object):
 
     def update_readings(self):
         self._cached_readings = self.get_readings()
-        print("cached readings have been updated")
-
     @property
     def readings(self):
         return self._cached_readings
