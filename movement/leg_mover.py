@@ -21,9 +21,9 @@ class LegMover(object):
         rotate_origin = (tip_distance, 0)
 
         points = [
-            Point3D(tip_distance, 0, step_length / 2),
-            Point3D(tip_distance, 0, -step_length / 2),
-            Point3D(tip_distance, step_height, 0)
+            Point3D(tip_distance, 0, step_length / 2),  # forward
+            Point3D(tip_distance, 0, -step_length / 2),  # back
+            Point3D(tip_distance, step_height, 0)  # lifted
         ]
 
         points_right = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points]
