@@ -1,29 +1,33 @@
 import numpy
-
 from lib.inverse_kinematics.core import TinyActuator
+
 from point import Point3D
 
 
 class Actuator:
-    def __init__(self, armDefinition, max_angles=None, min_angles=None):
-        for i, val in enumerate(armDefinition):  # Fix axes
-            if (armDefinition[i] == "z"):
-                armDefinition[i] = "y"
-            elif (armDefinition[i] == "y"):
-                armDefinition[i] = "z"
+    def __init__(self, cache, arm_definition, max_angles=None, min_angles=None):
+        for i, val in enumerate(arm_definition):  # Fix axes
+            if (arm_definition[i] == "z"):
+                arm_definition[i] = "y"
+            elif (arm_definition[i] == "y"):
+                arm_definition[i] = "z"
 
-        self.cache = {}
+        self.cache = cache
 
-        self._arm = TinyActuator(armDefinition, max_angles=numpy.deg2rad(max_angles),
+        self._arm = TinyActuator(arm_definition, max_angles=numpy.deg2rad(max_angles),
                                  min_angles=numpy.deg2rad(min_angles))
 
     def inverse_kinematics(self, point):
-        if (point in self.cache):
-            return self.cache[point]
+        point_string = str(point)
+        if (point_string in self.cache.points):
+            return self.cache.points[point_string]
 
         self._arm.ee = Actuator.change_format([point.x, point.y, point.z])
         angles = numpy.rad2deg(self._arm.angles)
-        self.cache[point] = angles
+
+        self.cache.points[point_string] = angles.tolist()
+        self.cache.export()
+        print("exported {} : {} to cache".format(point_string, angles))
         return angles
 
     def forward_kinematics(self, angles):

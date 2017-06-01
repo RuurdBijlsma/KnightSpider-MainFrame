@@ -1,24 +1,51 @@
 import json
 
-import utils
-from models import SpiderInfo
+from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
 
+import utils
+from leg import Leg
+from models import SpiderInfo
+from point import Point3D
+
+
 class Spider(object):
-    def __init__(self, front_left_leg, mid_left_leg, back_left_leg, back_right_leg, mid_right_leg, front_right_leg):
+    def __init__(self):
+        self.ik_cache = IKCache('store/ik_cache.json')
+        self.ik_cache.from_file()
+        # self.ik_cache.clear()
+
+        legs = [
+            Leg(self.ik_cache, leg_id=1, angle=30, body_position=Point3D(-70.8, 0, 104.12)),
+            Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
+            Leg(self.ik_cache, leg_id=3, angle=-30, body_position=Point3D(-71.09, 0, -108.50)),
+            Leg(self.ik_cache, leg_id=4, angle=-30, body_position=Point3D(69.8, 0, 103.65)),
+            Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
+            Leg(self.ik_cache, leg_id=6, angle=30, body_position=Point3D(69.58, 0, -108.97)),
+        ]
+
         self.legs = {
             'left': {
-                'front': front_left_leg,
-                'mid': mid_left_leg,
-                'back': back_left_leg
+                'front': legs[0],
+                'mid': legs[1],
+                'back': legs[2]
             },
             'right': {
-                'front': front_right_leg,
-                'mid': mid_right_leg,
-                'back': back_right_leg
+                'front': legs[3],
+                'mid': legs[4],
+                'back': legs[5]
             }
         }
         self.leg_mover = LegMover(self, ground_clearance=50)
+
+    def rotate_body(self, x_angle, z_angle):
+        for leg in self.leg_iter:
+            just_the_tip = leg.get_body_to_tip_point()
+            tip_y = just_the_tip.y
+            rotated = just_the_tip.rotate_around_x(angle=x_angle)
+            rotated = rotated.rotate_around_z(angle=z_angle)
+            gho = tip_y - rotated.y
+            leg.ground_height_offset = gho
 
     @property
     def cpu_temperature(self):
@@ -27,7 +54,6 @@ class Spider(object):
     @cpu_temperature.setter
     def cpu_temperature(self, value):
         self._cpu_temperature = value
-
 
     @property
     def cpu_usage(self):

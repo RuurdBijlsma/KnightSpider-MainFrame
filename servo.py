@@ -7,8 +7,7 @@ from models import ServoReadings
 class Servo(object):
     ROTATION_SPEED = 200
     ANGLE_THRESHOLD = 3
-    TIMER_DELAY = 0.4
-    TIMEOUT = 0.5
+    TIMER_DELAY = .2
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles
@@ -73,5 +72,5 @@ class Servo(object):
             )
             return readings
         except TypeError as e:
-            print("Error reading from servo:", e)
+            # print("Error reading from servo:", e)
             return ServoReadings.empty()

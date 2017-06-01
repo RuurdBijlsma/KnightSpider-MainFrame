@@ -1,9 +1,7 @@
 # from pyax12.connection import Connection
 import math
-import time
 
 import ax12_serial
-from leg import Leg
 from readings_worker import ReadingsWorker
 
 # from spider import Spider
@@ -23,33 +21,22 @@ ax12_serial.init()
 
 from spider import Spider
 
-legs = [
-    Leg(leg_id=1, angle=-30),
-    Leg(leg_id=2, angle=0),
-    Leg(leg_id=3, angle=30),
-    Leg(leg_id=4, angle=-30),
-    Leg(leg_id=5, angle=0),
-    Leg(leg_id=6, angle=30),
-]
-
-# angle = 60
-
-spider = Spider(front_left_leg=legs[0],
-                mid_left_leg=legs[1],
-                back_left_leg=legs[2],
-                front_right_leg=legs[3],
-                mid_right_leg=legs[4],
-                back_right_leg=legs[5])
+spider = Spider()
 
 # leg1.move_to_normalized(Point3D(150, -50, 0))
 
 #
 ReadingsWorker(frequency=5, spider=spider).start()
 # spider.leg_mover.set_stance(sequences['idle'][0])
-spider.leg_mover.ground_clearance = 150
-spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=40, tip_distance=130)
+spider.leg_mover.ground_clearance = 110
+# spider.leg_mover.slope = Point3D(0, 1, 0)
+spider.rotate_body(x_angle=math.radians(11.3), z_angle=math.radians(0))
+#                   x vergroten is voorkant verhogen
+#                   z vergroten is linkerkant verhogen
+spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=20, step_length=30, tip_distance=110, rotate=False)
 
-time.sleep(1)
+
+# time.sleep(1)
 
 def print_leg(leg):
     for s in leg.get_readings():
