@@ -1,6 +1,5 @@
 # from pyax12.connection import Connection
 import math
-import time
 
 import ax12_serial
 from leg import Leg
@@ -46,10 +45,9 @@ spider = Spider(front_left_leg=legs[0],
 #
 ReadingsWorker(frequency=5, spider=spider).start()
 # spider.leg_mover.set_stance(sequences['idle'][0])
-spider.leg_mover.ground_clearance = 150
-spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=40, tip_distance=130)
+spider.leg_mover.ground_clearance = 110
+spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=40, tip_distance=110)
 
-time.sleep(1)
 
 def print_leg(leg):
     for s in leg.get_readings():
