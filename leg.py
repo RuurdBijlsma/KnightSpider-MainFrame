@@ -13,10 +13,10 @@ class Leg(object):
                                  arm_definition=['y', [60, 0., 0.], 'z', [70, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
                                  min_angles=[-150, -150, -150])
-        self.gamma = Servo(leg_id * 10 + 1, offset_angle=0, min_angle=-60, max_angle=60)
-        self.alpha = Servo(leg_id * 10 + 2, offset_angle=0, min_angle=-140, max_angle=70,
+        self.gamma = Servo(leg_id * 10 + 1, offset_angle=0, min_angle=-150, max_angle=150)
+        self.alpha = Servo(leg_id * 10 + 2, offset_angle=0, min_angle=-150, max_angle=150,
                            flip_angles=True)
-        self.beta = Servo(leg_id * 10 + 3, offset_angle=0, min_angle=-90, max_angle=140)
+        self.beta = Servo(leg_id * 10 + 3, offset_angle=0, min_angle=-150, max_angle=150)
 
         self.ground_height_offset = 0
         self.angle = angle
