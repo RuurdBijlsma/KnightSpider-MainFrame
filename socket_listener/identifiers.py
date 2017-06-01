@@ -1,0 +1,3 @@
+ANGLES = 1
+SERVO = 2
+SPIDER = 3

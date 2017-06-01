@@ -15,10 +15,28 @@ try:
 except:
     pass
 
+def find_reading(id):
+    for leg in spoder.leg_iter:
+        for servo_reading in leg.readings:
+            if(servo_reading.id == id):
+                print(servo_reading)
+                return True
+
+    return False
+
+def read_id():
+    while True:
+        try:
+            id = int(input("Enter id: "))
+            if not find_reading(id):
+                print("ID {} not found".format(id))
+        except:
+            pass
+
 ax12_serial.init()
 
 # ax12_serial.scan(18)
-12
+
 legs = [
     Leg(-30, 1),
     Leg(0, 2),
@@ -39,34 +57,5 @@ spoder = Spider(front_left_leg=legs[0],
 ReadingsWorker(frequency=5, spider=spoder).start()
 
 time.sleep(1)
-
-# for leg in spoder.leg_iter:
-#     for r in leg.readings:
-#         print(r)
-
-print(spoder.get_servo_angles_json())
-
-def find_reading(id):
-    for leg in spoder.leg_iter:
-        for servo_reading in leg.readings:
-            if(servo_reading.id == id):
-                print(servo_reading)
-                return True
-
-    return False
-
-def read_id():
-    while True:
-        try:
-            id = int(input("Enter id: "))
-            if not find_reading(id):
-                print("ID {} not found".format(id))
-        except:
-            pass
-
-
-threading.Thread(target=read_id).start()
-print(spoder.get_info())
-print(spoder.get_info().to_json())
 
 # spoder.leg_mover.execute_stance_sequence_indefinitely(sequences["walking"])
