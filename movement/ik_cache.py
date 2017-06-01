@@ -1,16 +1,26 @@
 import json
+import os
 
 
 class IKCache(object):
     def __init__(self, file_location):
         self.file_location = file_location
-        self.cache = {}
+        self.points = {}
 
     def from_file(self):
-        pass
+        file = open(self.file_location, 'r')
+        text = file.read()
+        j = json.loads(text)
+        self.points = j
+        return j
 
     def export(self):
-        j = json.dumps(self.cache)
-        f = open(self.file_location, 'w')
-        f.write(j)
-        f.close()
+        j = json.dumps(self.points)
+        file = open(self.file_location, 'w')
+        file.write(j)
+        file.close()
+        return j
+
+    def clear(self):
+        os.remove(self.file_location);
+        self.points = {}

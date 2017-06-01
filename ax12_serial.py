@@ -1,8 +1,7 @@
 import sys
-import RPi.GPIO as GPIO
 from threading import Lock
 
-import time
+import RPi.GPIO as GPIO
 from lib.memes.ax12 import Ax12
 from lib.pyax12.connection import Connection
 
@@ -22,7 +21,8 @@ def run_with_lock(action):
     try:
         return action()
     except Exception as e:
-        print("Serial error: ", e)
+        pass
+        # print("Serial error: ", e)
     finally:
         mutex.release()
 

@@ -73,5 +73,5 @@ class Servo(object):
             )
             return readings
         except TypeError as e:
-            print("Error reading from servo:", e)
+            # print("Error reading from servo:", e)
             return ServoReadings.empty()
