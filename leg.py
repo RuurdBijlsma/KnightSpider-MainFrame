@@ -8,7 +8,7 @@ from utils import rotate
 
 
 class Leg(object):
-    def __init__(self, ik_cache, angle, leg_id):
+    def __init__(self, ik_cache, angle, leg_id, body_position):
         self.actuator = Actuator(cache=ik_cache,
                                  arm_definition=['y', [60, 0., 0.], 'z', [70, 0., 0.], 'z', [115, 0., 0.]],
                                  max_angles=[150, 150, 150],
@@ -20,12 +20,14 @@ class Leg(object):
 
         self.ground_height_offset = 0
         self.angle = angle
+        self.body_position = body_position
+        self.is_left_leg = body_position.x < 0
 
     def point_to_normalized(self, point):
         origin = (0, 0)
         tip_point = (point.x, point.z)
         x, z = rotate(origin, tip_point, math.radians(self.angle))
-        return Point3D(x, point.y, z)
+        return Point3D(x, point.y, z * (-1 if self.is_left_leg else 1))
 
     def move_to_normalized(self, point, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point), on_done)
@@ -36,8 +38,11 @@ class Leg(object):
         beta_angle = self.beta.angle
         return self.actuator.forward_kinematics([gamma_angle, alpha_angle, beta_angle])
 
+    def get_body_to_tip_point(self):
+        return self.body_position + self.get_tip_point()
+
     def move_to(self, point, on_done=lambda: None):
-        point.y += self.ground_height_offset
+        point.y += self.ground_height_offset * (-1 if self.is_left_leg else 1)
         # assert (point.y < 0)
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)

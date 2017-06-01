@@ -1,8 +1,10 @@
 import math
-import subprocess
-from subprocess import check_output, Popen, PIPE
+from subprocess import check_output
 
 import psutil
+
+
+# from point import Point3D
 
 
 def rotate(origin, point, angle):
@@ -21,6 +23,7 @@ def rotate(origin, point, angle):
 
 def get_cpu_usage():
     return psutil.cpu_percent()
+
 
 def get_cpu_temp():
     return round(

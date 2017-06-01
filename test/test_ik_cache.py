@@ -1,13 +1,11 @@
-from movement.ik_cache import IKCache
+import math
 
 from point import Point3D
 
-cache = IKCache('store/ik_cache.json')
+point = Point3D(4, 4, 4)
+origin = Point3D(0, 0, 0)
+# point = point.rotate_around_y(angle=math.radians(50))
+# point = point.rotate_around_z(angle=math.radians(30))
+point = point.rotate_around_x(angle=math.radians(132))
 
-cache.cache = {
-    str(Point3D(0, 1, 2)): [30, 40, 50],
-    str(Point3D(0, 11, 2)): [30, 401, 50],
-    str(Point3D(0, 12, 2)): [30, 402, 50]
-}
-
-print(cache.export())
+print(point)

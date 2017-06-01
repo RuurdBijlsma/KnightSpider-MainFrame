@@ -2,7 +2,6 @@ import math
 
 from movement.stance import Stance
 
-import utils
 from point import Point3D
 
 
@@ -14,71 +13,59 @@ class LegMover(object):
         self.current_walk_index = None
         self.is_moving = False
 
-    def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180):
-        forward_point_right = Point3D(tip_distance, 0, step_length / 2)
-        back_point_right = Point3D(tip_distance, 0, -step_length / 2)
-        lifted_point_right = Point3D(tip_distance, step_height, 0)
-
-        forward_point_left = forward_point_right.negate_z()
-        back_point_left = back_point_right.negate_z()
-        lifted_point_left = lifted_point_right.negate_z()
+    def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180, rotate=False):
+        forward = 0
+        back = 1
+        lifted = 2
 
         rotate_origin = (tip_distance, 0)
-        forward_x, forward_z = utils.rotate(rotate_origin, (forward_point_right.x, forward_point_right.z), rotate_angle)
-        back_x, back_z = utils.rotate(rotate_origin, (back_point_right.x, back_point_right.z), rotate_angle)
-        lifted_x, lifted_z = utils.rotate(rotate_origin, (lifted_point_right.x, lifted_point_right.z), rotate_angle)
 
-        forward_point_right.x = forward_x
-        forward_point_right.z = forward_z
-        back_point_right.x = back_x
-        back_point_right.z = back_z
-        lifted_point_right.x = lifted_x
-        lifted_point_right.z = lifted_z
+        points = [
+            Point3D(tip_distance, 0, step_length / 2),
+            Point3D(tip_distance, 0, -step_length / 2),
+            Point3D(tip_distance, step_height, 0)
+        ]
 
-        rotate_origin = (tip_distance, 0)
-        forward_x, forward_z = utils.rotate(rotate_origin, (forward_point_left.x, forward_point_left.z), rotate_angle)
-        back_x, back_z = utils.rotate(rotate_origin, (back_point_left.x, back_point_left.z), rotate_angle)
-        lifted_x, lifted_z = utils.rotate(rotate_origin, (lifted_point_left.x, lifted_point_left.z), rotate_angle)
+        points_right = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points]
+        points_left = points
 
-        forward_point_left.x = forward_x
-        forward_point_left.z = forward_z
-        back_point_left.x = back_x
-        back_point_left.z = back_z
-        lifted_point_left.x = lifted_x
-        lifted_point_left.z = lifted_z
+        if (rotate):
+            points_left = [point.negate_z() for point in points_left]
+
+        points_left = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points_left]
 
         stance_sequence = [
             Stance(
-                front_left_point=forward_point_left,
-                mid_left_point=back_point_left,
-                back_left_point=forward_point_left,
-                front_right_point=back_point_right,
-                mid_right_point=forward_point_right,
-                back_right_point=back_point_right
+                front_left_point=points_left[forward],
+                mid_left_point=points_left[back],
+                back_left_point=points_left[forward],
+                front_right_point=points_right[back],
+                mid_right_point=points_right[forward],
+                back_right_point=points_right[back]
             ),
             Stance(
-                front_left_point=back_point_left,
-                mid_left_point=lifted_point_left,
-                back_left_point=back_point_left,
-                front_right_point=lifted_point_right,
-                mid_right_point=back_point_right,
-                back_right_point=lifted_point_right
+                front_left_point=points_left[back],
+                mid_left_point=points_left[lifted],
+                back_left_point=points_left[back],
+                front_right_point=points_right[lifted],
+                mid_right_point=points_right[back],
+                back_right_point=points_right[lifted]
             ),
             Stance(
-                front_left_point=back_point_left,
-                mid_left_point=forward_point_left,
-                back_left_point=back_point_left,
-                front_right_point=forward_point_right,
-                mid_right_point=back_point_right,
-                back_right_point=forward_point_right
+                front_left_point=points_left[back],
+                mid_left_point=points_left[forward],
+                back_left_point=points_left[back],
+                front_right_point=points_right[forward],
+                mid_right_point=points_right[back],
+                back_right_point=points_right[forward]
             ),
             Stance(
-                front_left_point=lifted_point_left,
-                mid_left_point=back_point_left,
-                back_left_point=lifted_point_left,
-                front_right_point=back_point_right,
-                mid_right_point=lifted_point_right,
-                back_right_point=back_point_right
+                front_left_point=points_left[lifted],
+                mid_left_point=points_left[back],
+                back_left_point=points_left[lifted],
+                front_right_point=points_right[back],
+                mid_right_point=points_right[lifted],
+                back_right_point=points_right[back]
             ),
         ]
 
