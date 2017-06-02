@@ -8,11 +8,14 @@ class IKCache(object):
         self.points = {}
 
     def from_file(self):
-        file = open(self.file_location, 'r')
-        text = file.read()
-        j = json.loads(text)
-        self.points = j
-        return j
+        try:
+            file = open(self.file_location, 'r')
+            text = file.read()
+            j = json.loads(text)
+            self.points = j
+            return j
+        except Exception as e:
+            print(e)
 
     def export(self):
         j = json.dumps(self.points)

@@ -27,7 +27,7 @@ index is servo ID
 {
     battery: int,
     slope: float,
-    cpu: float,
-    temperature: int
+    cpuUsage: float,
+    cpuTemperature: int
 }
 ```
