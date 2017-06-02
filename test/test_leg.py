@@ -34,7 +34,7 @@ spider.leg_mover.ground_clearance = 100
 spider.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
 #                   x vergroten is voorkant verhogen
 #                   z vergroten is linkerkant verhogen
-spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=90, tip_distance=120, turn_modifier=0)
+spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=90, tip_distance=120, turn_modifier=0.3)
 
 
 # time.sleep(1)
