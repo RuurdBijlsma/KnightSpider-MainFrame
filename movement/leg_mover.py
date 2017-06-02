@@ -13,10 +13,20 @@ class LegMover(object):
         self.current_walk_index = None
         self.is_moving = False
 
-    def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180, rotate=False):
+    def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180, turn_modifier=0):
+        # Turning speed 1 betekent naar rechts draaien om zijn as
+        # Turning speed -1 betekent naar links draaien om zijn as
+        # Turning speed 0.5 betekent naar rechts sturen terwijl hij loopt
         forward = 0
         back = 1
         lifted = 2
+
+        left_legs_speed_multiplier = 1
+        right_legs_speed_multiplier = 1
+        if (turn_modifier > 0):
+            left_legs_speed_multiplier = 1 - turn_modifier * 2
+        else:
+            right_legs_speed_multiplier = 1 + turn_modifier * 2
 
         rotate_origin = (tip_distance, 0)
 
@@ -26,12 +36,16 @@ class LegMover(object):
             Point3D(tip_distance, step_height, 0)  # lifted
         ]
 
-        points_right = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points]
         points_left = points
+        points_right = points
 
-        if (rotate):
-            points_left = [point.negate_z() for point in points_left]
+        if (right_legs_speed_multiplier != 1):
+            points_right = [point.multiply_z(right_legs_speed_multiplier) for point in points_left]
 
+        if (left_legs_speed_multiplier != 1):
+            points_left = [point.multiply_z(left_legs_speed_multiplier) for point in points_left]
+
+        points_right = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points_right]
         points_left = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points_left]
 
         stance_sequence = [
@@ -70,8 +84,11 @@ class LegMover(object):
         ]
 
         if self.is_moving:
-            self.cancel_sequence()
-        self.execute_stance_sequence_indefinitely(stance_sequence, self.current_walk_index)
+            self.cancel_sequence(
+                lambda: self.execute_stance_sequence_indefinitely(stance_sequence, self.current_walk_index)
+            )
+        else:
+            self.execute_stance_sequence_indefinitely(stance_sequence, self.current_walk_index)
 
     def set_stance(self, stance, on_done=lambda: None):
         self.legs_to_do = 0
@@ -102,6 +119,7 @@ class LegMover(object):
                             lambda: self.execute_stance_sequence_indefinitely(stance_list, index - 1))
         else:
             self.cancel = False
+            self.on_cancel_listener()
 
     def execute_stance_sequence(self, stance_list):
         stance, *remaining_stances = stance_list
@@ -111,7 +129,9 @@ class LegMover(object):
             self.set_stance(stance, lambda: self.execute_stance_sequence(remaining_stances))
         else:
             self.cancel = False
+            self.on_cancel_listener()
 
-    def cancel_sequence(self):
+    def cancel_sequence(self, on_cancelled=lambda: None):
+        self.on_cancel_listener = on_cancelled
         self.cancel = True
         self.is_moving = False
