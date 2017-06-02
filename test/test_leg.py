@@ -28,13 +28,13 @@ spider = Spider()
 #
 ReadingsWorker(frequency=5, spider=spider).start()
 # spider.leg_mover.set_stance(sequences['idle'][0])
-spider.leg_mover.ground_clearance = 100
+spider.leg_mover.ground_clearance = 110
 # spider.leg_mover.slope = Point3D(0, 1, 0)
-
-spider.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
+spider.rotate_body(x_angle=math.radians(11.3), z_angle=math.radians(0))
 #                   x vergroten is voorkant verhogen
 #                   z vergroten is linkerkant verhogen
-spider.leg_mover.walk(rotate_angle=math.radians(180), step_height=60, step_length=80, tip_distance=120, rotate=False)
+spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=20, step_length=30, tip_distance=110, rotate=False)
+
 
 # time.sleep(1)
 
