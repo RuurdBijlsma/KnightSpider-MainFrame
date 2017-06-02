@@ -8,6 +8,9 @@ import fcntl
 
 import time
 
+from socket_listener import identifiers
+from socket_listener.message import Message
+
 
 class Server(object):
     HOST = ''  # Symbolic name meaning all available interfaces
@@ -20,6 +23,7 @@ class Server(object):
         self.cancel_listening = False
 
         self.client_threads = []
+        self.message_handlers = {}
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print('Socket created')
@@ -77,6 +81,7 @@ class Server(object):
 
                 while not queue.empty():
                     data = self.prepare_for_sending(queue.get())
+                    print("Sending", data)
                     connection.send(data.encode())
 
                 try:
@@ -102,10 +107,32 @@ class Server(object):
 
     def handle_message(self, connection, message):
         print("received", message)
-        self.broadcast("response " + message)
+
+        parsed = Message.from_string(message)
+
+        try:
+            self.message_handlers[parsed.identifier](connection, parsed.payload)
+        except IndexError:
+            pass
+
+    def register_message_handler(self, identifier, function):
+        print("registered handler for", identifier)
+        self.message_handlers[identifier] = function
+
+    def unregister_message_handler(self, identifier):
+        del self.message_handlers[identifier]
+
+
+    def send_servo(self, connection, id):
+        try:
+            parsed_id = int(id)
+            self.client_send_queue[connection].put()
+
+        except ValueError:
+            pass
+
 
     def broadcast(self, data):
-        print("broadcast", data)
         for connection in self.connections:
             self.client_send_queue[connection].put(data)
 
@@ -116,7 +143,7 @@ class Server(object):
 
     def close(self):
         self.cancel_listening = True
-        time.sleep(1)
+        self.socket.close()
         for connection in self.connections:
             connection.close()
-        self.socket.close()
+        print("Closed socket")

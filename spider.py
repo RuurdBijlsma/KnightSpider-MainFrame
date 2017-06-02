@@ -73,6 +73,18 @@ class Spider(object):
             for leg in value.values():
                 yield leg
 
+    @property
+    def servo_iter(self):
+        for leg in self.leg_iter:
+            yield leg.gamma
+            yield leg.beta
+            yield leg.alpha
+
+    def get_servo_by_id(self, id):
+        for servo in self.servo_iter:
+            if servo.id == id:
+                return servo
+
     def get_servo_angles(self):
         result = {}
 
