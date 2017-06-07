@@ -4,9 +4,9 @@ import cv2
 class ShapeDetector(object):
     def __init__(self, shape, shape_min_threshold=180, contour_index=None):
         self.shape = shape
-        _, self.thresh = cv2.threshold(cv2.cvtColor(shape, cv2.COLOR_BGR2GRAY), shape_min_threshold, 255,
+        _, self.thresh = cv2.threshold(shape, shape_min_threshold, 255,
                                        cv2.THRESH_BINARY)
-        # self.shape_edges = cv2.Canny(shape, shape_min_threshold, shape_max_threshold, apertureSize=3)
+        #self.shape_edges = cv2.Canny(shape, shape_min_threshold, shape_max_threshold, apertureSize=3)
         _, shape_contours, _ = cv2.findContours(self.thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         if contour_index is None:
@@ -26,14 +26,12 @@ class ShapeDetector(object):
 
         self.shape_contour = shape_contours[contour_index]
 
-    def detect(self, image, min_area=400, max_similarity_value=0.1, min_threshold=220, max_threshold=300):
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        edges = cv2.Canny(gray, min_threshold, max_threshold, apertureSize=3)
-        _, contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    def detect(self, image, min_area=400, max_similarity_value=0.1, min_thresh = 127, max_thresh = 255):
+        _, thresh = cv2.threshold(image, min_thresh, max_thresh, 0)
+        _, contours, _ = cv2.findContours(thresh,2,1)
 
         best_contour = contours[0]
         best_value = float('inf')
-        match_area = 0
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_area:
@@ -41,13 +39,12 @@ class ShapeDetector(object):
                 if similarity < best_value:
                     best_contour = contour
                     best_value = similarity
-                    match_area = area
 
         found_match = "areafail"
-
         if best_value > max_similarity_value and best_value is not float('inf'):
             found_match = "similarityfail"
         else:
             found_match = "success"
 
-        return contours, found_match, best_contour, best_value, match_area
+        return contours, found_match, best_contour, best_value
+        
