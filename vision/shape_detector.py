@@ -2,10 +2,10 @@ import cv2
 
 
 class ShapeDetector(object):
-    def __init__(self, shape, shape_min_threshold=180, contour_index=None):
+    def __init__(self, shape, shape_min_threshold=127, contour_index=None):
         self.shape = shape
         _, self.thresh = cv2.threshold(shape, shape_min_threshold, 255,
-                                       cv2.THRESH_BINARY)
+                                       0)
         #self.shape_edges = cv2.Canny(shape, shape_min_threshold, shape_max_threshold, apertureSize=3)
         _, shape_contours, _ = cv2.findContours(self.thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 

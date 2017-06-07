@@ -3,10 +3,10 @@ import numpy as np
 from shape_detector import ShapeDetector
 
 
-#img1 = cv2.imread('hart2.jpg',0)
-#img1 = cv2.imread('club.jpg',0)
-#img1 = cv2.imread('spade.jpg',0)
-targetImg = cv2.imread('ruiten.png',0)
+targetImg = cv2.imread('images/hart2.jpg',0)
+#targetImg = cv2.imread('images/club.jpg',0)
+#targetImg = cv2.imread('images/spade.jpg',0)
+#targetImg = cv2.imread('images/ruiten.png',0)
 
 #img2 = cv2.imread('23.jpg',0)
 
@@ -26,14 +26,14 @@ while 1:
     grabbed, frame = cap.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    contours, found_match, match_contour, similarity = shape_detector.detect(frame)
+    contours, found_match, match_contour, similarity = shape_detector.detect(frame,MIN_AREA)
 
     if found_match == "success":
         frame = cv2.drawContours(frame, match_contour, -1, (255,0,0),3)
     
     
     cv2.imshow('result', frame)
-    k = cv2.waitKey(5) & 0xFF
+    k = cv2.waitKey(0) & 0xFF
     if k == 27:
         break;
 cap.release()
