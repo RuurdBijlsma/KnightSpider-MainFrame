@@ -2,6 +2,7 @@ import socket
 import signal
 import sys
 import threading
+import os
 from queue import Queue
 
 import fcntl
@@ -35,6 +36,7 @@ class Server(object):
             print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
             sys.exit()
 
+        self.original_sigint = signal.getsignal(signal.SIGINT)
         signal.signal(signal.SIGINT, self.sigint_handler)
 
         print('Socket bound at {}:{}'.format(self.socket.getsockname()[0], self.PORT))
@@ -110,6 +112,9 @@ class Server(object):
 
         parsed = Message.from_string(message)
 
+        if parsed is None:
+            print("Message could not be parsed")
+
         try:
             self.message_handlers[parsed.identifier](connection, parsed.payload)
         except IndexError:
@@ -123,23 +128,18 @@ class Server(object):
         del self.message_handlers[identifier]
 
 
-    def send_servo(self, connection, id):
-        try:
-            parsed_id = int(id)
-            self.client_send_queue[connection].put()
-
-        except ValueError:
-            pass
-
-
     def broadcast(self, data):
         for connection in self.connections:
             self.client_send_queue[connection].put(data)
 
-    def sigint_handler(self, signal, frame):
+    def sigint_handler(self, sig, frame):
         print("Received SIGINT, cleaning up socket")
+        # remove handler?
+        signal.signal(signal.SIGINT, self.original_sigint)
         self.close()
-        sys.exit(0)
+
+        print("killing")
+        os.kill(os.getpid(), signal.SIGTERM)
 
     def close(self):
         self.cancel_listening = True
