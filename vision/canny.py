@@ -19,7 +19,7 @@ cv2.createTrackbar('T2', 'image', 220, 300, nothing)
 threshold1 = cv2.getTrackbarPos('T1', 'image')
 threshold2 = cv2.getTrackbarPos('T2', 'image')
 
-heart = cv2.imread('images/heart.jpg', 1)
+heart = cv2.imread('images/hart.jpg', 1)
 heart_edges = cv2.Canny(heart, threshold1, threshold2, apertureSize=3)
 
 _, heart_contours, _ = cv2.findContours(heart_edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
