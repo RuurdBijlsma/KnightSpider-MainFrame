@@ -5,9 +5,9 @@ from models import ServoReadings
 
 
 class Servo(object):
-    ROTATION_SPEED = 1000
+    ROTATION_SPEED = 300
     ANGLE_THRESHOLD = 3
-    TIMER_DELAY = 0.1
+    TIMER_DELAY = 0.2
 
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
         self.flip_angles = flip_angles

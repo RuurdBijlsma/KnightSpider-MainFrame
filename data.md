@@ -22,6 +22,16 @@ index is servo ID
 }
 ```
 
+## Servos
+````
+[
+    {
+        id: int,
+        readings: ServoInfo
+    }
+]
+````
+
 ## Spider info
 ```
 {
