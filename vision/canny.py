@@ -19,16 +19,8 @@ cv2.createTrackbar('T2', 'image', 220, 300, nothing)
 threshold1 = cv2.getTrackbarPos('T1', 'image')
 threshold2 = cv2.getTrackbarPos('T2', 'image')
 
-heart = cv2.imread('images/hart.jpg', 1)
-heart_edges = cv2.Canny(heart, threshold1, threshold2, apertureSize=3)
-
-_, heart_contours, _ = cv2.findContours(heart_edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-heart_contour = heart_contours[0]
-
-MIN_AREA = 5
-MAX_SIMILARITY_VALUE = 0.1
-
-shape_detector = ShapeDetector(heart, contour_index=1)
+target_shape = cv2.imread('images/hart.jpg', 1)
+shape_detector = ShapeDetector(target_shape, contour_index=1)
 
 while True:
     ret, frame = capture.read()
@@ -38,9 +30,11 @@ while True:
     threshold2 = cv2.getTrackbarPos('T2', 'image')
     contours, found_match, match_contour, similarity, area = shape_detector.detect(frame,
                                                                                    min_threshold=threshold1,
-                                                                                   max_threshold=threshold2)
-    print(
-        "Found match" if found_match == "success" else "Did not found match", "Similarity:", similarity, "Area:", area)
+                                                                                   max_threshold=threshold2,
+                                                                                   min_area=500,
+                                                                                   max_similarity_value=0.15)
+    print("Found match" if found_match == "success" else "Did not found match", "Similarity:", similarity, "Area:",
+          area)
 
     [cv2.drawContours(frame, [contour], 0, (0, 0, 255), 3) for contour in contours]
     if found_match == "success":

@@ -47,4 +47,3 @@ class ShapeDetector(object):
             found_match = "success"
 
         return contours, found_match, best_contour, best_value
-        
