@@ -11,7 +11,7 @@ cv2.namedWindow('image')
 
 cv2.createTrackbar('low', 'image', 110, 255, lambda x: None)
 cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
-cv2.createTrackbar('a', 'image', 186, 255, lambda x: None)
+cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
 
 def midpoint(p1, p2):
@@ -35,8 +35,17 @@ def line_intersection(line1, line2):
     return x, y
 
 
+special_index = None
+image_index = 1
+max_image = 6
 while (True):
-    frame = cv2.imread('images/road.jpg', 1)
+    if (special_index is None):
+        print("Current Image Index:", image_index)
+    image_url = 'images/road/road%s.png' % (special_index if special_index is not None else image_index)
+    frame = cv2.imread(image_url, 1)
+    image_index += 1
+    if image_index > max_image:
+        image_index = 1
     # lowHue = cv2.getTrackbarPos('lowHue', 'image')
     # upHue = cv2.getTrackbarPos('upHue', 'image')
     # lowSat = cv2.getTrackbarPos('lowSat', 'image')
@@ -82,31 +91,35 @@ while (True):
             from_pos = (x1, y1)
             to_pos = (x2, y2)
 
-            angle = np.math.atan2(y2 - y1, x2 - x1)
+            angle = np.math.atan2(from_pos[1] - to_pos[1], from_pos[0] - to_pos[0])
             angle = np.math.degrees(angle)
-            if (abs(angle) > 30 and abs(angle) < 60):
-                # if (int(angle) < LOWER_ANGLE_FILTER and int(angle) > UPPER_ANGLE_FILTER):
+            angle = angle + 180 if angle < 0 else angle
+            if (40 < angle < 85 or 120 < angle < 175):
                 stop = False
                 for road_angle in angles:
-                    if road_angle > 0 and angle > 0:
+                    if road_angle > 90 and angle > 90:
                         stop = True
 
                 if not stop:
                     cv2.line(frame, from_pos, to_pos, (0, 0, 255), 2)
+                    # cv2.putText(frame, str(angle), to_pos, cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0))
                     road_lines.append((from_pos, to_pos))
                     angles.append(angle)
 
     if (len(road_lines) > 1):
         intersect = line_intersection(road_lines[0], road_lines[1])
-        cv2.circle(frame, (int(intersect[0]), int(intersect[1])), 3, (0, 255, 0))
+        if (intersect):
+            cv2.circle(frame, (int(intersect[0]), int(intersect[1])), 3, (0, 255, 0))
 
-        height, width, channels = frame.shape
-        mid = (width / 2, height / 2)
-        offset = np.subtract(mid, intersect)
-        cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 0))
-        print(offset[0])
+            height, width, channels = frame.shape
+            mid = (width / 2, height / 2)
+            offset = np.subtract(mid, intersect)
+            cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
+            print('Actie: GO', 'RIGHT' if offset[0] < 0 else 'LEFT', 'by', round(abs(offset[0]), 1))
 
     cv2.imshow("image", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if special_index is None:
+        cv2.waitKey()
+    elif cv2.waitKey(1) & 0xFF == ord('q'):
         break

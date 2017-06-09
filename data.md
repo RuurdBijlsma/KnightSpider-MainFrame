@@ -31,3 +31,19 @@ index is servo ID
     cpuTemperature: int
 }
 ```
+
+## Smart Controller info
+Button map:
+1: turn left
+2: turn right
+3: raise body
+4: lower body
+```
+{
+    joystick:{
+        x: float,
+        y: float
+    },
+    pressedButtons:int[]
+}
+```
