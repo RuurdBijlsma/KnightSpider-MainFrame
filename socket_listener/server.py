@@ -83,7 +83,7 @@ class Server(object):
 
                 while not queue.empty():
                     data = self.prepare_for_sending(queue.get())
-                    print("Sending", data)
+                    # print("Sending", data)
                     connection.send(data.encode())
 
                 try:
@@ -114,6 +114,7 @@ class Server(object):
 
         if parsed is None:
             print("Message could not be parsed")
+            return
 
         try:
             self.message_handlers[parsed.identifier](connection, parsed.payload)
@@ -143,7 +144,6 @@ class Server(object):
 
     def close(self):
         self.cancel_listening = True
+        self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
-        for connection in self.connections:
-            connection.close()
         print("Closed socket")
