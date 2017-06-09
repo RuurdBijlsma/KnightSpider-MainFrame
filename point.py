@@ -28,6 +28,13 @@ class Point3D(object):
             -self.z
         )
 
+    def multiply_z(self, multiplier):
+        return Point3D(
+            self.x,
+            self.y,
+            self.z * multiplier
+        )
+
     def negate(self):
         return Point3D(
             -self.x,

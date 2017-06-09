@@ -57,6 +57,6 @@ class SpiderInfo(object):
         return json.dumps({
             "battery": self.battery_level,
             "slope": self.slope,
-            "cpu": self.cpu_usage,
-            "temperature": self.cpu_temperature
+            "cpuUsage": self.cpu_usage,
+            "cpuTemperature": self.cpu_temperature
         })

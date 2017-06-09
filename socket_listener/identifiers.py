@@ -1,3 +1,4 @@
 ANGLES = 1
 SERVO = 2
 SPIDER = 3
+GET_SERVO = 4

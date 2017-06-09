@@ -10,7 +10,6 @@ class DataBroadcaster(PeriodicWorker):
         super().__init__(frequency)
 
     def update(self):
-        print("sending info")
         self.server.broadcast(Message(
             identifiers.SPIDER,
             self.spider.get_info().to_json()

@@ -15,11 +15,20 @@ class Spider(object):
         self.ik_cache.from_file()
         # self.ik_cache.clear()
 
+        # legs = [
+        #     Leg(self.ik_cache, leg_id=1, angle=30, body_position=Point3D(-70.8, 0, 104.12)),
+        #     Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
+        #     Leg(self.ik_cache, leg_id=3, angle=-30, body_position=Point3D(-71.09, 0, -108.50)),
+        #     Leg(self.ik_cache, leg_id=4, angle=-30, body_position=Point3D(69.8, 0, 103.65)),
+        #     Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
+        #     Leg(self.ik_cache, leg_id=6, angle=30, body_position=Point3D(69.58, 0, -108.97)),
+        # ]
+
         legs = [
             Leg(self.ik_cache, leg_id=1, angle=0, body_position=Point3D(-70.8, 0, 104.12)),
             Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
-            Leg(self.ik_cache, leg_id=3, angle=-0, body_position=Point3D(-71.09, 0, -108.50)),
-            Leg(self.ik_cache, leg_id=4, angle=-0, body_position=Point3D(69.8, 0, 103.65)),
+            Leg(self.ik_cache, leg_id=3, angle=0, body_position=Point3D(-71.09, 0, -108.50)),
+            Leg(self.ik_cache, leg_id=4, angle=0, body_position=Point3D(69.8, 0, 103.65)),
             Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
             Leg(self.ik_cache, leg_id=6, angle=0, body_position=Point3D(69.58, 0, -108.97)),
         ]
@@ -72,6 +81,18 @@ class Spider(object):
         for value in self.legs.values():
             for leg in value.values():
                 yield leg
+
+    @property
+    def servo_iter(self):
+        for leg in self.leg_iter:
+            yield leg.gamma
+            yield leg.beta
+            yield leg.alpha
+
+    def get_servo_by_id(self, id):
+        for servo in self.servo_iter:
+            if servo.id == id:
+                return servo
 
     def get_servo_angles(self):
         result = {}
