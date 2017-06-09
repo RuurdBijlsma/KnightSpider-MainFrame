@@ -21,7 +21,7 @@ from numpy.lib.stride_tricks import as_strided
 # cols = 1280
 # f = np.fromfile(fd, dtype=np.uint32,count=rows*cols)
 # im = f.reshape((rows, cols)) #notice row, column format
-# fd.close(
+# fd.close(\
 
 with open("pic.raw", "rb") as fd:
     cols, rows = (720, 1280)
