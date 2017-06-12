@@ -1,12 +1,20 @@
 import json
 import math
+from threading import Thread
+
+import signal
+
+import os
 
 import utils
+import pistreaming
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
+from pistreaming.server import Server
 from point import Point3D
+from socket_listener.app_communicator import AppCommunicator
 
 
 class Spider(object):
@@ -46,6 +54,7 @@ class Spider(object):
             }
         }
         self.leg_mover = LegMover(self, ground_clearance=50)
+        signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
         for leg in self.leg_iter:
@@ -140,9 +149,30 @@ class Spider(object):
             cpu_temperature=utils.get_cpu_temp()
         )
 
-    def start(self):
+    def start(self, enable_all_systems=True):
+        self.enable_all_systems = enable_all_systems
         self.leg_mover.walk(rotate_angle=math.radians(0), step_height=0, step_length=0, tip_distance=120,
                             turn_modifier=0)
+
+        if enable_all_systems:
+            self.app = AppCommunicator(self)
+            self.stream_server = Server()
+            Thread(target=self.stream_server.start)
+
+    def close(self):
+        try:
+            self.app.close()
+            self.stream_server.close()
+        except:
+            pass
+
+    def sigint_handler(self, sig, frame):
+        print("Received SIGINT, cleaning up")
+        self.close()
+
+        print("killing")
+        os.kill(os.getpid(), signal.SIGTERM)
+
 
     @property
     def step_height(self):

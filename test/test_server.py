@@ -13,10 +13,6 @@ ax12_serial.init()
 
 spider = Spider()
 
-ReadingsWorker(frequency=5, spider=spider).start()
-
-print(spider.get_servo_angles_json())
-
 app = AppCommunicator(spider)
 
 spider.leg_mover.ground_clearance = 65
@@ -31,7 +27,7 @@ print("press q to terminate")
 while True:
     val = input()
     if val == 'q':
-        break2
+        break
     elif val == 's':
         app.server.broadcast("hey")
 

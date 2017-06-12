@@ -39,9 +39,6 @@ class Server(object):
         if enable_udp:
             self.start_udp_listen()
 
-        self.original_sigint = signal.getsignal(signal.SIGINT)
-        signal.signal(signal.SIGINT, self.sigint_handler)
-
         print('Socket bound at {}:{}'.format(self.socket.getsockname()[0], self.PORT))
 
         # Start listening on socket
@@ -158,15 +155,6 @@ class Server(object):
     def broadcast(self, data):
         for connection in self.connections:
             self.client_send_queue[connection].put(data)
-
-    def sigint_handler(self, sig, frame):
-        print("Received SIGINT, cleaning up socket")
-        # remove handler?
-        signal.signal(signal.SIGINT, self.original_sigint)
-        self.close()
-
-        print("killing")
-        os.kill(os.getpid(), signal.SIGTERM)
 
     def close(self):
         self.cancel_listening = True

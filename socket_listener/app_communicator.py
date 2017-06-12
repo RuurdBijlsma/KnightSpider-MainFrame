@@ -1,3 +1,4 @@
+from readings_worker import ReadingsWorker
 from servo import Servo
 from socket_listener import identifiers
 from socket_listener.data_broadcaster import DataBroadcaster
@@ -14,6 +15,7 @@ class AppCommunicator(object):
         self.server.register_udp_callback(self.udp_callback)
         self.server.start_listen_thread()
         self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
+        self.readings_worker = ReadingsWorker(frequency=5, spider=spider).start()
 
     def udp_callback(self, data):
         print("UDP:", data)
