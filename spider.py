@@ -257,3 +257,4 @@ class Spider(object):
 
     def egg_mode(self):
         print("[EGG]")
+

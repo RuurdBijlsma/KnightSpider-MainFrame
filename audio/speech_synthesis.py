@@ -1,4 +1,4 @@
-import os
+import subprocess
 import random
 
 import time
@@ -20,12 +20,12 @@ def speak_random():
 
 def speak(text):
     print("saying", text)
-    # os.system("espeak -s 125 -v en+m3 '{}'".format(text))
-    tts = gTTS(text, lang="en")
-    tts.speed = 10
-    tts.save(FILE_NAME)
-    mixer.music.load(FILE_NAME)
-    mixer.music.play()
+    subprocess.call(["espeak", text])
+    # tts = gTTS(text, lang="en-uk")
+    # tts.speed = 10
+    # tts.save(FILE_NAME)
+    # mixer.music.load(FILE_NAME)
+    # mixer.music.play()
 
 
 def main():

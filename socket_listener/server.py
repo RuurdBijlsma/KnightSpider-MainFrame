@@ -158,6 +158,9 @@ class Server(object):
 
     def close(self):
         self.cancel_listening = True
-        self.socket.shutdown(socket.SHUT_RDWR)
-        self.socket.close()
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+            self.socket.close()
+        except:
+            pass
         print("Closed socket")
