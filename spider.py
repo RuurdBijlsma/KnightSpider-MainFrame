@@ -7,7 +7,7 @@ import signal
 import os
 
 import utils
-import pistreaming
+from audio import speech_synthesis
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
@@ -155,6 +155,7 @@ class Spider(object):
                             turn_modifier=0)
 
         if enable_all_systems:
+            speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self)
             self.stream_server = Server()
             Thread(target=self.stream_server.start)
