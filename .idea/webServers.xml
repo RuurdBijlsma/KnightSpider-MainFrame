@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="0f0d590e-9194-4204-9820-9e00ce16380a" name="PI" url="http://141.252.240.37">
-        <fileTransfer host="141.252.240.37" port="22" rootFolder="/home/pi" accessType="SFTP">
+      <webServer id="0f0d590e-9194-4204-9820-9e00ce16380a" name="PI" url="http://141.252.240.35">
+        <fileTransfer host="141.252.240.35" port="22" rootFolder="/home/pi" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

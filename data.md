@@ -39,7 +39,7 @@ Button map:
 2: turn right
 3: raise body
 4: lower body
-5:
+5: random text to speech
 ```
 ```
 {
