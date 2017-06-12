@@ -1,7 +1,6 @@
 import math
 
 from movement.stance import Stance
-
 from point import Point3D
 
 
@@ -13,10 +12,10 @@ class LegMover(object):
         self.current_walk_index = None
         self.is_moving = False
 
-    def walk(self, rotate_angle=math.radians(0), step_length=40, step_height=40, tip_distance=180, turn_modifier=0):
-        # Turning speed 1 betekent naar rechts draaien om zijn as
-        # Turning speed -1 betekent naar links draaien om zijn as
-        # Turning speed 0.5 betekent naar rechts sturen terwijl hij loopt
+    def walk(self, rotate_angle=math.radians(0), step_length=80, step_height=40, tip_distance=180, turn_modifier=0):
+        # Turning modifier 1 betekent naar rechts draaien om zijn as
+        # Turning modifier -1 betekent naar links draaien om zijn as
+        # Turning modifier 0.5 betekent naar rechts sturen terwijl hij loopt
         forward = 0
         back = 1
         lifted = 2
@@ -97,6 +96,10 @@ class LegMover(object):
             for yp, point in dict.items():
                 leg = self.spider.legs[xp][yp]
                 point = Point3D(point.x, point.y - self.ground_clearance, point.z)
+
+                if (point.y >= 0):
+                    print("[ERROR] Y value (%s) >= 0, setting y to -1" % point.y)
+                    point.y = -1
 
                 self.legs_to_do = self.legs_to_do + 1
 
