@@ -1,6 +1,5 @@
 # from pyax12.connection import Connection
 import math
-from time import sleep
 
 import ax12_serial
 from readings_worker import ReadingsWorker
@@ -35,11 +34,8 @@ spider.leg_mover.ground_clearance = 100
 spider.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
 #                   x vergroten is voorkant verhogen
 #                   z vergroten is linkerkant verhogen
-spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=0, step_length=0, tip_distance=120, turn_modifier=-1)
+spider.leg_mover.walk(rotate_angle=math.radians(180), step_height=60, step_length=80, tip_distance=120, turn_modifier=0)
 
-while (True):
-    spider.leg_mover.walk(rotate_angle=math.radians(0), step_height=0, step_length=0, tip_distance=int(input("")),
-                          turn_modifier=-1)
 
 # time.sleep(1)
 

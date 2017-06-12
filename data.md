@@ -22,6 +22,16 @@ index is servo ID
 }
 ```
 
+## Servos
+````
+[
+    {
+        id: int,
+        readings: ServoInfo
+    }
+]
+````
+
 ## Spider info
 ```
 {
@@ -29,5 +39,24 @@ index is servo ID
     slope: float,
     cpuUsage: float,
     cpuTemperature: int
+}
+```
+
+## Smart Controller info
+```
+Button map:
+1: turn left
+2: turn right
+3: raise body
+4: lower body
+5: random text to speech
+```
+```
+{
+    joystick:{
+        x: float,
+        y: float
+    },
+    pressedButtons:int[]
 }
 ```

@@ -15,7 +15,12 @@ class DataBroadcaster(PeriodicWorker):
             self.spider.get_info().to_json()
         ))
 
+        # self.server.broadcast(Message(
+        #     identifiers.ANGLES,
+        #     self.spider.get_servo_angles_json()
+        # ))
+
         self.server.broadcast(Message(
-            identifiers.ANGLES,
-            self.spider.get_servo_angles_json()
+            identifiers.SERVOS,
+            self.spider.get_servo_readings_json()
         ))

@@ -1,12 +1,20 @@
 import json
+import math
+from threading import Thread
 
-from movement.ik_cache import IKCache
-from movement.leg_mover import LegMover
+import signal
+
+import os
 
 import utils
+from audio import speech_synthesis
 from leg import Leg
 from models import SpiderInfo
+from movement.ik_cache import IKCache
+from movement.leg_mover import LegMover
+from pistreaming.server import Server
 from point import Point3D
+from socket_listener.app_communicator import AppCommunicator
 
 
 class Spider(object):
@@ -46,6 +54,7 @@ class Spider(object):
             }
         }
         self.leg_mover = LegMover(self, ground_clearance=50)
+        signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
         for leg in self.leg_iter:
@@ -106,6 +115,18 @@ class Spider(object):
     def get_servo_angles_json(self):
         return json.dumps(self.get_servo_angles(), separators=(",", ":"))
 
+    def get_servo_readings_json(self):
+        return json.dumps({k: v.to_json() for k, v in self.get_servo_readings_flat().items()}, separators=(",", ":"))
+
+    def get_servo_readings_flat(self):
+        result = {}
+
+        for leg in self.leg_iter:
+            for reading in leg.readings:
+                result[reading.id] = reading
+
+        return result
+
     def get_servo_readings(self):
         return {
             'left': {
@@ -127,3 +148,113 @@ class Spider(object):
             cpu_usage=utils.get_cpu_usage(),
             cpu_temperature=utils.get_cpu_temp()
         )
+
+    def start(self, enable_all_systems=True):
+        self.enable_all_systems = enable_all_systems
+        self.leg_mover.walk(rotate_angle=math.radians(0), step_height=0, step_length=0, tip_distance=120,
+                            turn_modifier=0)
+
+        if enable_all_systems:
+            speech_synthesis.speak("Starting all systems")
+            self.app = AppCommunicator(self)
+            self.stream_server = Server()
+            Thread(target=self.stream_server.start)
+
+    def close(self):
+        try:
+            self.app.close()
+            self.stream_server.close()
+        except:
+            pass
+
+    def sigint_handler(self, sig, frame):
+        print("Received SIGINT, cleaning up")
+        self.close()
+
+        print("killing")
+        os.kill(os.getpid(), signal.SIGTERM)
+
+
+    @property
+    def step_height(self):
+        return self._step_height
+
+    @step_height.setter
+    def step_height(self, value):
+        self._step_height = value
+        self.update_spider()
+
+    @property
+    def rotate_angle(self):
+        return self._rotate_angle
+
+    @rotate_angle.setter
+    def rotate_angle(self, value):
+        self._rotate_angle = value
+        self.update_spider()
+
+    @property
+    def step_length(self):
+        return self._step_length
+
+    @step_length.setter
+    def step_length(self, value):
+        self._step_length = value
+        self.update_spider()
+
+    @property
+    def tip_distance(self):
+        return self._tip_distance
+
+    @tip_distance.setter
+    def tip_distance(self, value):
+        self._tip_distance = value
+        self.update_spider()
+
+    @property
+    def turn_modifier(self):
+        return self._turn_modifier
+
+    @turn_modifier.setter
+    def turn_modifier(self, value):
+        self._turn_modifier = value
+        self.update_spider()
+
+    def update_spider(self):
+        self.leg_mover.walk(rotate_angle=self.rotate_angle, step_height=self.step_height, step_length=self.step_length,
+                            tip_distance=self.tip_distance, turn_modifier=self.turn_modifier)
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, value):
+        max_servo_speed = 1023
+        interval_at_max_speed = 0.1
+        interval = max_servo_speed * interval_at_max_speed / value
+        self._speed = value
+        for servo in self.servo_iter:
+            servo.move_speed = value
+            servo.step_interval = interval
+
+    def parse_controller_update(self, data):
+        max_stick_value = 14000
+        stick_x, stick_y, mode, *pressed_buttons = data.split(",")
+        print(stick_x, stick_y, mode, pressed_buttons)
+        stick_x /= max_stick_value
+        stick_y /= max_stick_value
+        try:
+            {
+                0: lambda: self.manual_mode((stick_x, stick_y), pressed_buttons),
+                1: lambda: self.egg_mode(),
+            }[mode]()
+        except:
+            print("Mode doesn't exist")
+
+    def manual_mode(self, stick, buttons):
+        print("[MANUAL]", stick, buttons)
+
+    def egg_mode(self):
+        print("[EGG]")
+

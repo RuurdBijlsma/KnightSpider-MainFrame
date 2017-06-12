@@ -161,7 +161,7 @@ class Ax12:
     class axError(Exception) : pass
 
     # Servo timeout
-    class timeoutError(Exception) : pass
+    class timeoutError(Exception): pass
 
     def direction(self,d):
         GPIO.output(Ax12.RPI_DIRECTION_PIN, d)
@@ -169,10 +169,11 @@ class Ax12:
 
     def readData(self,id):
         self.direction(Ax12.RPI_DIRECTION_RX)
-        reply = Ax12.port.read(5) # [0xff, 0xff, origin, length, error]
+        reply = Ax12.port.read(5)  # [0xff, 0xff, origin, length, error]
         try:
             assert reply[0] == 0xff
         except:
+            print("reply first byte:", reply[0])
             e = "Timeout on servo " + str(id)
             raise Ax12.timeoutError(e)
 

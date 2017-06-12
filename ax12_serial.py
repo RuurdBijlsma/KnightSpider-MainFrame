@@ -20,9 +20,9 @@ def run_with_lock(action):
     mutex.acquire()
     try:
         return action()
-    except Exception as e:
+    except  Exception as e:
         pass
-        # print("Serial error: ", e)
+        # print("Serial Error:", e)
     finally:
         mutex.release()
 
