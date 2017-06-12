@@ -5,11 +5,8 @@ from models import ServoReadings
 
 
 class Servo(object):
-    ROTATION_SPEED = 300
-    ANGLE_THRESHOLD = 3
-    TIMER_DELAY = 0.2
-
-    def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False):
+    def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False, move_speed=300,
+                 step_interval=0.1):
         self.flip_angles = flip_angles
         self.max_angle = max_angle
         self.offset_angle = offset_angle
@@ -19,6 +16,9 @@ class Servo(object):
         if (self.min_angle < -150):
             self.min_angle = -150
         self.id = id
+
+        self.move_speed = step_interval
+        self.step_interval = step_interval
 
         self._cached_readings = ServoReadings(
             position=0,
@@ -44,11 +44,11 @@ class Servo(object):
         # print("Rotating servo {0} to {1}".format(self.id, angle))
 
         try:
-            ax12_serial.rotate_to(self.id, angle, speed=self.ROTATION_SPEED, degrees=True)
+            ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
         except ValueError as e:
             print("Error moving servo:", e)
 
-        threading.Timer(self.TIMER_DELAY, on_done).start()
+        threading.Timer(self.step_interval, on_done).start()
 
     def update_readings(self):
         self._cached_readings = self.get_readings()
