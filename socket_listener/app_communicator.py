@@ -12,7 +12,7 @@ class AppCommunicator(object):
         self.server = Server()
         self.server.register_message_handler(identifiers.GET_SERVO, self.handle_servo_request)
         self.server.start_listen_thread()
-        # self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
+        self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
 
     def handle_servo_request(self, connection, payload):
         print("getting readings for", payload)

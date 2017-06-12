@@ -106,6 +106,18 @@ class Spider(object):
     def get_servo_angles_json(self):
         return json.dumps(self.get_servo_angles(), separators=(",", ":"))
 
+    def get_servo_readings_json(self):
+        return json.dumps({k: v.to_json() for k,v in self.get_servo_readings_flat().items()}, separators=(",", ":"))
+
+    def get_servo_readings_flat(self):
+        result = {}
+
+        for leg in self.leg_iter:
+            for reading in leg.readings:
+                result[reading.id] = reading
+
+        return result
+
     def get_servo_readings(self):
         return {
             'left': {
