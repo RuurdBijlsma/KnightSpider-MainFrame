@@ -13,9 +13,10 @@ t = Thread(target=server.start)
 t.start()
 time.sleep(1)
 
-# server.stream.seek(0)
-array = server.stream
+# array = server.stream
 
 # im = cv2.imdecode(array, cv2.IMREAD_ANYCOLOR)
 
-cv2.imwrite("sok.png", array)
+cv2.imwrite("sok.jpeg", server.get_capture())
+
+server.close()

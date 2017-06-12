@@ -139,3 +139,7 @@ class Spider(object):
             cpu_usage=utils.get_cpu_usage(),
             cpu_temperature=utils.get_cpu_temp()
         )
+
+    def parse_controller_update(self, data):
+        stick_x, stick_y, mode, *pressed_buttons = data.split(",")
+        print(stick_x, stick_y, mode, pressed_buttons)

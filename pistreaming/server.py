@@ -179,5 +179,8 @@ class Server():
             print('Waiting for websockets thread to finish.')
             self.websocket_thread.join()
 
+    def get_capture(self):
+        return self.stream
+
     def close(self):
         self.camera.close()

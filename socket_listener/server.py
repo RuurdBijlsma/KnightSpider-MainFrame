@@ -18,7 +18,7 @@ class Server(object):
     PORT = 4980  # Arbitrary non-privileged port
     RECV_SIZE = 1024
 
-    def __init__(self, host=HOST, port=PORT):
+    def __init__(self, enable_udp=True, host=HOST, port=PORT):
         self.connections = []
         self.client_send_queue = {}
         self.cancel_listening = False
@@ -36,6 +36,9 @@ class Server(object):
             print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
             sys.exit()
 
+        if enable_udp:
+            self.start_udp_listen()
+
         self.original_sigint = signal.getsignal(signal.SIGINT)
         signal.signal(signal.SIGINT, self.sigint_handler)
 
@@ -47,6 +50,26 @@ class Server(object):
         self.socket.listen(10)
         print('Socket now listening')
 
+    def start_udp_listen(self, host=HOST, port=PORT):
+        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            self.udp_socket.bind((host, port))
+        except socket.error as msg:
+            print('UDP Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+            sys.exit()
+
+        self.udp_thread = threading.Thread(target=self.udp_listen_loop)
+        self.udp_thread.start()
+
+    def udp_listen_loop(self):
+        while True:
+            try:
+                data, _ = self.udp_socket.recvfrom(self.RECV_SIZE)
+                self.udp_callback(data.decode("utf-8"))
+            except Exception as e:
+                print(e)
+
+
     def start_listen_thread(self):
         self.listen_thread = threading.Thread(target=self.listen_loop)
         self.listen_thread.start()
@@ -56,12 +79,12 @@ class Server(object):
             while not self.cancel_listening:
                 try:
                     connection, address = self.socket.accept()
+                    print('Connected with ' + address[0] + ':' + str(address[1]))
                     connection.setblocking(True)
                     connection.settimeout(1) # Block for 1 second before thorwing a timeout exception
 
                     connection.send(self.prepare_for_sending("henlo frend").encode())
 
-                    print('Connected with ' + address[0] + ':' + str(address[1]))
                     self.connections.append(connection)
                     self.client_send_queue[connection] = Queue()
 
@@ -120,6 +143,9 @@ class Server(object):
             self.message_handlers[parsed.identifier](connection, parsed.payload)
         except IndexError:
             pass
+
+    def register_udp_callback(self, callback):
+        self.udp_callback = callback
 
     def register_message_handler(self, identifier, function):
         print("registered handler for", identifier)

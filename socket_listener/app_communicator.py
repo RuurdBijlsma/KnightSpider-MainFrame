@@ -11,8 +11,13 @@ class AppCommunicator(object):
         self.spider = spider
         self.server = Server()
         self.server.register_message_handler(identifiers.GET_SERVO, self.handle_servo_request)
+        self.server.register_udp_callback(self.udp_callback)
         self.server.start_listen_thread()
         self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
+
+    def udp_callback(self, data):
+        print("UDP:", data)
+        self.spider.parse_controller_update(data)
 
     def handle_servo_request(self, connection, payload):
         print("getting readings for", payload)
