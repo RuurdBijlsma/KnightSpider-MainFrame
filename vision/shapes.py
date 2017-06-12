@@ -27,7 +27,7 @@ else:
 
 cap = cv2.VideoCapture(0)
 
-MIN_AREA = 5
+MIN_AREA = 500
 MAX_SIMILARITY_VALUE = 0.1
 
 shape_detector = ShapeDetector(targetImg, contour_index=None)
