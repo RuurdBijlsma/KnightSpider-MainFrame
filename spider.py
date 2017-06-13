@@ -234,71 +234,20 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         max_stick_value = 14000
-        stick_y, stick_x, up, down, left, right, joystick_button, mode = [int(value) for value in data.split(",")]
+        stick_x, stick_y, mode, *pressed_buttons = data.split(",")
+        print(stick_x, stick_y, mode, pressed_buttons)
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         try:
             {
-                1: lambda: self.fury_mode(),
-                2: lambda: self.manual_mode((stick_x, stick_y), 1 if up == 1 else -1 if down == 1 else 0,
-                                            1 if right == 1 else -1 if left == 1 else 0),
-                3: lambda: self.dance_mode(),
-                4: lambda: self.egg_mode(),
-                5: lambda: self.balloon_mode(),
-                6: lambda: self.line_dance_mode(),
+                0: lambda: self.manual_mode((stick_x, stick_y), pressed_buttons),
+                1: lambda: self.egg_mode(),
             }[mode]()
         except:
             print("Mode doesn't exist")
 
-    def manual_mode(self, stick, vertical, horizontal):
-        print("[MANUAL]", stick, vertical, horizontal)
-        max_step_length = 110
-        min_step_height = 30
-        step_height_deviation = 30
-        height_change_multiplier = 0.5
-
-        x, y = stick
-
-        self.leg_mover.ground_clearance += vertical * height_change_multiplier
-
-        step_length = math.sqrt(x ** 2 + y ** 2) * max_step_length
-        # step length is meer als de joystick verder van het midden af is
-        rotate_angle = math.radians(0 if y > 0 else 180)
-        step_height = min_step_height + abs(y) * step_height_deviation
-
-        turn_threshold = 0.1
-        turn_modifier = 1 if x > turn_threshold else -1 if x < -turn_threshold else 0
-        turn_modifier *= abs(y * 0.5)
-
-        change = False
-
-        if step_length is not self.step_length:
-            self.step_length = step_length
-            change = True
-        if rotate_angle is not self.rotate_angle:
-            self.rotate_angle = rotate_angle
-            change = True
-        if step_height is not self.step_height:
-            self.step_height = step_height
-            change = True
-        if turn_modifier is not self.turn_modifier:
-            self.turn_modifier = turn_modifier
-            change = True
-
-        if (change):
-            self.update_spider()
-
-    def fury_mode(self):
-        print("[EGG]")
-
-    def dance_mode(self):
-        print("[EGG]")
+    def manual_mode(self, stick, buttons):
+        print("[MANUAL]", stick, buttons)
 
     def egg_mode(self):
-        print("[EGG]")
-
-    def balloon_mode(self):
-        print("[EGG]")
-
-    def line_dance_mode(self):
         print("[EGG]")
