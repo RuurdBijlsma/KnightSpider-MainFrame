@@ -3,11 +3,12 @@ from subprocess import check_output
 
 import psutil
 
-
 # from point import Point3D
+from point import Point3D
+
 
 def midpoint(point1, point2):
-    return (point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2, (point1[2] + point2[2]) / 2,
+    return Point3D((point1.x + point2.x) / 2, (point1.y + point2.y) / 2, (point1.z + point2.z) / 2)
 
 
 def rotate(origin, point, angle):

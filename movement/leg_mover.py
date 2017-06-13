@@ -107,10 +107,6 @@ class LegMover(object):
                 leg = self.spider.legs[xp][yp]
                 point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
-                if (point.y >= 0):
-                    print("[ERROR] Y value (%s) >= 0, setting y to -1" % point.y)
-                    point.y = -1
-
                 self.legs_to_do = self.legs_to_do + 1
                 midpoint = stance.midpoints[xp]
 

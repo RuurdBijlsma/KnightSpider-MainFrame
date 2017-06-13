@@ -1,5 +1,4 @@
 from readings_worker import ReadingsWorker
-from servo import Servo
 from socket_listener import identifiers
 from socket_listener.data_broadcaster import DataBroadcaster
 from socket_listener.message import Message
@@ -10,7 +9,7 @@ class AppCommunicator(object):
 
     def __init__(self, spider):
         self.spider = spider
-        self.server = Server()
+        self.server = Server(enable_udp=True)
         self.server.register_message_handler(identifiers.GET_SERVO, self.handle_servo_request)
         self.server.register_udp_callback(self.udp_callback)
         self.server.start_listen_thread()
@@ -18,7 +17,6 @@ class AppCommunicator(object):
         self.readings_worker = ReadingsWorker(frequency=5, spider=spider).start()
 
     def udp_callback(self, data):
-        print("UDP:", data)
         self.spider.parse_controller_update(data)
 
     def handle_servo_request(self, connection, payload):

@@ -22,8 +22,9 @@ class Leg(object):
         self.is_left_leg = body_position.x < 0
 
     def point_to_normalized(self, point, midpoint):
+        midpoint = (midpoint.x, midpoint.z)
         rotated_point = point.rotate_around_y(midpoint, math.radians(self.angle))
-        return rotated_point if self.is_left_leg else rotated_point.negate_z
+        return rotated_point if self.is_left_leg else rotated_point.negate_z()
 
     def move_to_normalized(self, point, midpoint, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point, midpoint), on_done)
@@ -39,7 +40,9 @@ class Leg(object):
 
     def move_to(self, point, on_done=lambda: None):
         point.y += self.ground_height_offset * (-1 if self.is_left_leg else 1)
-        # assert (point.y < 0)
+
+        point.y = -1 if point.y >= 0 else point.y
+
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
 
