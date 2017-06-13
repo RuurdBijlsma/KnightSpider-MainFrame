@@ -161,6 +161,7 @@ class Spider(object):
 
     def close(self):
         try:
+            self.speed = 0
             self.app.close()
             self.stream_server.close()
         except:
