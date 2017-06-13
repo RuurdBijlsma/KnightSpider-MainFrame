@@ -1,10 +1,8 @@
 import math
 
 from lib.inverse_kinematics.actuator import Actuator
-
 from point import Point3D
 from servo import Servo
-from utils import rotate
 
 
 class Leg(object):
@@ -23,14 +21,12 @@ class Leg(object):
         self.body_position = body_position
         self.is_left_leg = body_position.x < 0
 
-    def point_to_normalized(self, point):
-        origin = (0, 0)
-        tip_point = (point.x, point.z)
-        x, z = rotate(origin, tip_point, math.radians(self.angle))
-        return Point3D(x, point.y, z * (-1 if self.is_left_leg else 1))
+    def point_to_normalized(self, point, midpoint):
+        rotated_point = point.rotate_around_y(midpoint, math.radians(self.angle))
+        return rotated_point if self.is_left_leg else rotated_point.negate_z
 
-    def move_to_normalized(self, point, on_done=lambda: None):
-        return self.move_to(self.point_to_normalized(point), on_done)
+    def move_to_normalized(self, point, midpoint, on_done=lambda: None):
+        return self.move_to(self.point_to_normalized(point, midpoint), on_done)
 
     def get_tip_point(self):
         gamma_angle = self.gamma.angle

@@ -17,7 +17,7 @@ class Servo(object):
             self.min_angle = -150
         self.id = id
 
-        self.move_speed = step_interval
+        self.move_speed = move_speed
         self.step_interval = step_interval
 
         self._cached_readings = ServoReadings(

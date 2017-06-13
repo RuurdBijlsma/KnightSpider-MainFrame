@@ -1,10 +1,8 @@
 import json
 import math
-from threading import Thread
-
-import signal
-
 import os
+import signal
+from threading import Thread
 
 import utils
 from audio import speech_synthesis
@@ -53,7 +51,7 @@ class Spider(object):
                 'back': legs[5]
             }
         }
-        self.leg_mover = LegMover(self, ground_clearance=50)
+        self.leg_mover = LegMover(self)
         signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
@@ -149,12 +147,14 @@ class Spider(object):
             cpu_temperature=utils.get_cpu_temp()
         )
 
-    def start(self, enable_all_systems=True):
-        self.enable_all_systems = enable_all_systems
+    def start(self, all_systems_enabled=True):
+        self.all_systems_enabled = all_systems_enabled
         self.leg_mover.walk(rotate_angle=math.radians(0), step_height=0, step_length=0, tip_distance=120,
                             turn_modifier=0)
+        self.speed = 400
+        self.leg_mover.ground_clearance = 50
 
-        if enable_all_systems:
+        if all_systems_enabled:
             speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self)
             self.stream_server = Server()
@@ -174,7 +174,6 @@ class Spider(object):
         print("killing")
         os.kill(os.getpid(), signal.SIGTERM)
 
-
     @property
     def step_height(self):
         return self._step_height
@@ -182,7 +181,6 @@ class Spider(object):
     @step_height.setter
     def step_height(self, value):
         self._step_height = value
-        self.update_spider()
 
     @property
     def rotate_angle(self):
@@ -191,7 +189,6 @@ class Spider(object):
     @rotate_angle.setter
     def rotate_angle(self, value):
         self._rotate_angle = value
-        self.update_spider()
 
     @property
     def step_length(self):
@@ -200,7 +197,6 @@ class Spider(object):
     @step_length.setter
     def step_length(self, value):
         self._step_length = value
-        self.update_spider()
 
     @property
     def tip_distance(self):
@@ -209,7 +205,6 @@ class Spider(object):
     @tip_distance.setter
     def tip_distance(self, value):
         self._tip_distance = value
-        self.update_spider()
 
     @property
     def turn_modifier(self):
@@ -218,7 +213,6 @@ class Spider(object):
     @turn_modifier.setter
     def turn_modifier(self, value):
         self._turn_modifier = value
-        self.update_spider()
 
     def update_spider(self):
         self.leg_mover.walk(rotate_angle=self.rotate_angle, step_height=self.step_height, step_length=self.step_length,
@@ -231,7 +225,7 @@ class Spider(object):
     @speed.setter
     def speed(self, value):
         max_servo_speed = 1023
-        interval_at_max_speed = 0.1
+        interval_at_max_speed = 0.06
         interval = max_servo_speed * interval_at_max_speed / value
         self._speed = value
         for servo in self.servo_iter:
@@ -240,20 +234,71 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         max_stick_value = 14000
-        stick_x, stick_y, mode, *pressed_buttons = data.split(",")
-        print(stick_x, stick_y, mode, pressed_buttons)
+        stick_y, stick_x, up, down, left, right, joystick_button, mode = [int(value) for value in data.split(",")]
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         try:
             {
-                0: lambda: self.manual_mode((stick_x, stick_y), pressed_buttons),
-                1: lambda: self.egg_mode(),
+                1: lambda: self.fury_mode(),
+                2: lambda: self.manual_mode((stick_x, stick_y), 1 if up == 1 else -1 if down == 1 else 0,
+                                            1 if right == 1 else -1 if left == 1 else 0),
+                3: lambda: self.dance_mode(),
+                4: lambda: self.egg_mode(),
+                5: lambda: self.balloon_mode(),
+                6: lambda: self.line_dance_mode(),
             }[mode]()
         except:
             print("Mode doesn't exist")
 
-    def manual_mode(self, stick, buttons):
-        print("[MANUAL]", stick, buttons)
+    def manual_mode(self, stick, vertical, horizontal):
+        print("[MANUAL]", stick, vertical, horizontal)
+        max_step_length = 110
+        min_step_height = 30
+        step_height_deviation = 30
+        height_change_multiplier = 0.5
+
+        x, y = stick
+
+        self.leg_mover.ground_clearance += vertical * height_change_multiplier
+
+        step_length = math.sqrt(x ** 2 + y ** 2) * max_step_length
+        # step length is meer als de joystick verder van het midden af is
+        rotate_angle = math.radians(0 if y > 0 else 180)
+        step_height = min_step_height + abs(y) * step_height_deviation
+
+        turn_threshold = 0.1
+        turn_modifier = 1 if x > turn_threshold else -1 if x < -turn_threshold else 0
+        turn_modifier *= abs(y * 0.5)
+
+        change = False
+
+        if step_length is not self.step_length:
+            self.step_length = step_length
+            change = True
+        if rotate_angle is not self.rotate_angle:
+            self.rotate_angle = rotate_angle
+            change = True
+        if step_height is not self.step_height:
+            self.step_height = step_height
+            change = True
+        if turn_modifier is not self.turn_modifier:
+            self.turn_modifier = turn_modifier
+            change = True
+
+        if (change):
+            self.update_spider()
+
+    def fury_mode(self):
+        print("[EGG]")
+
+    def dance_mode(self):
+        print("[EGG]")
 
     def egg_mode(self):
+        print("[EGG]")
+
+    def balloon_mode(self):
+        print("[EGG]")
+
+    def line_dance_mode(self):
         print("[EGG]")

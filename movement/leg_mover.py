@@ -1,11 +1,12 @@
 import math
 
+import utils
 from movement.stance import Stance
 from point import Point3D
 
 
 class LegMover(object):
-    def __init__(self, spider, ground_clearance):
+    def __init__(self, spider, ground_clearance=50):
         self.spider = spider
         self.ground_clearance = ground_clearance
         self.cancel = False
@@ -47,6 +48,11 @@ class LegMover(object):
         points_right = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points_right]
         points_left = [point.rotate_around_y(rotate_origin, rotate_angle) for point in points_left]
 
+        midpoints = {
+            'right': utils.midpoint(points_right[back], points_right[forward]),
+            'left': utils.midpoint(points_left[back], points_left[forward])
+        }
+
         stance_sequence = [
             Stance(
                 front_left_point=points_left[forward],
@@ -54,7 +60,8 @@ class LegMover(object):
                 back_left_point=points_left[forward],
                 front_right_point=points_right[back],
                 mid_right_point=points_right[forward],
-                back_right_point=points_right[back]
+                back_right_point=points_right[back],
+                midpoints=midpoints
             ),
             Stance(
                 front_left_point=points_left[back],
@@ -62,7 +69,8 @@ class LegMover(object):
                 back_left_point=points_left[back],
                 front_right_point=points_right[lifted],
                 mid_right_point=points_right[back],
-                back_right_point=points_right[lifted]
+                back_right_point=points_right[lifted],
+                midpoints=midpoints
             ),
             Stance(
                 front_left_point=points_left[back],
@@ -70,7 +78,8 @@ class LegMover(object):
                 back_left_point=points_left[back],
                 front_right_point=points_right[forward],
                 mid_right_point=points_right[back],
-                back_right_point=points_right[forward]
+                back_right_point=points_right[forward],
+                midpoints=midpoints
             ),
             Stance(
                 front_left_point=points_left[lifted],
@@ -78,8 +87,9 @@ class LegMover(object):
                 back_left_point=points_left[lifted],
                 front_right_point=points_right[back],
                 mid_right_point=points_right[lifted],
-                back_right_point=points_right[back]
-            ),
+                back_right_point=points_right[back],
+                midpoints=midpoints
+            )
         ]
 
         if self.is_moving:
@@ -102,13 +112,14 @@ class LegMover(object):
                     point.y = -1
 
                 self.legs_to_do = self.legs_to_do + 1
+                midpoint = stance.midpoints[xp]
 
                 def on_done_callback():
                     self.legs_to_do = self.legs_to_do - 1
                     if self.legs_to_do == 0:
                         on_done()
 
-                leg.move_to_normalized(point, on_done_callback)
+                leg.move_to_normalized(point, midpoint, on_done_callback)
 
     def execute_stance_sequence_indefinitely(self, stance_list, index=None):
         if index == None or index == -1:
