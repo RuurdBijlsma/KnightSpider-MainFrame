@@ -29,8 +29,8 @@ class ShapeDetector(object):
 
     def detect(self, image, min_area=400, max_similarity_value=0.1, min_thresh = 127,
                max_thresh = 255):
-        gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        _, thresh = cv2.threshold(gray, min_thresh, max_thresh, 0)
+
+        _, thresh = cv2.threshold(image, min_thresh, max_thresh, 0)
         _, contours, _ = cv2.findContours(thresh,2,1)
 
         best_contour = contours[0]
@@ -52,8 +52,11 @@ class ShapeDetector(object):
         return contours, found_match, best_contour, best_value
 
     def detectEgg(self, image, min_area=400, max_similarity_value=0.1, min_threshold=220, max_threshold=300):
-        edges = cv2.Canny(image, min_threshold, max_threshold, apertureSize=3)
-        _, contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        #image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        #image = cv2.medianBlur(image,5)
+        thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        #edges = cv2.Canny(image, min_threshold, max_threshold, apertureSize=3)
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         best_contour = contours[0]
         best_value = float('inf')
