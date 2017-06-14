@@ -124,7 +124,8 @@ class BroadcastThread(Thread):
         finally:
             self.converter.stdout.close()
 
-class Server():
+
+class Server:
 
     def __init__(self):
         print('Initializing camera')
