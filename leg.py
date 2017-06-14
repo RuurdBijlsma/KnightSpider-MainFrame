@@ -56,9 +56,9 @@ class Leg(object):
 
         ax12_serial.lock()
         try:
-            self.gamma.rotate_to(angles[0], on_done_callback)
-            self.alpha.rotate_to(angles[1], on_done_callback)
             self.beta.rotate_to(angles[2], on_done_callback)
+            self.alpha.rotate_to(angles[1], on_done_callback)
+            self.gamma.rotate_to(angles[0], on_done_callback)
         finally:
             ax12_serial.unlock()
 

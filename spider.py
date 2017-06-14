@@ -148,20 +148,20 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.ground_clearance = 90
-        self.speed = 500
+        self.leg_mover.ground_clearance = 110
+        self.speed = 150
 
-        self.rotate_angle = math.radians(0)
-        self.step_height = 0
-        self.step_length = 0
-        self.tip_distance = 130
+        self.rotate_angle = math.radians(180)
+        self.step_height = 100
+        self.step_length = 110
+        self.tip_distance = 120
         self.turn_modifier = 0
 
         self.update_spider()
 
         if all_systems_enabled:
             # speech_synthesis.speak("Starting all systems")
-            self.app = AppCommunicator(self, True)
+            self.app = AppCommunicator(self, False)
             self.stream_server = Server()
             Thread(target=self.stream_server.start)
 
@@ -255,9 +255,9 @@ class Spider(object):
 
     def manual_mode(self, stick, vertical, horizontal):
         stick = [round(value * 5) / 5 for value in stick]
-        # print(stick, vertical, horizontal)
+        print(stick, vertical, horizontal)
         max_step_length = 110
-        min_step_height = 30
+        min_step_height = 40
         step_height_deviation = 20
         height_change_multiplier = 5
         turn_threshold = 0.1
@@ -272,37 +272,32 @@ class Spider(object):
         rotate_angle = math.radians(180 if y > 0 else 0)
         step_height = 0 if step_length < minimum_threshold else min_step_height + abs(y) * step_height_deviation
 
-        turn_modifier = 1 if x > turn_threshold else -1 if x < -turn_threshold else 0
-        turn_modifier *= abs(y * 0.5)
-
-        # step_length, step_height = [round(value / 5) * 5 for value in [step_length, step_height]]
-
-        # turn_modifier = round(turn_modifier, 1)
-
-        # print(step_length, rotate_angle, step_height, turn_modifier)
+        turn_modifier = float(1 if x > turn_threshold else -1 if x < -turn_threshold else 0)
+        turn_modifier = turn_modifier - abs(y * 0.5) if turn_modifier > 0.5 else turn_modifier + abs(
+            y * 0.5) if turn_modifier < -0.5 else turn_modifier
 
         change = False
 
-        if step_length is not self.step_length:
+        if step_length != self.step_length:
             self.step_length = step_length
             change = True
-        if rotate_angle is not self.rotate_angle:
+        if rotate_angle != self.rotate_angle:
             self.rotate_angle = rotate_angle
             change = True
-        if step_height is not self.step_height:
+        if step_height != self.step_height:
             self.step_height = step_height
             change = True
-        if turn_modifier is not self.turn_modifier:
+        if turn_modifier != self.turn_modifier:
             self.turn_modifier = turn_modifier
             change = True
 
         if (change):
-            # print({
-            #     "turnModifier": self.turn_modifier,
-            #     "stepLength": self.step_length,
-            #     "stepHeight": self.step_height,
-            #     "rotateAngle": self.rotate_angle,
-            # })
+            print({
+                "turnModifier": self.turn_modifier,
+                "stepLength": self.step_length,
+                "stepHeight": self.step_height,
+                "rotateAngle": self.rotate_angle,
+            })
             # print(change)
             self.update_spider()
 
