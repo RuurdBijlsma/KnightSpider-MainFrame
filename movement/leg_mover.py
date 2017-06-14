@@ -13,7 +13,7 @@ class LegMover(object):
         self.current_walk_index = None
         self.is_moving = False
 
-    def walk(self, rotate_angle=math.radians(0), step_length=80, step_height=40, tip_distance=180, turn_modifier=0):
+    def walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0):
         # Turning modifier 1 betekent naar rechts draaien om zijn as
         # Turning modifier -1 betekent naar links draaien om zijn as
         # Turning modifier 0.5 betekent naar rechts sturen terwijl hij loopt

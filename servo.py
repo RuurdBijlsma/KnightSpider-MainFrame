@@ -44,6 +44,7 @@ class Servo(object):
         # print("Rotating servo {0} to {1}".format(self.id, angle))
 
         try:
+            # pass
             ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
         except ValueError as e:
             print("Error moving servo:", e)

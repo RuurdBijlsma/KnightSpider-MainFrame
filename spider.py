@@ -20,23 +20,23 @@ class Spider(object):
         self.ik_cache.from_file()
         # self.ik_cache.clear()
 
-        # legs = [
-        #     Leg(self.ik_cache, leg_id=1, angle=30, body_position=Point3D(-70.8, 0, 104.12)),
-        #     Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
-        #     Leg(self.ik_cache, leg_id=3, angle=-30, body_position=Point3D(-71.09, 0, -108.50)),
-        #     Leg(self.ik_cache, leg_id=4, angle=-30, body_position=Point3D(69.8, 0, 103.65)),
-        #     Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
-        #     Leg(self.ik_cache, leg_id=6, angle=30, body_position=Point3D(69.58, 0, -108.97)),
-        # ]
-
         legs = [
-            Leg(self.ik_cache, leg_id=1, angle=0, body_position=Point3D(-70.8, 0, 104.12)),
+            Leg(self.ik_cache, leg_id=1, angle=-30, body_position=Point3D(-70.8, 0, 104.12)),
             Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
-            Leg(self.ik_cache, leg_id=3, angle=0, body_position=Point3D(-71.09, 0, -108.50)),
-            Leg(self.ik_cache, leg_id=4, angle=0, body_position=Point3D(69.8, 0, 103.65)),
+            Leg(self.ik_cache, leg_id=3, angle=30, body_position=Point3D(-71.09, 0, -108.50)),
+            Leg(self.ik_cache, leg_id=4, angle=30, body_position=Point3D(69.8, 0, 103.65)),
             Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
-            Leg(self.ik_cache, leg_id=6, angle=0, body_position=Point3D(69.58, 0, -108.97)),
+            Leg(self.ik_cache, leg_id=6, angle=-30, body_position=Point3D(69.58, 0, -108.97)),
         ]
+
+        # legs = [
+        #     Leg(self.ik_cache, leg_id=1, angle=0, body_position=Point3D(-70.8, 0, 104.12)),
+        #     Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
+        #     Leg(self.ik_cache, leg_id=3, angle=0, body_position=Point3D(-71.09, 0, -108.50)),
+        #     Leg(self.ik_cache, leg_id=4, angle=0, body_position=Point3D(69.8, 0, 103.65)),
+        #     Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
+        #     Leg(self.ik_cache, leg_id=6, angle=0, body_position=Point3D(69.58, 0, -108.97)),
+        # ]
 
         self.legs = {
             'left': {
@@ -148,10 +148,16 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.walk(rotate_angle=math.radians(0), step_height=50, step_length=0, tip_distance=120,
-                            turn_modifier=0)
-        self.speed = 400
         self.leg_mover.ground_clearance = 90
+        self.speed = 500
+
+        self.rotate_angle = math.radians(0)
+        self.step_height = 0
+        self.step_length = 0
+        self.tip_distance = 130
+        self.turn_modifier = 0
+
+        self.update_spider()
 
         if all_systems_enabled:
             # speech_synthesis.speak("Starting all systems")
@@ -237,24 +243,25 @@ class Spider(object):
         stick_y, stick_x, up, down, left, right, joystick_button, mode = [int(value) for value in data.split(",")]
         stick_x /= max_stick_value
         stick_y /= max_stick_value
-        try:
-            {
-                1: lambda: self.fury_mode(),
-                2: lambda: self.manual_mode((stick_x, stick_y), 1 if up == 1 else -1 if down == 1 else 0,
-                                            1 if right == 1 else -1 if left == 1 else 0),
-                3: lambda: self.dance_mode(),
-                4: lambda: self.egg_mode(),
-                5: lambda: self.balloon_mode(),
-                6: lambda: self.line_dance_mode(),
-            }[mode]()
-        except:
-            print("Mode doesn't exist")
+        {
+            1: lambda: self.fury_mode(),
+            2: lambda: self.manual_mode((stick_x, stick_y), 1 if up == 1 else -1 if down == 1 else 0,
+                                        1 if right == 1 else -1 if left == 1 else 0),
+            3: lambda: self.dance_mode(),
+            4: lambda: self.egg_mode(),
+            5: lambda: self.balloon_mode(),
+            6: lambda: self.line_dance_mode(),
+        }[mode]()
 
     def manual_mode(self, stick, vertical, horizontal):
+        stick = [round(value * 5) / 5 for value in stick]
+        print(stick, vertical, horizontal)
         max_step_length = 110
         min_step_height = 30
-        step_height_deviation = 30
-        height_change_multiplier = 0.5
+        step_height_deviation = 20
+        height_change_multiplier = 5
+        turn_threshold = 0.1
+        minimum_threshold = 5
 
         x, y = stick
 
@@ -262,12 +269,17 @@ class Spider(object):
 
         step_length = math.sqrt(x ** 2 + y ** 2) * max_step_length
         # step length is meer als de joystick verder van het midden af is
-        rotate_angle = math.radians(0 if y > 0 else 180)
-        step_height = min_step_height + abs(y) * step_height_deviation
+        rotate_angle = math.radians(180 if y > 0 else 0)
+        step_height = 0 if step_length < minimum_threshold else min_step_height + abs(y) * step_height_deviation
 
-        turn_threshold = 0.1
         turn_modifier = 1 if x > turn_threshold else -1 if x < -turn_threshold else 0
         turn_modifier *= abs(y * 0.5)
+
+        # step_length, step_height = [round(value / 5) * 5 for value in [step_length, step_height]]
+
+        # turn_modifier = round(turn_modifier, 1)
+
+        # print(step_length, rotate_angle, step_height, turn_modifier)
 
         change = False
 
@@ -285,6 +297,13 @@ class Spider(object):
             change = True
 
         if (change):
+            print({
+                "turnModifier": self.turn_modifier,
+                "stepLength": self.step_length,
+                "stepHeight": self.step_height,
+                "rotateAngle": self.rotate_angle,
+            })
+            print(change)
             self.update_spider()
 
     def fury_mode(self):
@@ -301,3 +320,8 @@ class Spider(object):
 
     def line_dance_mode(self):
         pass
+
+    def cache_controller_ik(self, stick_divider=5, height_step=5, min_height=30, max_height=160):
+        for x in range(-stick_divider, stick_divider):
+            for y in range(-stick_divider, stick_divider):
+                self.manual_mode((x / stick_divider, y / stick_divider), 0, 0)

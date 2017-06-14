@@ -5,16 +5,17 @@ from socket_listener.message import Message
 from socket_listener.server import Server
 
 class AppCommunicator(object):
-    UPDATE_FREQUENCY = 5
+    UPDATE_FREQUENCY = 1
 
-    def __init__(self, spider):
+    def __init__(self, spider, debug=False):
         self.spider = spider
         self.server = Server(enable_udp=True)
         self.server.register_message_handler(identifiers.GET_SERVO, self.handle_servo_request)
         self.server.register_udp_callback(self.udp_callback)
         self.server.start_listen_thread()
-        self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
-        self.readings_worker = ReadingsWorker(frequency=5, spider=spider).start()
+        if (debug):
+            self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
+            self.readings_worker = ReadingsWorker(frequency=self.UPDATE_FREQUENCY, spider=spider).start()
 
     def udp_callback(self, data):
         self.spider.parse_controller_update(data)
