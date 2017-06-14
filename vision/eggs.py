@@ -2,36 +2,20 @@ import cv2
 import numpy as np
 from shape_detector import ShapeDetector
 
-
-cap = cv2.VideoCapture(0)
-
-targetImg = cv2.imread('images/mainegg.png',0)
-
-shape_detect = ShapeDetector(targetImg, contour_index=None)
-
-lower = (0,15,80)
-upper = (20,209,255)
-#lower = (10, 30, 100)
-#upper = (20,255,255)
-#lower = (0,0,200)
-#upper = (180,80,255)
-
-
-
-MIN_AREA = 50
-
-while 1:
-    _, frame = cap.read()
+def find_egg(frame, white, MIN_AREA):
+    lower = (0,15,80)
+    upper = (20,209,2550)
+    if white:
+        lower = (0,0,200)
+        upper = (180,80,255)
     blurred = cv2.GaussianBlur(frame,(5,5), 0)
-    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    hsv = cv2.GaussianBlur(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower, upper)
     res = cv2.bitwise_and(frame, frame, mask=mask)
     res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
-    th3 = cv2.adaptiveThreshold(res, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
-    canny = cv2.Canny(frame,55,150)
-
-    contours, found_match, match_contour, similarity = shape_detect.detectEgg(res, MIN_AREA,0.2)
+    shape_detect = ShapeDetector(targetImg, contour_index=None)
+    contours, found_match, match_contour, similarity = shape_detect.detectEgg(res, MIN_AREA, 0.2)
 
     if found_match == "success":
         M = cv2.moments(match_contour)
@@ -42,10 +26,6 @@ while 1:
             frame = cv2.circle(frame,(cx,cy), 3, (255,0,0), 3)
 
 
-    cv2.imshow("output", frame)
-    cv2.imshow("threshold",th3)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    cv2.imshow("result", frame)
 
-cap.release()
 cv2.destroyAllWindows()

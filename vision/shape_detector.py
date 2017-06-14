@@ -78,4 +78,16 @@ class ShapeDetector(object):
             found_match = "success"
 
         return contours, found_match, best_contour, best_value
+
+    def isCentered(self, image, contour):
+        height, width = image.shape
+        mid = width / 2
+
+        M = cv2.moments(contour)
+        if M['m00'] > 1000:
+            cx = int(M['m10'] / M['m00'])
+            if cx > (mid - 10) and cx < (mid + 10):
+                return true
+
+        return false
         

@@ -27,5 +27,10 @@ class Vision:
     def find_club(self):
         shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/club.jpg", 0))
 
+    def find_white_egg(self):
+        eggs.find_egg(self.server.get_capture(), True, 50)
+
+    def find_colored_egg(self):
+        eggs.find_egg(self.server.get_capture(), False, 50)
     def find_road(self):
 
