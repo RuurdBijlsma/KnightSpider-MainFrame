@@ -63,6 +63,7 @@ class Servo(object):
         return self._cached_readings.position
 
     def get_readings(self):
+        ax12_serial.lock()
         try:
             readings = ServoReadings(
                 position=ax12_serial.read_position(self.id),
@@ -75,3 +76,5 @@ class Servo(object):
         except TypeError as e:
             # print("Error reading from servo:", e)
             return ServoReadings.empty()
+        finally:
+            ax12_serial.unlock()

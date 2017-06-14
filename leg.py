@@ -1,5 +1,6 @@
 import math
 
+import ax12_serial
 from lib.inverse_kinematics.actuator import Actuator
 from point import Point3D
 from servo import Servo
@@ -53,9 +54,13 @@ class Leg(object):
             if (self.servos_to_do == 0):
                 on_done()
 
-        self.gamma.rotate_to(angles[0], on_done_callback)
-        self.alpha.rotate_to(angles[1], on_done_callback)
-        self.beta.rotate_to(angles[2], on_done_callback)
+        ax12_serial.lock()
+        try:
+            self.gamma.rotate_to(angles[0], on_done_callback)
+            self.alpha.rotate_to(angles[1], on_done_callback)
+            self.beta.rotate_to(angles[2], on_done_callback)
+        finally:
+            ax12_serial.unlock()
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

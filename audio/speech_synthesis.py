@@ -1,48 +1,80 @@
+import socket
 import subprocess
 import random
 
 import time
-from pygame import mixer
-from gtts import gTTS
 
-import pyttsx
+import os
 
-SENTENCES = [
-    "Beep beep lettuce",
-    "speedtest is lies",
-    "fast.com is good shit right there"
-]
+class SpeechSynthesis(object):
+    SENTENCES = [
+        "Beep beep lettuce",
+        "hello i am kitt",
+        "vroom vroom am car",
+        "starting all systems"
+    ]
 
-FILE_NAME = "temp.mp3"
+    PROCESS_COMMAND = "festival"
 
-# mixer.init()
-tts_engine = pyttsx.init()
-tts_engine.setProperty('rate', 100)
+    def __init__(self):
+        try:
+            ps = subprocess.Popen(["ps", "-ef"], stdout=subprocess.PIPE)
+            festival = subprocess.Popen(["grep", self.PROCESS_COMMAND], stdin=ps.stdout, stdout=subprocess.PIPE)
+            clean = subprocess.check_output(["grep", "-v", "grep"], stdin=festival.stdout)
+
+            lines = len(clean.decode().split('\n')) - 1
+            # print(clean.decode())
+            print("instances", lines)
+
+            if lines == 1:
+                self.connect_server()
+                return
+
+            if lines > 1:
+                print("Too many instances, cleaning up")
+                os.system("killall festival")
+                self.start_server()
+
+        except subprocess.CalledProcessError as e:
+            self.start_server()
+            print(e)
 
 
-def speak_random():
-    speak(random.choice(SENTENCES))
+    def start_server(self):
+        print("Spawning server")
+        subprocess.Popen(["festival", "--server"], stdout=subprocess.PIPE)
+        time.sleep(0.1)
+        return self.connect_server()
 
-def speak(text):
-    print("saying", text)
-    tts_engine.setProperty("voice", b'punjabi')
-    tts_engine.say(text)
-    # subprocess.call(["espeak", text])
-    # tts = gTTS(text, lang="en-uk")
-    # tts.speed = 10
-    # tts.save(FILE_NAME)
-    # mixer.music.load(FILE_NAME)
-    # mixer.music.play()
+    def connect_server(self):
+        t_start = time.time()
+        while t_start + 5 > time.time():
+            try:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.connect(("127.0.0.1", 1314))
+                return True
+            except:
+                time.sleep(0.1)
+
+        print("Failed to connect")
+        return False
+
+
+
+    def speak_random(self):
+        self.speak(random.choice(self.SENTENCES))
+
+    def speak(self, text):
+        print("saying", text)
+        self.socket.send("(SayText '\"{}\")".format(text + " man").encode("utf-8"))
 
 
 def main():
-    # speak_random()
-    for voice in tts_engine.getProperty('voices'):
-        print(voice.id)
-        tts_engine.setProperty("voice", voice.id)
-        tts_engine.say("test")
+    ss = SpeechSynthesis()
 
-    tts_engine.runAndWait()
+    while True:
+        ss.speak_random()
+        time.sleep(5)
 
 if __name__ == '__main__':
     main()

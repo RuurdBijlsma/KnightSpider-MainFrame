@@ -13,6 +13,8 @@ class ReadingsWorker(PeriodicWorker):
         PeriodicWorker.__init__(self, frequency)
 
     def update(self):
+        t_start = time.time()
         self.spider.cpu_temperature = utils.get_cpu_temp()
         self.spider.cpu_usage = utils.get_cpu_usage()
         self.spider.update_readings()
+        print("Reading", time.time() -  t_start)

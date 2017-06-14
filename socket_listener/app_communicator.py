@@ -7,13 +7,13 @@ from socket_listener.server import Server
 class AppCommunicator(object):
     UPDATE_FREQUENCY = 1
 
-    def __init__(self, spider, debug=False):
+    def __init__(self, spider, broadcast=False):
         self.spider = spider
         self.server = Server(enable_udp=True)
         self.server.register_message_handler(identifiers.GET_SERVO, self.handle_servo_request)
         self.server.register_udp_callback(self.udp_callback)
         self.server.start_listen_thread()
-        if (debug):
+        if (broadcast):
             self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
             self.readings_worker = ReadingsWorker(frequency=self.UPDATE_FREQUENCY, spider=spider).start()
 

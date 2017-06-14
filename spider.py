@@ -161,7 +161,7 @@ class Spider(object):
 
         if all_systems_enabled:
             # speech_synthesis.speak("Starting all systems")
-            self.app = AppCommunicator(self)
+            self.app = AppCommunicator(self, True)
             self.stream_server = Server()
             Thread(target=self.stream_server.start)
 
@@ -255,7 +255,7 @@ class Spider(object):
 
     def manual_mode(self, stick, vertical, horizontal):
         stick = [round(value * 5) / 5 for value in stick]
-        print(stick, vertical, horizontal)
+        # print(stick, vertical, horizontal)
         max_step_length = 110
         min_step_height = 30
         step_height_deviation = 20
@@ -297,13 +297,13 @@ class Spider(object):
             change = True
 
         if (change):
-            print({
-                "turnModifier": self.turn_modifier,
-                "stepLength": self.step_length,
-                "stepHeight": self.step_height,
-                "rotateAngle": self.rotate_angle,
-            })
-            print(change)
+            # print({
+            #     "turnModifier": self.turn_modifier,
+            #     "stepLength": self.step_length,
+            #     "stepHeight": self.step_height,
+            #     "rotateAngle": self.rotate_angle,
+            # })
+            # print(change)
             self.update_spider()
 
     def fury_mode(self):
