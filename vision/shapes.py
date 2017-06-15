@@ -25,6 +25,10 @@ from threading import Thread
 MIN_AREA = 5
 MAX_SIMILARITY_VALUE = 0.1
 
+LEFT = -1
+CENTER = 0
+RIGHT = 1
+
 
 def find_shape(frame, target_img):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -33,8 +37,9 @@ def find_shape(frame, target_img):
     contours, found_match, match_contour, similarity = shape_detector.detect(frame,MIN_AREA)
 
     if found_match == "success":
-        frame = cv2.drawContours(frame, match_contour, -1, (255,0,0),3)
+        if ShapeDetector.is_centered(frame, match_contour) is False:
+            return ShapeDetector.on_screen(frame,match_contour)
+        elif ShapeDetector.is_centered(frame, match_contour):
+            return CENTER
 
-    cv2.imshow('result', frame)
 
-cv2.destroyAllWindows()
