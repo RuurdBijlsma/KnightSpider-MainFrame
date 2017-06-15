@@ -29,7 +29,7 @@ class Leg(object):
         return rotated_point if self.is_left_leg else rotated_point.negate_z()
 
     def move_to_normalized(self, point, midpoint, crab=False, on_done=lambda: None):
-        return self.move_to(self.point_to_normalized(point, midpoint), on_done)
+        return self.move_to(self.point_to_normalized(point, midpoint, crab), on_done)
 
     def get_tip_point(self):
         gamma_angle = self.gamma.angle

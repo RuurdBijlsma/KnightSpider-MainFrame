@@ -149,14 +149,17 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.ground_clearance = 110
-        self.speed = 150
+        self.leg_mover.ground_clearance = 80
+        self.speed =300
 
-        self.rotate_angle = math.radians(180)
-        self.step_height = 100
-        self.step_length = 110
+        self.rotate_angle = math.radians(90)
+        self.step_height = 50
+        self.step_length = 50
         self.tip_distance = 120
-        self.turn_modifier = 0
+        self.turn_modifier = 1
+        self.crab=True
+
+        self.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
 
         self.update_spider()
 
@@ -227,7 +230,7 @@ class Spider(object):
 
     def update_spider(self):
         self.leg_mover.walk(rotate_angle=self.rotate_angle, step_height=self.step_height, step_length=self.step_length,
-                            tip_distance=self.tip_distance, turn_modifier=self.turn_modifier)
+                            tip_distance=self.tip_distance, turn_modifier=self.turn_modifier, crab=self.crab)
 
     @property
     def speed(self):
