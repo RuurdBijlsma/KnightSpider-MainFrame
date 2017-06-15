@@ -14,8 +14,6 @@ class Vision:
         t.start()
         time.sleep(1)
 
-        # self.frame = server.get_capture()
-
     def find_heart(self):
         shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/hart2.jpg", 0))
 
