@@ -4,6 +4,7 @@ from threading import Thread
 import vision.shapes as shapes
 import vision.road_detector as road_detector
 import time
+import vision.eggs as eggs
 
 
 class Vision:
@@ -32,5 +33,6 @@ class Vision:
 
     def find_colored_egg(self):
         eggs.find_egg(self.server.get_capture(), False, 50)
-    def find_road(self):
 
+    def find_road(self):
+        road_detector.find_road(self.server.get_capture())
