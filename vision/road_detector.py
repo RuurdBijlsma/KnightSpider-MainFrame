@@ -35,8 +35,8 @@ def line_intersection(line1, line2):
     return x, y
 
 
-while (True):
-    ret, frame = capture.read()
+def find_road(frame):
+    # ret, frame = capture.read()
     # frame = cv2.flip(frame, 0)
 
     low = cv2.getTrackbarPos('low', 'image')
@@ -90,9 +90,3 @@ while (True):
                 offset = np.subtract(mid, intersect)
                 cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
                 print('Actie: GO', 'RIGHT' if offset[0] < 0 else 'LEFT', 'by', round(abs(offset[0]), 1))
-
-    # cv2.imwrite("image.png", frame)
-    cv2.imshow("image", frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
