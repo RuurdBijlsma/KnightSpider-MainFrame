@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from shape_detector import ShapeDetector
 
-def find_egg(frame, white, MIN_AREA):
+def find_egg(frame, targetImg ,white, MIN_AREA):
     lower = (0,15,80)
     upper = (20,209,2550)
     if white:
