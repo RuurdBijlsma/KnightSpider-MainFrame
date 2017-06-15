@@ -11,7 +11,9 @@ OPEN_PWM = 10
 def init():
     gpio.setmode(gpio.BCM)
     gpio.setup(PIN_ID, gpio.OUT)
+    global pin
     pin = gpio.PWM(PIN_ID, PWM_HZ)
+    pin.start(OPEN_PWM)
 
 def open_maw():
     pin.ChangeDutyCycle(OPEN_PWM)

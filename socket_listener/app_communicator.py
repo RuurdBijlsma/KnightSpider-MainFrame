@@ -4,6 +4,7 @@ from socket_listener.data_broadcaster import DataBroadcaster
 from socket_listener.message import Message
 from socket_listener.server import Server
 
+
 class AppCommunicator(object):
     UPDATE_FREQUENCY = 1
 
@@ -17,8 +18,13 @@ class AppCommunicator(object):
             self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
             self.readings_worker = ReadingsWorker(frequency=self.UPDATE_FREQUENCY, spider=spider).start()
 
+    mag = 0
+
     def udp_callback(self, data):
-        self.spider.parse_controller_update(data)
+        # print(data)
+        self.mag += 1
+        if self.mag % 10 == 0:
+            self.spider.parse_controller_update(data)
 
     def handle_servo_request(self, connection, payload):
         print("getting readings for", payload)

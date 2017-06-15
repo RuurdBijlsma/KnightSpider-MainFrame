@@ -5,7 +5,7 @@ from spider import Spider
 
 ax12_serial.init()
 spider = Spider()
-spider.start(True)
-# spider.cache_controller_ik()
+spider.start(False)
 
-time.sleep(100000)
+while True:
+    time.sleep(1)

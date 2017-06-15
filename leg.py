@@ -1,7 +1,8 @@
 import math
 
-import ax12_serial
 from lib.inverse_kinematics.actuator import Actuator
+
+import ax12_serial
 from point import Point3D
 from servo import Servo
 
@@ -22,13 +23,13 @@ class Leg(object):
         self.body_position = body_position
         self.is_left_leg = body_position.x < 0
 
-    def point_to_normalized(self, point, midpoint):
-        midpoint = (midpoint.x, midpoint.z)
+    def point_to_normalized(self, point, midpoint, crab=False):
+        midpoint = (0, 0) if crab else (midpoint.x, midpoint.z)
         rotated_point = point.rotate_around_y(midpoint, math.radians(self.angle))
         return rotated_point if self.is_left_leg else rotated_point.negate_z()
 
-    def move_to_normalized(self, point, midpoint, on_done=lambda: None):
-        return self.move_to(self.point_to_normalized(point, midpoint), on_done)
+    def move_to_normalized(self, point, midpoint, crab=False, on_done=lambda: None):
+        return self.move_to(self.point_to_normalized(point, midpoint, crab), on_done)
 
     def get_tip_point(self):
         gamma_angle = self.gamma.angle
@@ -42,7 +43,7 @@ class Leg(object):
     def move_to(self, point, on_done=lambda: None):
         point.y += self.ground_height_offset * (-1 if self.is_left_leg else 1)
 
-        point.y = -1 if point.y >= 0 else point.y
+        # point.y = -1 if point.y >= 0 else point.y
 
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
@@ -56,9 +57,9 @@ class Leg(object):
 
         ax12_serial.lock()
         try:
-            self.gamma.rotate_to(angles[0], on_done_callback)
-            self.alpha.rotate_to(angles[1], on_done_callback)
             self.beta.rotate_to(angles[2], on_done_callback)
+            self.alpha.rotate_to(angles[1], on_done_callback)
+            self.gamma.rotate_to(angles[0], on_done_callback)
         finally:
             ax12_serial.unlock()
 
