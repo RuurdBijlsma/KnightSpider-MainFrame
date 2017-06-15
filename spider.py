@@ -1,8 +1,9 @@
 import json
-import math
 import os
-import signal
 from threading import Thread
+
+import math
+import signal
 
 import egg_maw
 import utils
@@ -150,14 +151,15 @@ class Spider(object):
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 80
-        self.speed =300
+        self.speed = 300
+        self.interval_at_max_speed = 0.06
 
         self.rotate_angle = math.radians(90)
         self.step_height = 50
-        self.step_length = 50
+        self.step_length = 0
         self.tip_distance = 120
         self.turn_modifier = 1
-        self.crab=True
+        self.crab = True
 
         self.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
 
@@ -239,8 +241,7 @@ class Spider(object):
     @speed.setter
     def speed(self, value):
         max_servo_speed = 1023
-        interval_at_max_speed = 0.06
-        interval = max_servo_speed * interval_at_max_speed / value
+        interval = max_servo_speed * self.interval_at_max_speed / value
         self._speed = value
         for servo in self.servo_iter:
             servo.move_speed = value
