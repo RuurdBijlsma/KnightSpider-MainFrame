@@ -4,6 +4,7 @@ import os
 import signal
 from threading import Thread
 
+import egg_maw
 import utils
 from leg import Leg
 from models import SpiderInfo
@@ -159,6 +160,9 @@ class Spider(object):
 
         self.update_spider()
 
+        egg_maw.init()
+        egg_maw.open_maw()
+
         if all_systems_enabled:
             # speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
@@ -170,6 +174,7 @@ class Spider(object):
             self.speed = 0
             self.app.close()
             self.stream_server.close()
+            egg_maw.close()
         except:
             pass
 
