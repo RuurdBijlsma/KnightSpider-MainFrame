@@ -1,10 +1,7 @@
 import cv2
 import numpy as np
 from shape_detector import ShapeDetector
-
-LEFT = -1
-CENTER = 0
-RIGHT = 1
+import magic
 
 
 def find_egg(frame, targetImg, white, MIN_AREA):
@@ -26,5 +23,6 @@ def find_egg(frame, targetImg, white, MIN_AREA):
         if ShapeDetector.is_centered(frame, match_contour) is False:
             return ShapeDetector.on_screen(frame, match_contour)
         elif ShapeDetector.is_centered(frame, match_contour):
-            return CENTER
-
+            return magic.CENTER
+    else:
+        return magic.DEFAULT_SIDE

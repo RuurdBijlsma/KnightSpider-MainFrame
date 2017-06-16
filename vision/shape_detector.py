@@ -1,4 +1,5 @@
 import cv2
+import magic
 
 
 class ShapeDetector(object):
@@ -99,8 +100,8 @@ class ShapeDetector(object):
         if M['m00'] > 1000:
             cx = int(M['m10'] / M['m00'])
             if cx < (mid - 10):
-                return -1
+                return magic.LEFT
             elif cx > (mid + 10):
-                return 1
+                return magic.RIGHT
 
-        return CENTER
+        return magic.CENTER
