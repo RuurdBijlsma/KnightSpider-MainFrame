@@ -262,6 +262,10 @@ class Spider(object):
             6: lambda: self.line_dance_mode(),
         }[mode]()
 
+    def rotate_stick(self, x, y, angle):
+        # werkt dit wel?
+        utils.rotate((0,0), (x,y), angle)
+
     def manual_mode(self, stick, vertical, horizontal):
         stick = [round(value * 5) / 5 for value in stick]
         print(stick, vertical, horizontal)
