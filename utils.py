@@ -37,3 +37,6 @@ def get_cpu_temp():
         ])) / 1000,
         2
     )
+
+def dist(a, b):
+    return math.sqrt((a * a) + (b * b))
