@@ -1,8 +1,7 @@
 import math
 
-from movement.stance import Stance
-
 import utils
+from movement.stance import Stance
 from point import Point3D
 
 
@@ -27,6 +26,11 @@ class LegMover(object):
             Point3D(tip_distance, clap_height, clap_closed_z)  # closed clap
         ]
 
+        midpoints = {
+            'right': utils.midpoint(clap_points[open], clap_points[open]),
+            'left': utils.midpoint(clap_points[open], clap_points[open])
+        }
+
         stance_sequence = [
             Stance(
                 front_left_point=clap_points[open],
@@ -35,7 +39,7 @@ class LegMover(object):
                 front_right_point=clap_points[open],
                 mid_right_point=mid_leg_pos,
                 back_right_point=leg_pos,
-                midpoints=clap_points[open]
+                midpoints=midpoints
             ),
             Stance(
                 front_left_point=clap_points[closed],
@@ -44,7 +48,7 @@ class LegMover(object):
                 front_right_point=clap_points[closed],
                 mid_right_point=mid_leg_pos,
                 back_right_point=leg_pos,
-                midpoints=clap_points[closed]
+                midpoints=midpoints
             ),
         ]
 

@@ -1,9 +1,8 @@
 import json
-import os
-from threading import Thread
-
 import math
+import os
 import signal
+from threading import Thread
 
 import egg_maw
 import utils
@@ -151,19 +150,21 @@ class Spider(object):
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 80
-        self.speed = 300
         self.interval_at_max_speed = 0.06
+        self.speed = 300
 
         self.rotate_angle = math.radians(90)
-        self.step_height = 50
+        self.step_height = 0
         self.step_length = 0
         self.tip_distance = 120
         self.turn_modifier = 1
         self.crab = True
 
-        self.rotate_body(x_angle=math.radians(0), z_angle=math.radians(0))
+        self.x_rotation = math.radians(0)
+        self.z_rotation = math.radians(0)
 
-        self.update_spider()
+        # self.update_walk()
+        self.leg_mover.clap()
 
         egg_maw.init()
         egg_maw.open_maw()
@@ -190,49 +191,27 @@ class Spider(object):
         print("killing")
         os.kill(os.getpid(), signal.SIGTERM)
 
-    @property
-    def step_height(self):
-        return self._step_height
-
-    @step_height.setter
-    def step_height(self, value):
-        self._step_height = value
-
-    @property
-    def rotate_angle(self):
-        return self._rotate_angle
-
-    @rotate_angle.setter
-    def rotate_angle(self, value):
-        self._rotate_angle = value
-
-    @property
-    def step_length(self):
-        return self._step_length
-
-    @step_length.setter
-    def step_length(self, value):
-        self._step_length = value
-
-    @property
-    def tip_distance(self):
-        return self._tip_distance
-
-    @tip_distance.setter
-    def tip_distance(self, value):
-        self._tip_distance = value
-
-    @property
-    def turn_modifier(self):
-        return self._turn_modifier
-
-    @turn_modifier.setter
-    def turn_modifier(self, value):
-        self._turn_modifier = value
-
-    def update_spider(self):
+    def update_walk(self):
         self.leg_mover.walk(rotate_angle=self.rotate_angle, step_height=self.step_height, step_length=self.step_length,
                             tip_distance=self.tip_distance, turn_modifier=self.turn_modifier, crab=self.crab)
+
+    @property
+    def rotate_x(self):
+        return self._rotate_x
+
+    @rotate_x.setter
+    def rotate_x(self, value):
+        self._rotate_x = value
+        self.rotate_body(self.rotate_x, self.rotate_z)
+
+    @property
+    def rotate_z(self):
+        return self._rotate_z
+
+    @rotate_z.setter
+    def rotate_z(self, value):
+        self._rotate_z = value
+        self.rotate_body(self.rotate_x, self.rotate_z)
 
     @property
     def speed(self):
@@ -249,22 +228,39 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         max_stick_value = 14000
-        stick_y, stick_x, up, down, left, right, joystick_button, mode = [int(value) for value in data.split(",")]
+        stick_y, stick_x, up_button, down_button, left_button, right_button, joystick_button, mode = [int(value) for
+                                                                                                      value in
+                                                                                                      data.split(",")]
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         {
             1: lambda: self.fury_mode(),
-            2: lambda: self.manual_mode((stick_x, stick_y), 1 if up == 1 else -1 if down == 1 else 0,
-                                        1 if right == 1 else -1 if left == 1 else 0),
+            2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
+                                        True if left_button == 1 else False, True if right_button == 1 else False),
             3: lambda: self.dance_mode(),
             4: lambda: self.egg_mode(),
             5: lambda: self.balloon_mode(),
             6: lambda: self.line_dance_mode(),
         }[mode]()
 
-    def manual_mode(self, stick, vertical, horizontal):
+    def lowrider_mode(self, stick):
+        rotation_speed_multiplier = 0.01
+        self.rotate_x += stick[0] * rotation_speed_multiplier
+        self.rotate_z += stick[1] * rotation_speed_multiplier
+
+    def manual_mode(self, stick, vertical, left_button, right_button):
+        return
         stick = [round(value * 5) / 5 for value in stick]
-        print(stick, vertical, horizontal)
+        print(stick, vertical, left_button, right_button)
+
+        if (right_button):
+            self.lowrider_mode(stick)
+            return
+
+        if (left_button):
+            self.leg_mover.clap()
+            return
+
         max_step_length = 110
         min_step_height = 40
         step_height_deviation = 20
@@ -285,6 +281,11 @@ class Spider(object):
         turn_modifier = turn_modifier - abs(y * 0.5) if turn_modifier > 0.5 else turn_modifier + abs(
             y * 0.5) if turn_modifier < -0.5 else turn_modifier
 
+        crab = False
+        if (left_button):
+            crab = True
+            rotate_angle = math.radians(90 if y > 0 else -90)
+
         change = False
 
         if step_length != self.step_length:
@@ -299,6 +300,9 @@ class Spider(object):
         if turn_modifier != self.turn_modifier:
             self.turn_modifier = turn_modifier
             change = True
+        if crab != self.crab:
+            self.crab = crab
+            change = True
 
         if (change):
             print({
@@ -308,7 +312,7 @@ class Spider(object):
                 "rotateAngle": self.rotate_angle,
             })
             # print(change)
-            self.update_spider()
+            self.update_walk()
 
     def fury_mode(self):
         pass

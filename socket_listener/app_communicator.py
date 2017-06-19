@@ -21,7 +21,7 @@ class AppCommunicator(object):
     mag = 0
 
     def udp_callback(self, data):
-        # print(data)
+        print(data)
         self.mag += 1
         if self.mag % 10 == 0:
             self.spider.parse_controller_update(data)

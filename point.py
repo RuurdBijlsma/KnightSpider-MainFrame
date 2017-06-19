@@ -89,3 +89,10 @@ class Point3D(object):
 
     def __hash__(self):
         return hash(str(self))
+
+    def round(self, rounder=0):
+        return Point3D(
+            round(self.x, rounder),
+            round(self.y, rounder),
+            round(self.z, rounder)
+        )

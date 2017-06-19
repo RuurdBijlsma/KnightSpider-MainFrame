@@ -1,6 +1,6 @@
 import numpy
-from lib.inverse_kinematics.core import TinyActuator
 
+from lib.inverse_kinematics.core import TinyActuator
 from point import Point3D
 
 
@@ -18,7 +18,7 @@ class Actuator:
                                  min_angles=numpy.deg2rad(min_angles))
 
     def inverse_kinematics(self, point):
-        point_string = str(point)
+        point_string = str(point.round(2))
         if (point_string in self.cache.points):
             return self.cache.points[point_string]
 
