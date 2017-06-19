@@ -153,12 +153,12 @@ class Spider(object):
         self.interval_at_max_speed = 0.06
         self.speed = 300
 
-        self.rotate_angle = math.radians(90)
+        self.rotate_angle = math.radians(180)
         self.step_height = 0
         self.step_length = 0
         self.tip_distance = 120
         self.turn_modifier = 1
-        self.crab = True
+        self.crab = False
 
         self.x_rotation = math.radians(0)
         self.z_rotation = math.radians(0)

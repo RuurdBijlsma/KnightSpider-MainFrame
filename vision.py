@@ -15,22 +15,22 @@ class Vision:
         time.sleep(1)
 
     def find_heart(self):
-        shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/hart2.jpg", 0))
+        return shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/hart2.jpg", 0))
 
     def find_diamond(self):
-        shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/ruiten.png", 0))
+        return shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/ruiten.png", 0))
 
     def find_spades(self):
-        shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/spade.jpg", 0))
+        return shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/spade.jpg", 0))
 
     def find_club(self):
-        shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/club.jpg", 0))
+        return shapes.find_shape(self.server.get_capture(), cv2.imwrite("images/club.jpg", 0))
 
     def find_white_egg(self):
-        eggs.find_egg(self.server.get_capture(), cv2.imwrite("images/mainegg.png"), True, 50)
+        return eggs.find_egg(self.server.get_capture(), cv2.imwrite("images/mainegg.png"), True, 50)
 
     def find_colored_egg(self):
-        eggs.find_egg(self.server.get_capture(), cv2.imwrite("images/mainegg.png"), False, 50)
+        return eggs.find_egg(self.server.get_capture(), cv2.imwrite("images/mainegg.png"), False, 50)
 
     def find_road(self):
-        road_detector.find_road(self.server.get_capture())
+        return road_detector.find_road(self.server.get_capture())

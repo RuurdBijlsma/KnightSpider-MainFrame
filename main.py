@@ -1,11 +1,14 @@
 import time
 
 import ax12_serial
+import utils
 from spider import Spider
+
+print("temp", utils.get_cpu_temp())
 
 ax12_serial.init()
 spider = Spider()
-spider.start(False)
+spider.start(True)
 
 while True:
     time.sleep(1)
