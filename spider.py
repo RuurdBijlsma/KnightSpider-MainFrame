@@ -7,6 +7,7 @@ from threading import Thread
 import egg_maw
 import utils
 from audio.speech_synthesis import SpeechSynthesis
+from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
@@ -141,9 +142,14 @@ class Spider(object):
         }
 
     def get_info(self):
+        if self.gyroscoop is not None:
+            # TODO: find correct angle after the gyroscope has been properly mounted to the body
+            gyroscoop = self.gyroscoop.get_y_rotation(self.gyroscoop.read_gyro())
+        else:
+            gyroscoop = -1
         return SpiderInfo(
             battery_level=200,
-            slope=20,
+            slope=gyroscoop,
             cpu_usage=utils.get_cpu_usage(),
             cpu_temperature=utils.get_cpu_temp()
         )
@@ -161,11 +167,11 @@ class Spider(object):
         self.turn_modifier = 1
         self.crab = False
 
-        self.x_rotation = math.radians(0)
-        self.z_rotation = math.radians(0)
+        self._rotate_x = math.radians(0)
+        self._rotate_z = math.radians(0)
 
-        # self.update_walk()
-        self.leg_mover.clap()
+        self.update_walk()
+        # self.leg_mover.clap()
 
         egg_maw.init()
         egg_maw.open_maw()
@@ -173,7 +179,8 @@ class Spider(object):
         if all_systems_enabled:
             self.speech_synthesis = SpeechSynthesis()
             self.speech_synthesis.speak("Starting all systems")
-            self.app = AppCommunicator(self, False)
+            self.gyroscoop = Gyroscoop()
+            self.app = AppCommunicator(self, True)
             self.stream_server = Server()
             Thread(target=self.stream_server.start)
 
@@ -231,13 +238,14 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         max_stick_value = 14000
+        # interdesting
         stick_y, stick_x, up_button, down_button, left_button, right_button, joystick_button, mode = [int(value) for
                                                                                                       value in
                                                                                                       data.split(",")]
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         {
-            1: lambda: self.fury_mode(),
+            1: lambda: self.fury_rode(),
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         True if left_button == 1 else False, True if right_button == 1 else False),
             3: lambda: self.dance_mode(),
@@ -252,7 +260,6 @@ class Spider(object):
         self.rotate_z += stick[1] * rotation_speed_multiplier
 
     def manual_mode(self, stick, vertical, left_button, right_button):
-        return
         stick = [round(value * 5) / 5 for value in stick]
         print(stick, vertical, left_button, right_button)
 
@@ -260,11 +267,12 @@ class Spider(object):
             self.lowrider_mode(stick)
             return
 
-        if (left_button):
-            self.leg_mover.clap()
-            return
+        # if (left_button):
+        #     self.leg_mover.clap()
+        #     return
 
-        max_step_length = 110
+        max_step_length = 70 if right_button else 110
+        tip_distance = 80 if right_button else 120
         min_step_height = 40
         step_height_deviation = 20
         height_change_multiplier = 5
@@ -284,13 +292,15 @@ class Spider(object):
         turn_modifier = turn_modifier - abs(y * 0.5) if turn_modifier > 0.5 else turn_modifier + abs(
             y * 0.5) if turn_modifier < -0.5 else turn_modifier
 
-        crab = False
         if (left_button):
             crab = True
             rotate_angle = math.radians(90 if y > 0 else -90)
+        else:
+            crab = False
 
         change = False
 
+        # region Detect change
         if step_length != self.step_length:
             self.step_length = step_length
             change = True
@@ -306,18 +316,18 @@ class Spider(object):
         if crab != self.crab:
             self.crab = crab
             change = True
+        if tip_distance != self.tip_distance:
+            self.tip_distance = tip_distance
+            change = True
+        # if vertical != 0:
+        #     change = True
+        # endregion
 
         if (change):
-            print({
-                "turnModifier": self.turn_modifier,
-                "stepLength": self.step_length,
-                "stepHeight": self.step_height,
-                "rotateAngle": self.rotate_angle,
-            })
-            # print(change)
+            print("CHANGE")
             self.update_walk()
 
-    def fury_mode(self):
+    def fury_rode(self):
         pass
 
     def dance_mode(self):

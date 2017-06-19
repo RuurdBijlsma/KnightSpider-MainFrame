@@ -4,7 +4,6 @@ import os
 
 class IKCache(object):
     def __init__(self, file_location):
-        self.file = None
         self.file_location = file_location
         self.points = {}
 
@@ -18,21 +17,14 @@ class IKCache(object):
         except Exception as e:
             print(e)
 
-    def open_write(self):
-        self.file = open(self.file_location, 'w')
-
-    def close(self):
-        self.file.close()
-        self.file = None
-
     def export(self):
         j = json.dumps(self.points)
-        if self.file is None:
-            self.open_write()
-
-        self.file.write(j)
+        file = open(self.file_location, 'w')
+        file.write(j)
+        file.close()
         return j
 
     def clear(self):
-        os.remove(self.file_location)
+        print("CLEARED CACHE")
+        os.remove(self.file_location);
         self.points = {}
