@@ -6,6 +6,7 @@ from threading import Thread
 
 import egg_maw
 import utils
+from audio.speech_synthesis import SpeechSynthesis
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
@@ -170,7 +171,8 @@ class Spider(object):
         egg_maw.open_maw()
 
         if all_systems_enabled:
-            # speech_synthesis.speak("Starting all systems")
+            self.speech_synthesis = SpeechSynthesis()
+            self.speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
             self.stream_server = Server()
             Thread(target=self.stream_server.start)
@@ -178,6 +180,7 @@ class Spider(object):
     def close(self):
         try:
             self.speed = 0
+            self.ik_cache.close()
             self.app.close()
             self.stream_server.close()
             egg_maw.close()
