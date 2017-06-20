@@ -19,7 +19,7 @@ class LegMover(object):
         open = 0
         closed = 1
 
-        clap_height = 50
+        clap_height = 150
         clap_closed_z = -60
         clap_points = [
             Point3D(tip_distance, clap_height, clap_closed_z + clap_size),  # open clap
@@ -36,18 +36,18 @@ class LegMover(object):
                 front_left_point=clap_points[open],
                 mid_left_point=mid_leg_pos,
                 back_left_point=leg_pos,
-                front_right_point=clap_points[open],
+                front_right_point=leg_pos,
                 mid_right_point=mid_leg_pos,
-                back_right_point=leg_pos,
+                back_right_point=clap_points[open],
                 midpoints=midpoints
             ),
             Stance(
                 front_left_point=clap_points[closed],
                 mid_left_point=mid_leg_pos,
                 back_left_point=leg_pos,
-                front_right_point=clap_points[closed],
+                front_right_point=leg_pos,
                 mid_right_point=mid_leg_pos,
-                back_right_point=leg_pos,
+                back_right_point=clap_points[closed],
                 midpoints=midpoints
             ),
         ]

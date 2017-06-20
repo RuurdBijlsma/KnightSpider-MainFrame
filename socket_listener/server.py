@@ -1,15 +1,8 @@
 import socket
-import signal
 import sys
 import threading
-import os
 from queue import Queue
 
-import fcntl
-
-import time
-
-from socket_listener import identifiers
 from socket_listener.message import Message
 
 
@@ -27,6 +20,7 @@ class Server(object):
         self.message_handlers = {}
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print('Socket created')
 
         # Bind socket to local host and port
