@@ -14,4 +14,5 @@ spider = Spider()
 spider.start(True)
 
 while True:
+    print(spider.vision.find_heart())
     time.sleep(1)

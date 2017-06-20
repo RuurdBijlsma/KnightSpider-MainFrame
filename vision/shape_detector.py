@@ -1,28 +1,14 @@
 import cv2
-import magic
+from vision import magic
 
 
 class ShapeDetector(object):
-    def __init__(self, shape, shape_min_threshold=127, contour_index=None):
+    def __init__(self, shape, shape_min_threshold=127, contour_index=1):
         self.shape = shape
         _, self.thresh = cv2.threshold(shape, shape_min_threshold, 255, 0)
 
         _, shape_contours, _ = cv2.findContours(self.thresh, cv2.RETR_TREE,
                                                 cv2.CHAIN_APPROX_SIMPLE)
-
-        if contour_index is None:
-            for index, contour in enumerate(shape_contours):
-                shape_copy = self.shape.copy()
-                cv2.drawContours(shape_copy, [contour], 0, (0, 180, 0), 3)
-                cv2.imshow("Is this the correct contour?",
-                           shape_copy)
-                k = cv2.waitKey(0)
-                if k == 121:
-                    contour_index = index
-                    cv2.destroyWindow("Is this the correct contour?")
-                    print("Contour index set to:", index)
-                    break
-
         if contour_index is None:
             Exception("Shape not found in image, try adjusting thresholds")
 

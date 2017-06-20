@@ -3,6 +3,7 @@ import math
 import os
 import signal
 from threading import Thread
+from visionclass import Vision
 
 import egg_maw
 import utils
@@ -174,15 +175,17 @@ class Spider(object):
             self.speech_synthesis = SpeechSynthesis()
             self.speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
-            self.stream_server = Server()
-            Thread(target=self.stream_server.start)
+            self.vision = Vision()
+            # self.stream_server = Server()
+            # Thread(target=self.stream_server.start)
 
     def close(self):
         try:
             self.speed = 0
             self.ik_cache.close()
             self.app.close()
-            self.stream_server.close()
+            # self.stream_server.close()
+            self.vision.close()
             egg_maw.close()
         except:
             pass
