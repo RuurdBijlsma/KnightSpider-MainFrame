@@ -43,14 +43,14 @@ class Spider(object):
 
         self.legs = {
             'left': {
+                'front': legs[5],
+                'mid': legs[4],
+                'back': legs[3]
+            },
+            'right': {
                 'front': legs[0],
                 'mid': legs[1],
                 'back': legs[2]
-            },
-            'right': {
-                'front': legs[3],
-                'mid': legs[4],
-                'back': legs[5]
             }
         }
         self.leg_mover = LegMover(self)
@@ -156,19 +156,18 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.ground_clearance = 80
+        self.leg_mover.ground_clearance = 90
         self.interval_at_max_speed = 0.06
-        self.speed = 300
+        self.speed = 200
 
-        self.rotate_angle = math.radians(180)
+        self.rotate_angle = math.radians(0)
         self.step_height = 0
         self.step_length = 0
         self.tip_distance = 120
-        self.turn_modifier = 1
+        self.turn_modifier = 0
         self.crab = False
 
-        self._rotate_x = math.radians(0)
-        self._rotate_z = math.radians(0)
+        self.rotate_body(math.radians(0), math.radians(0))
 
         self.update_walk()
         # self.leg_mover.clap()
@@ -206,24 +205,6 @@ class Spider(object):
                             tip_distance=self.tip_distance, turn_modifier=self.turn_modifier, crab=self.crab)
 
     @property
-    def rotate_x(self):
-        return self._rotate_x
-
-    @rotate_x.setter
-    def rotate_x(self, value):
-        self._rotate_x = value
-        self.rotate_body(self.rotate_x, self.rotate_z)
-
-    @property
-    def rotate_z(self):
-        return self._rotate_z
-
-    @rotate_z.setter
-    def rotate_z(self, value):
-        self._rotate_z = value
-        self.rotate_body(self.rotate_x, self.rotate_z)
-
-    @property
     def speed(self):
         return self._speed
 
@@ -256,8 +237,9 @@ class Spider(object):
 
     def lowrider_mode(self, stick):
         rotation_speed_multiplier = 0.01
-        self.rotate_x += stick[0] * rotation_speed_multiplier
-        self.rotate_z += stick[1] * rotation_speed_multiplier
+        print("not implementede error")
+        # self.rotate_x += stick[0] * rotation_speed_multiplier
+        # self.rotate_z += stick[1] * rotation_speed_multiplier
 
     def manual_mode(self, stick, vertical, left_button, right_button):
         stick = [round(value * 5) / 5 for value in stick]
@@ -306,6 +288,7 @@ class Spider(object):
             change = True
         if rotate_angle != self.rotate_angle:
             self.rotate_angle = rotate_angle
+            print("SETTTT")
             change = True
         if step_height != self.step_height:
             self.step_height = step_height
@@ -324,7 +307,6 @@ class Spider(object):
         # endregion
 
         if (change):
-            print("CHANGE")
             self.update_walk()
 
     def fury_rode(self):

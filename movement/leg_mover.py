@@ -10,7 +10,7 @@ class LegMover(object):
         self.spider = spider
         self.ground_clearance = ground_clearance
 
-    def clap(self, bpm=120, tip_distance=140, mid_leg_front_pos=20, clap_size=50):
+    def clap(self, bpm=120, tip_distance=140, mid_leg_front_pos=30, clap_size=100):
         claps_per_second = bpm / 60
 
         leg_pos = Point3D(tip_distance, 0, 0)
@@ -19,11 +19,9 @@ class LegMover(object):
         open = 0
         closed = 1
 
-        clap_height = 150
-        clap_closed_z = -60
         clap_points = [
-            Point3D(tip_distance, clap_height, clap_closed_z + clap_size),  # open clap
-            Point3D(tip_distance, clap_height, clap_closed_z)  # closed clap
+            Point3D(tip_distance, 200, 0),  # open clap
+            Point3D(-60, 200, 280)  # closed clap
         ]
 
         midpoints = {
@@ -84,7 +82,7 @@ class LegMover(object):
         points_right = points
 
         if (right_legs_speed_multiplier != 1):
-            points_right = [point.multiply_z(right_legs_speed_multiplier) for point in points_left]
+            points_right = [point.multiply_z(right_legs_speed_multiplier) for point in points_right]
 
         if (left_legs_speed_multiplier != 1):
             points_left = [point.multiply_z(left_legs_speed_multiplier) for point in points_left]
@@ -135,6 +133,8 @@ class LegMover(object):
                 midpoints=midpoints
             )
         ]
+
+        print("Current sequence cancelled, starting new sequence")
 
         if self.current_walk_index is not None:
             self.clear_interval(self.current_walk_index)
