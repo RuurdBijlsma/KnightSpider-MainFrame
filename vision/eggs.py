@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-from shape_detector import ShapeDetector
-import magic
+from vision.shape_detector import ShapeDetector
+import vision.magic
 
 
 def find_egg(frame, targetImg, white, MIN_AREA):

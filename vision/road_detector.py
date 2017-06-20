@@ -4,14 +4,14 @@ from threading import Thread
 
 resolution = 500
 
-capture = cv2.VideoCapture(0)
-capture.set(3, resolution / 9 * 16)
-capture.set(4, resolution)
-
-cv2.namedWindow('image')
-cv2.createTrackbar('low', 'image', 110, 255, lambda x: None)
-cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
-cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
+# capture = cv2.VideoCapture(0)
+# capture.set(3, resolution / 9 * 16)
+# capture.set(4, resolution)
+#
+# cv2.namedWindow('image')
+# cv2.createTrackbar('low', 'image', 110, 255, lambda x: None)
+# cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
+# cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
 
 # def midpoint(p1, p2):

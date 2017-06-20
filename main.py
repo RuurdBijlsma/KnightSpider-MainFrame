@@ -17,4 +17,5 @@ spider.start(False)
 # spider.leg_mover.clap(tip_distance=100)
 
 while True:
+    print(spider.vision.find_heart())
     time.sleep(1)

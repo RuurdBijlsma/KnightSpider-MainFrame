@@ -34,3 +34,6 @@ class Vision:
 
     def find_road(self):
         return road_detector.find_road(self.server.get_capture())
+
+    def close(self):
+        self.server.close()

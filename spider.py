@@ -3,11 +3,11 @@ import math
 import os
 import signal
 from threading import Thread
+from visionclass import Vision
 
 import egg_maw
 import utils
 from audio.speech_synthesis import SpeechSynthesis
-from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
@@ -142,14 +142,9 @@ class Spider(object):
         }
 
     def get_info(self):
-        if self.gyroscoop is not None:
-            # TODO: find correct angle after the gyroscope has been properly mounted to the body
-            gyroscoop = self.gyroscoop.get_y_rotation(self.gyroscoop.read_gyro())
-        else:
-            gyroscoop = -1
         return SpiderInfo(
             battery_level=200,
-            slope=gyroscoop,
+            slope=20,
             cpu_usage=utils.get_cpu_usage(),
             cpu_temperature=utils.get_cpu_temp()
         )
@@ -158,7 +153,7 @@ class Spider(object):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 90
         self.interval_at_max_speed = 0.06
-        self.speed = 200
+        self.speed = 300
 
         self.rotate_angle = math.radians(0)
         self.step_height = 0
@@ -178,17 +173,18 @@ class Spider(object):
         if all_systems_enabled:
             self.speech_synthesis = SpeechSynthesis()
             self.speech_synthesis.speak("Starting all systems")
-            self.gyroscoop = Gyroscoop()
-            self.app = AppCommunicator(self, True)
-            self.stream_server = Server()
-            Thread(target=self.stream_server.start)
+            self.app = AppCommunicator(self, False)
+            self.vision = Vision()
+            # self.stream_server = Server()
+            # Thread(target=self.stream_server.start)
 
     def close(self):
         try:
             self.speed = 0
             self.ik_cache.close()
             self.app.close()
-            self.stream_server.close()
+            # self.stream_server.close()
+            self.vision.close()
             egg_maw.close()
         except:
             pass
@@ -219,14 +215,13 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         max_stick_value = 14000
-        # interdesting
         stick_y, stick_x, up_button, down_button, left_button, right_button, joystick_button, mode = [int(value) for
                                                                                                       value in
                                                                                                       data.split(",")]
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         {
-            1: lambda: self.fury_rode(),
+            1: lambda: self.fury_mode(),
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         True if left_button == 1 else False, True if right_button == 1 else False),
             3: lambda: self.dance_mode(),
@@ -274,11 +269,10 @@ class Spider(object):
         turn_modifier = turn_modifier - abs(y * 0.5) if turn_modifier > 0.5 else turn_modifier + abs(
             y * 0.5) if turn_modifier < -0.5 else turn_modifier
 
+        crab = False
         if (left_button):
             crab = True
             rotate_angle = math.radians(90 if y > 0 else -90)
-        else:
-            crab = False
 
         change = False
 
@@ -288,7 +282,6 @@ class Spider(object):
             change = True
         if rotate_angle != self.rotate_angle:
             self.rotate_angle = rotate_angle
-            print("SETTTT")
             change = True
         if step_height != self.step_height:
             self.step_height = step_height
@@ -307,9 +300,16 @@ class Spider(object):
         # endregion
 
         if (change):
+            print({
+                "turnModifier": self.turn_modifier,
+                "stepLength": self.step_length,
+                "stepHeight": self.step_height,
+                "rotateAngle": self.rotate_angle,
+            })
+            # print(change)
             self.update_walk()
 
-    def fury_rode(self):
+    def fury_mode(self):
         pass
 
     def dance_mode(self):

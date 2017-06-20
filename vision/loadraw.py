@@ -28,7 +28,3 @@ with open("pic.raw", "rb") as fd:
     buffer = np.fromfile(fd, dtype=np.int32, count=cols*rows)
 
     im = buffer.reshape((cols, rows))
-
-    cv2.imshow("Hello", im)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
