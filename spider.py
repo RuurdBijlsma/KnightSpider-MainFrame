@@ -2,8 +2,6 @@ import json
 import math
 import os
 import signal
-from threading import Thread
-from visionclass import Vision
 
 import egg_maw
 import utils
@@ -12,9 +10,9 @@ from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
-from pistreaming.server import Server
 from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
+from visionclass import Vision
 
 
 class Spider(object):
@@ -165,7 +163,6 @@ class Spider(object):
         self.rotate_body(math.radians(0), math.radians(0))
 
         self.update_walk()
-        # self.leg_mover.clap()
 
         egg_maw.init()
         egg_maw.open_maw()
@@ -173,7 +170,7 @@ class Spider(object):
         if all_systems_enabled:
             self.speech_synthesis = SpeechSynthesis()
             self.speech_synthesis.speak("Starting all systems")
-            self.app = AppCommunicator(self, False)
+            self.app = AppCommunicator(self, True)
             self.vision = Vision()
             # self.stream_server = Server()
             # Thread(target=self.stream_server.start)
@@ -323,8 +320,3 @@ class Spider(object):
 
     def line_dance_mode(self):
         pass
-
-    def cache_controller_ik(self, stick_divider=5, height_step=5, min_height=30, max_height=160):
-        for x in range(-stick_divider, stick_divider):
-            for y in range(-stick_divider, stick_divider):
-                self.manual_mode((x / stick_divider, y / stick_divider), 0, 0)

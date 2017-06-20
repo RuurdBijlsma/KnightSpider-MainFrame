@@ -10,7 +10,7 @@ class LegMover(object):
         self.spider = spider
         self.ground_clearance = ground_clearance
 
-    def clap(self, bpm=120, tip_distance=140, mid_leg_front_pos=30, clap_size=100):
+    def clap(self, bpm=120, tip_distance=140, mid_leg_front_pos=30):
         claps_per_second = bpm / 60
 
         leg_pos = Point3D(tip_distance, 0, 0)
@@ -19,9 +19,12 @@ class LegMover(object):
         open = 0
         closed = 1
 
+        clap_radius = 240
+        clap_height = 200
+        closed_x_pos = -50
         clap_points = [
-            Point3D(tip_distance, 200, 0),  # open clap
-            Point3D(-60, 200, 280)  # closed clap
+            Point3D(clap_radius, clap_height, 0),  # open clap
+            Point3D(closed_x_pos, clap_height, clap_radius)  # closed clap
         ]
 
         midpoints = {
@@ -34,18 +37,18 @@ class LegMover(object):
                 front_left_point=clap_points[open],
                 mid_left_point=mid_leg_pos,
                 back_left_point=leg_pos,
-                front_right_point=leg_pos,
+                front_right_point=clap_points[open],
                 mid_right_point=mid_leg_pos,
-                back_right_point=clap_points[open],
+                back_right_point=leg_pos,
                 midpoints=midpoints
             ),
             Stance(
                 front_left_point=clap_points[closed],
                 mid_left_point=mid_leg_pos,
                 back_left_point=leg_pos,
-                front_right_point=leg_pos,
+                front_right_point=clap_points[closed],
                 mid_right_point=mid_leg_pos,
-                back_right_point=clap_points[closed],
+                back_right_point=leg_pos,
                 midpoints=midpoints
             ),
         ]
