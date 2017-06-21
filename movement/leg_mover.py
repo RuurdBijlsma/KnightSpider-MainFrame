@@ -137,9 +137,9 @@ class LegMover(object):
             )
         ]
 
-        print("Current sequence cancelled, starting new sequence")
 
         if self.current_walk_index is not None:
+            print("Current sequence cancelled, starting new sequence")
             self.clear_interval(self.current_walk_index)
         self.current_walk_index = self.execute_stance_sequence(stance_sequence, crab=crab)
 
@@ -178,7 +178,7 @@ class LegMover(object):
             self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:
-            print("Cancelled")
+            print("Cancelled sequence")
             self.cancelled_indices.remove(interval_index)
 
         return interval_index

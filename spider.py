@@ -2,14 +2,11 @@ import json
 import math
 import os
 import signal
-from threading import Thread
-
-from gyroscoop import Gyroscoop
-from visionclass import Vision
 
 import egg_maw
 import utils
 from audio.speech_synthesis import SpeechSynthesis
+from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
 from movement.ik_cache import IKCache
@@ -153,9 +150,9 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.ground_clearance = 90
-        self.interval_at_max_speed = 0.06
-        self.speed = 300
+        self.leg_mover.ground_clearance = 110
+        self.interval_at_max_speed = 0.1
+        self.speed = 400
 
         self.rotate_angle = math.radians(0)
         self.step_height = 0
@@ -176,7 +173,7 @@ class Spider(object):
         if all_systems_enabled:
             self.speech_synthesis = SpeechSynthesis()
             self.speech_synthesis.speak("Starting all systems")
-            self.app = AppCommunicator(self, True)
+            self.app = AppCommunicator(self, False)
             self.vision = Vision()
             # self.stream_server = Server()
             # Thread(target=self.stream_server.start)
@@ -250,8 +247,8 @@ class Spider(object):
         #     self.leg_mover.clap()
         #     return
 
-        max_step_length = 70 if left_button else 110
-        tip_distance = 80 if left_button else 120
+        max_step_length = 100 if left_button else 100
+        tip_distance = 120 if left_button else 120
         min_step_height = 40
         step_height_deviation = 20
         height_change_multiplier = 5
@@ -260,6 +257,8 @@ class Spider(object):
 
         # x, y = stick
         y, x = stick
+        # x *= -1
+        y *= -1
 
         self.leg_mover.ground_clearance += vertical * height_change_multiplier
 
