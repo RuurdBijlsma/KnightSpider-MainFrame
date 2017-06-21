@@ -19,6 +19,8 @@ class AppCommunicator(object):
         if (broadcast):
             self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY).start()
             self.readings_worker = ReadingsWorker(frequency=self.UPDATE_FREQUENCY, spider=spider).start()
+        else:
+            self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY, send_readings=False)
 
     mag = 0
     def udp_callback(self, data):

@@ -4,9 +4,10 @@ from socket_listener.message import Message
 
 
 class DataBroadcaster(PeriodicWorker):
-    def __init__(self, spider, server, frequency):
+    def __init__(self, spider, server, frequency, send_readings=True):
         self.server = server
         self.spider = spider
+        self.send_readings = send_readings
         super().__init__(frequency)
 
     def update(self):
@@ -20,7 +21,8 @@ class DataBroadcaster(PeriodicWorker):
         #     self.spider.get_servo_angles_json()
         # ))
 
-        self.server.broadcast(Message(
-            identifiers.SERVOS,
-            self.spider.get_servo_readings_json()
-        ))
+        if self.send_readings:
+            self.server.broadcast(Message(
+                identifiers.SERVOS,
+                self.spider.get_servo_readings_json()
+            ))
