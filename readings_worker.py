@@ -17,4 +17,3 @@ class ReadingsWorker(PeriodicWorker):
         self.spider.cpu_temperature = utils.get_cpu_temp()
         self.spider.cpu_usage = utils.get_cpu_usage()
         self.spider.update_readings()
-        print("Reading", time.time() -  t_start)

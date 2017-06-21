@@ -2,11 +2,18 @@ import json
 
 
 class ServoReadings(object):
+    LOAD_MASK = 0b1000000000
+
     def __init__(self, id, position=-1, load=-1, voltage=-1, temperature=-1):
         self.id = id
         self.temperature = temperature
         self.voltage = voltage
-        self.load = load
+
+        load_direction = load & self.LOAD_MASK
+        load_value = load & ~self.LOAD_MASK
+
+        self.load_direction = load_direction
+        self.load = load_value
         self.position = position
 
         # if voltage < 7.5:

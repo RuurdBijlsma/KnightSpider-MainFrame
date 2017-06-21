@@ -2,6 +2,10 @@ import json
 import math
 import os
 import signal
+from threading import Thread
+
+from gyroscoop import Gyroscoop
+from visionclass import Vision
 
 import egg_maw
 import utils
@@ -142,7 +146,7 @@ class Spider(object):
     def get_info(self):
         return SpiderInfo(
             battery_level=200,
-            slope=20,
+            slope=self.gyroscope.get_x_rotation(self.gyroscope.read_gyro()),
             cpu_usage=utils.get_cpu_usage(),
             cpu_temperature=utils.get_cpu_temp()
         )
@@ -164,6 +168,8 @@ class Spider(object):
 
         self.update_walk()
 
+        self.gyroscope = Gyroscoop()
+
         egg_maw.init()
         egg_maw.open_maw()
 
@@ -178,7 +184,6 @@ class Spider(object):
     def close(self):
         try:
             self.speed = 0
-            self.ik_cache.close()
             self.app.close()
             # self.stream_server.close()
             self.vision.close()
@@ -237,23 +242,24 @@ class Spider(object):
         stick = [round(value * 5) / 5 for value in stick]
         print(stick, vertical, left_button, right_button)
 
-        if (right_button):
-            self.lowrider_mode(stick)
-            return
+        # if (right_button):
+        #     self.lowrider_mode(stick)
+        #     return
 
         # if (left_button):
         #     self.leg_mover.clap()
         #     return
 
-        max_step_length = 70 if right_button else 110
-        tip_distance = 80 if right_button else 120
+        max_step_length = 70 if left_button else 110
+        tip_distance = 80 if left_button else 120
         min_step_height = 40
         step_height_deviation = 20
         height_change_multiplier = 5
         turn_threshold = 0.1
         minimum_threshold = 5
 
-        x, y = stick
+        # x, y = stick
+        y, x = stick
 
         self.leg_mover.ground_clearance += vertical * height_change_multiplier
 

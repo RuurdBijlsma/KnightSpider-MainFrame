@@ -66,28 +66,39 @@ class ShapeDetector(object):
 
         return contours, found_match, best_contour, best_value
 
-    def is_centered(self, image, contour):
-        height, width = image.shape
-        mid = width / 2
+    # def is_centered(self, image, contour):
+    #     height, width = image.shape
+    #     mid = width / 2
+    #
+    #     M = cv2.moments(contour)
+    #     if M['m00'] > 1000:
+    #         cx = int(M['m10'] / M['m00'])
+    #         if (mid - 10) < cx < (mid + 10):
+    #             return True
+    #
+    #     return False
 
-        M = cv2.moments(contour)
-        if M['m00'] > 1000:
-            cx = int(M['m10'] / M['m00'])
-            if (mid - 10) < cx < (mid + 10):
-                return True
-
-        return False
+    CENTER_SIZE = 120
 
     def on_screen(self, image, contour):
-        height, width = image.shape
+        height, width, *_ = image.shape
         mid = width / 2
 
         M = cv2.moments(contour)
         if M['m00'] > 1000:
-            cx = int(M['m10'] / M['m00'])
-            if cx < (mid - 10):
-                return magic.LEFT
-            elif cx > (mid + 10):
+            print("m goed", M['m00'])
+            cx = float(M['m10'] / M['m00'])
+            if cx < (mid - self.CENTER_SIZE):
+                print("Should go right")
                 return magic.RIGHT
+            elif cx > (mid + self.CENTER_SIZE):
+                print("Should go left")
+                return magic.LEFT
+            else:
+                print("Shape is centered")
+                return magic.CENTER
 
-        return magic.CENTER
+        print("kut m", M['m00'])
+        return magic.DEFAULT_SIDE
+
+

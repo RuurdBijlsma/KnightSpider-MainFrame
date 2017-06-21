@@ -173,7 +173,7 @@ class Ax12:
         try:
             assert reply[0] == 0xff
         except:
-            print("reply first byte:", reply[0])
+            # print("reply first byte:", reply[0])
             e = "Timeout on servo " + str(id)
             raise Ax12.timeoutError(e)
 
