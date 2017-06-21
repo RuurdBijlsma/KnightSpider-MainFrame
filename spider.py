@@ -245,8 +245,8 @@ class Spider(object):
         #     self.leg_mover.clap()
         #     return
 
-        max_step_length = 70 if right_button else 110
-        tip_distance = 80 if right_button else 120
+        max_step_length = 70 if left_button else 110
+        tip_distance = 80 if left_button else 120
         min_step_height = 40
         step_height_deviation = 20
         height_change_multiplier = 5
@@ -269,7 +269,9 @@ class Spider(object):
         crab = False
         if (left_button):
             crab = True
-            rotate_angle = math.radians(90 if y > 0 else -90)
+            is_up_or_down = abs(y) > abs(x)
+            rotate_angle = math.radians(0 if x > 0 else 180 if is_up_or_down else 90 if y > 0 else -90)
+            turn_modifier = 1
 
         change = False
 
