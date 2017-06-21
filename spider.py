@@ -275,7 +275,9 @@ class Spider(object):
         crab = False
         if (left_button):
             crab = True
-            rotate_angle = math.radians(90 if y > 0 else -90)
+            is_up_or_down = abs(y) > abs(x)
+            rotate_angle = math.radians(0 if x > 0 else 180 if is_up_or_down else 90 if y > 0 else -90)
+            turn_modifier = 1
 
         change = False
 
