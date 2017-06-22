@@ -1,10 +1,7 @@
 import time
 
-import math
-
 import ax12_serial
 import utils
-from servo import Servo
 from spider import Spider
 
 print("temp", utils.get_cpu_temp())
@@ -19,4 +16,5 @@ spider.start(True)
 
 # Keep awake
 while True:
+    # spider.vision.find_road()
     time.sleep(1)

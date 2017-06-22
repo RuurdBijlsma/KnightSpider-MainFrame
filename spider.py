@@ -329,7 +329,6 @@ class Spider(object):
             stats = self.stats_dict[rotation]
         else:
             stats = self.stats_dict[magic.CENTER]
-            print("CENTER")
 
         if stats != self.current_stats:
             print({

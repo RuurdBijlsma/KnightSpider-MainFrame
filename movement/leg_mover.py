@@ -1,4 +1,5 @@
 import math
+import time
 
 import utils
 from movement.stance import Stance
@@ -60,7 +61,7 @@ class LegMover(object):
         if self.current_walk_index is not None and past_index != self.current_walk_index:
             self.clear_interval(past_index)
 
-    def  walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
+    def walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
              crab=False):
         # Turning modifier 1 betekent naar rechts draaien om zijn as
         # Turning modifier -1 betekent naar links draaien om zijn as
@@ -143,9 +144,9 @@ class LegMover(object):
         if self.current_walk_index is not None:
             self.clear_interval(self.current_walk_index)
         self.current_walk_index = self.execute_stance_sequence(stance_sequence, crab=crab)
+        time.sleep(0.2)
 
     def set_stance(self, stance, crab=False, on_done=lambda: None):
-        print("STARTING SET STANCE")
         self.legs_to_do = 0
 
         for xp, dict in stance.points.items():
@@ -159,7 +160,6 @@ class LegMover(object):
                 def on_done_callback():
                     self.legs_to_do = self.legs_to_do - 1
                     if self.legs_to_do == 0:
-                        print("STANCE IS DONE, calling callback")
                         on_done()
 
                 leg.move_to_normalized(point, midpoint, crab, on_done_callback)
@@ -175,14 +175,13 @@ class LegMover(object):
             self.sequence_amount += 1
             interval_index = self.sequence_amount
 
-
-
+        print("Checking if %s has been cancelled" % interval_index, self.cancelled_indices)
         if interval_index not in self.cancelled_indices:
-            print("Running sequence:", interval_index)
+            print("Executing stance sequence:", interval_index)
             self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:
-            print("Cancelled sequence:", interval_index)
+            print("Cancelled stance sequence:", interval_index, "has been removed")
             self.cancelled_indices.remove(interval_index)
 
         return interval_index
