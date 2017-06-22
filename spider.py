@@ -9,6 +9,8 @@ from audio.speech_synthesis import SpeechSynthesis
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
+from movement.dance_mover import DanceMover
+import movement.dance_sequence as dance_sequence
 from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
 from point import Point3D
@@ -54,6 +56,7 @@ class Spider(object):
             }
         }
         self.leg_mover = LegMover(self)
+        self.dance_mover = DanceMover(self, dance_sequence.SAYONARA_MAXWELL_DANCE)
         signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
@@ -345,7 +348,11 @@ class Spider(object):
         pass
 
     def dance_mode(self):
-        pass
+        print("evacueer de dansvloer")
+        if not self.dance_mover.is_playing:
+            print("lekker beginnen")
+            self.leg_mover.stop()
+            self.dance_mover.execute()
 
     def egg_mode(self):
         pass

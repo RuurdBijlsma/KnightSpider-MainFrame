@@ -1,6 +1,5 @@
 import utils
 
-
 class Point3D(object):
     def __init__(self, x=0, y=0, z=0):
         self.x = x
@@ -96,3 +95,5 @@ class Point3D(object):
             round(self.y, rounder),
             round(self.z, rounder)
         )
+
+OUT_OF_REACH = Point3D(999, 0, 0)

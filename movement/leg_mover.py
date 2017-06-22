@@ -141,21 +141,28 @@ class LegMover(object):
             )
         ]
 
-        if self.current_walk_index is not None:
-            self.clear_interval(self.current_walk_index)
+        self.stop()
         self.current_walk_index = self.execute_stance_sequence(stance_sequence, crab=crab)
         time.sleep(0.2)
 
-    def set_stance(self, stance, crab=False, on_done=lambda: None):
+    def stop(self):
+        if self.current_walk_index is not None:
+            self.clear_interval(self.current_walk_index)
+
+    def set_stance(self, stance, crab=False, on_done=lambda: None, enable_ground_clearance=True):
         self.legs_to_do = 0
 
         for xp, dict in stance.points.items():
             for yp, point in dict.items():
                 leg = self.spider.legs[xp][yp]
-                point = Point3D(point.x, point.y - self.ground_clearance, point.z)
+                if enable_ground_clearance:
+                    point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
                 self.legs_to_do = self.legs_to_do + 1
-                midpoint = stance.midpoints[xp]
+                if stance.midpoints is None:
+                    midpoint = None
+                else:
+                    midpoint = stance.midpoints[xp]
 
                 def on_done_callback():
                     self.legs_to_do = self.legs_to_do - 1

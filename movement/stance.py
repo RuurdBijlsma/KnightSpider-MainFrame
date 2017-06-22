@@ -1,6 +1,6 @@
 class Stance(object):
     def __init__(self, front_left_point, mid_left_point, back_left_point, back_right_point, mid_right_point,
-                 front_right_point, midpoints):
+                 front_right_point, midpoints=None):
         self.points = {
             'left': {
                 'front': front_left_point,

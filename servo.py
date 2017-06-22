@@ -3,6 +3,7 @@ import threading
 import ax12_serial
 from models import ServoReadings
 
+TRANING_MODE=False
 
 class Servo(object):
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False, move_speed=300,
@@ -45,7 +46,8 @@ class Servo(object):
 
         try:
             # pass
-            ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
+            if not TRANING_MODE:
+                ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
         except ValueError as e:
             print("Error moving servo:", e)
 

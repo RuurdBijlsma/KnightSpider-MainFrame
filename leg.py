@@ -24,9 +24,10 @@ class Leg(object):
         self.is_left_leg = body_position.x < 0
 
     def point_to_normalized(self, point, midpoint, crab=False):
-        midpoint = (0, 0) if crab else (midpoint.x, midpoint.z)
-        rotated_point = point.rotate_around_y(midpoint, math.radians(self.angle))
-        return rotated_point if self.is_left_leg else rotated_point.negate_z()
+        if midpoint is not None:
+            midpoint = (0, 0) if crab else (midpoint.x, midpoint.z)
+            point = point.rotate_around_y(midpoint, math.radians(self.angle))
+        return point if self.is_left_leg else point.negate_z()
 
     def move_to_normalized(self, point, midpoint, crab=False, on_done=lambda: None):
         return self.move_to(self.point_to_normalized(point, midpoint, crab), on_done)
