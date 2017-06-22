@@ -14,7 +14,9 @@ from movement.leg_mover import LegMover
 from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
 from vision import magic
+from vision import cards
 from visionclass import Vision
+
 
 
 class Spider(object):
@@ -347,8 +349,44 @@ class Spider(object):
     def dance_mode(self):
         pass
 
-    def egg_mode(self):
-        pass
+    def egg_mode(self, card, colored):
+        if egg_maw.current_pwm == egg_maw.OPEN_PWM:
+            if colored:
+                position = self.vision.find_colored_egg()
+                self.move_to_magic(position)
+
+            else:
+                position = self.vision.find_white_egg()
+                self.move_to_magic(position)
+        else:
+            if card == cards.SPADE:
+                position = self.vision.find_spades()
+                self.move_to_magic(position)
+            elif card == cards.CLUB:
+                position = self.vision.find_club()
+                self.move_to_magic(position)
+            elif card == cards.HART:
+                position = self.vision.find_heart()
+                self.move_to_magic(position)
+            else:
+                position = self.vision.find_diamond()
+                self.move_to_magic(position)
+
+            # turn_to_magic(position)
+
+        #if ! has egg
+            #zoek egg
+            #if gevonden
+                #wok naar egg
+                #if dichtbij
+                    #pak egg
+                    #success? has egg = true
+        #elif ! at suit
+            #zoek suit
+            #if gevonden
+                #loop naar suit
+        # if at suit
+            #drop ei
 
     def balloon_mode(self):
         pass
