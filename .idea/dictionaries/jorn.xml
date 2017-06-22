@@ -1,10 +1,12 @@
 <component name="ProjectDictionaryState">
   <dictionary name="jorn">
     <words>
+      <w>accel</w>
       <w>backports</w>
       <w>baudrate</w>
       <w>dynamixel</w>
       <w>gpio</w>
+      <w>mgmt</w>
       <w>pyax</w>
       <w>recv</w>
       <w>unregister</w>

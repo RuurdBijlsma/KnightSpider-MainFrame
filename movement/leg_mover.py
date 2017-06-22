@@ -53,11 +53,14 @@ class LegMover(object):
             ),
         ]
 
-        if self.current_walk_index is not None:
-            self.clear_interval(self.current_walk_index)
+        past_index = self.current_walk_index
+
         self.current_walk_index = self.execute_stance_sequence(stance_sequence)
 
-    def walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
+        if self.current_walk_index is not None and past_index != self.current_walk_index:
+            self.clear_interval(past_index)
+
+    def  walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
              crab=False):
         # Turning modifier 1 betekent naar rechts draaien om zijn as
         # Turning modifier -1 betekent naar links draaien om zijn as
@@ -171,6 +174,8 @@ class LegMover(object):
         if interval_index is None:
             self.sequence_amount += 1
             interval_index = self.sequence_amount
+
+
 
         if interval_index not in self.cancelled_indices:
             print("Running sequence:", interval_index)
