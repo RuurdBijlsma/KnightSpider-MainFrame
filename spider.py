@@ -13,6 +13,7 @@ from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
 from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
+from vision import magic
 from visionclass import Vision
 
 
@@ -152,7 +153,7 @@ class Spider(object):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 110
         self.interval_at_max_speed = 0.1
-        self.speed = 400
+        self.speed = 250
 
         self.rotate_angle = math.radians(0)
         self.step_height = 0
@@ -163,7 +164,7 @@ class Spider(object):
 
         self.rotate_body(math.radians(0), math.radians(0))
 
-        self.update_walk()
+        self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
@@ -195,9 +196,13 @@ class Spider(object):
         print("killing")
         os.kill(os.getpid(), signal.SIGTERM)
 
-    def update_walk(self):
-        self.leg_mover.walk(rotate_angle=self.rotate_angle, step_height=self.step_height, step_length=self.step_length,
-                            tip_distance=self.tip_distance, turn_modifier=self.turn_modifier, crab=self.crab)
+    def update_walk(self, stats):
+        self.leg_mover.walk(rotate_angle=stats['rotate_angle'],
+                            step_height=stats['step_height'],
+                            step_length=stats['step_length'],
+                            tip_distance=stats['tip_distance'],
+                            turn_modifier=stats['turn_modifier'],
+                            crab=stats['crab'])
 
     @property
     def speed(self):
@@ -235,83 +240,107 @@ class Spider(object):
         # self.rotate_x += stick[0] * rotation_speed_multiplier
         # self.rotate_z += stick[1] * rotation_speed_multiplier
 
+    current_stats = {}
+    stats_dict = {
+        magic.CENTER: {
+            'step_length': 0,
+            'tip_distance': 100,
+            'step_height': 0,
+            'rotate_angle': math.radians(180),
+            'turn_modifier': 0,
+            'crab': False,
+        },
+        magic.UP: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(180),
+            'turn_modifier': 0,
+            'crab': False,
+        },
+        magic.DOWN: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(0),
+            'turn_modifier': 0,
+            'crab': False,
+        },
+        magic.RIGHT: {
+            'step_length': 40,
+            'tip_distance': 120,
+            'step_height': 50,
+            'rotate_angle': math.radians(90),
+            'turn_modifier': 1,
+            'crab': True,
+        },
+        magic.LEFT: {
+            'step_length': 40,
+            'tip_distance': 120,
+            'step_height': 50,
+            'rotate_angle': math.radians(-90),
+            'turn_modifier': 1,
+            'crab': True,
+        },
+        magic.ROTATE_RIGHT: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(0),
+            'turn_modifier': 1,
+            'crab': False,
+        },
+        magic.ROTATE_LEFT: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(0),
+            'turn_modifier': -1,
+            'crab': False,
+        },
+        magic.TURN_RIGHT: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(0),
+            'turn_modifier': 0.25,
+            'crab': False,
+        },
+        magic.TURN_LEFT: {
+            'step_length': 40,
+            'tip_distance': 100,
+            'step_height': 50,
+            'rotate_angle': math.radians(0),
+            'turn_modifier': -0.25,
+            'crab': False,
+        },
+    }
+
     def manual_mode(self, stick, vertical, left_button, right_button):
-        stick = [round(value * 5) / 5 for value in stick]
-        print(stick, vertical, left_button, right_button)
-
-        # if (right_button):
-        #     self.lowrider_mode(stick)
-        #     return
-
-        # if (left_button):
-        #     self.leg_mover.clap()
-        #     return
-
-        max_step_length = 100 if left_button else 100
-        tip_distance = 120 if left_button else 120
-        min_step_height = 40
-        step_height_deviation = 20
-        height_change_multiplier = 5
-        turn_threshold = 0.1
-        minimum_threshold = 5
-
-        # x, y = stick
-        y, x = stick
-        # x *= -1
+        y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
+        threshold = 0.1
+        rotation = magic.ROTATE_LEFT if left_button else magic.ROTATE_RIGHT if right_button else magic.CENTER
+        direction = magic.UP if y > x and y > threshold else magic.DOWN if y < x and y < -threshold else magic.LEFT if x > y and x > threshold else  magic.RIGHT if x < y and x < -threshold else magic.CENTER
 
-        self.leg_mover.ground_clearance += vertical * height_change_multiplier
+        if rotation == magic.CENTER or direction == magic.LEFT or direction == magic.RIGHT:
+            stats = self.stats_dict[direction]
+        elif direction == magic.CENTER:
+            stats = self.stats_dict[rotation]
+        else:
+            stats = self.stats_dict[magic.CENTER]
+            print("CENTER")
 
-        step_length = math.sqrt(x ** 2 + y ** 2) * max_step_length
-        # step length is meer als de joystick verder van het midden af is
-        rotate_angle = math.radians(180 if y > 0 else 0)
-        step_height = 0 if step_length < minimum_threshold else min_step_height + abs(y) * step_height_deviation
-
-        turn_modifier = float(1 if x > turn_threshold else -1 if x < -turn_threshold else 0)
-        turn_modifier = turn_modifier - abs(y * 0.5) if turn_modifier > 0.5 else turn_modifier + abs(
-            y * 0.5) if turn_modifier < -0.5 else turn_modifier
-
-        crab = False
-        if (left_button):
-            crab = True
-            is_up_or_down = abs(y) > abs(x)
-            rotate_angle = math.radians(0 if x > 0 else 180 if is_up_or_down else 90 if y > 0 else -90)
-            turn_modifier = 1
-
-        change = False
-
-        # region Detect change
-        if step_length != self.step_length:
-            self.step_length = step_length
-            change = True
-        if rotate_angle != self.rotate_angle:
-            self.rotate_angle = rotate_angle
-            change = True
-        if step_height != self.step_height:
-            self.step_height = step_height
-            change = True
-        if turn_modifier != self.turn_modifier:
-            self.turn_modifier = turn_modifier
-            change = True
-        if crab != self.crab:
-            self.crab = crab
-            change = True
-        if tip_distance != self.tip_distance:
-            self.tip_distance = tip_distance
-            change = True
-        # if vertical != 0:
-        #     change = True
-        # endregion
-
-        if (change):
+        if stats != self.current_stats:
             print({
-                "turnModifier": self.turn_modifier,
-                "stepLength": self.step_length,
-                "stepHeight": self.step_height,
-                "rotateAngle": self.rotate_angle,
-            })
-            # print(change)
-            self.update_walk()
+                      magic.UP: "up",
+                      magic.DOWN: "down",
+                      magic.RIGHT: "right",
+                      magic.LEFT: "left",
+                      magic.CENTER: "center",
+                  }[direction])
+            self.current_stats = stats
+            self.update_walk(stats)
 
     def fury_mode(self):
         pass

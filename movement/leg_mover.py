@@ -137,13 +137,12 @@ class LegMover(object):
             )
         ]
 
-
         if self.current_walk_index is not None:
-            print("Current sequence cancelled, starting new sequence")
             self.clear_interval(self.current_walk_index)
         self.current_walk_index = self.execute_stance_sequence(stance_sequence, crab=crab)
 
     def set_stance(self, stance, crab=False, on_done=lambda: None):
+        print("STARTING SET STANCE")
         self.legs_to_do = 0
 
         for xp, dict in stance.points.items():
@@ -157,6 +156,7 @@ class LegMover(object):
                 def on_done_callback():
                     self.legs_to_do = self.legs_to_do - 1
                     if self.legs_to_do == 0:
+                        print("STANCE IS DONE, calling callback")
                         on_done()
 
                 leg.move_to_normalized(point, midpoint, crab, on_done_callback)
@@ -172,18 +172,19 @@ class LegMover(object):
             self.sequence_amount += 1
             interval_index = self.sequence_amount
 
-        self.current_walk_index = index
-
         if interval_index not in self.cancelled_indices:
+            print("Running sequence:", interval_index)
             self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:
-            print("Cancelled sequence")
+            print("Cancelled sequence:", interval_index)
             self.cancelled_indices.remove(interval_index)
 
         return interval_index
 
     def clear_interval(self, interval_id):
+        print("Cancelling", interval_id, "current walk index", self.current_walk_index, "sequence amount:",
+              self.sequence_amount)
         if self.current_walk_index == interval_id:
             self.current_walk_index = None
         self.cancelled_indices.append(interval_id)
