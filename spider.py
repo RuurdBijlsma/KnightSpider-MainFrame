@@ -151,11 +151,11 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
-        self.leg_mover.ground_clearance = 110
+        self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
         self.speed = 250
 
-        self.rotate_angle = math.radians(0)
+        self.rotate_angle = math.radians(180)
         self.step_height = 0
         self.step_length = 0
         self.tip_distance = 120
@@ -355,3 +355,21 @@ class Spider(object):
 
     def line_dance_mode(self):
         pass
+
+    def go_direction(self, direction):
+        stats = self.stats_dict[direction]
+        if stats != self.current_stats:
+            self.current_stats = stats
+            self.update_walk(stats)
+
+    def turn_left(self):
+        self.go_direction(magic.LEFT)
+
+    def turn_right(self):
+        self.go_direction(magic.RIGHT)
+
+    def move_forward(self):
+        self.go_direction(magic.UP)
+
+    def move_backward(self):
+        self.go_direction(magic.DOWN)
