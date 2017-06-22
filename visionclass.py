@@ -5,6 +5,7 @@ import vision.shapes as shapes
 import vision.road_detector as road_detector
 import time
 import vision.eggs as eggs
+from vision import magic
 
 
 class Vision:
@@ -39,3 +40,7 @@ class Vision:
 
     def close(self):
         self.server.close()
+
+
+
+

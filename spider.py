@@ -16,7 +16,10 @@ from movement.leg_mover import LegMover
 from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
 from vision import magic
+from vision import cards
 from visionclass import Vision
+import distance
+
 
 
 class Spider(object):
@@ -354,14 +357,53 @@ class Spider(object):
             self.leg_mover.stop()
             self.dance_mover.execute()
 
-    def egg_mode(self):
-        pass
+
+    def egg_mode(self, card, colored):
+        if egg_maw.current_pwm == egg_maw.OPEN_PWM:
+            if colored:
+                position = self.vision.find_colored_egg()
+                self.operate_maw(False, position)
+            else:
+                position = self.vision.find_white_egg()
+                self.operate_maw(False, position)
+        else:
+            if card == cards.SPADE:
+                position = self.vision.find_spades()
+                self.operate_maw(True,position)
+            elif card == cards.CLUB:
+                position = self.vision.find_club()
+                self.operate_maw(True, position)
+            elif card == cards.HART:
+                position = self.vision.find_heart()
+                self.operate_maw(True, position)
+            else:
+                position = self.vision.find_diamond()
+                self.operate_maw(True, position)
 
     def balloon_mode(self):
         pass
 
     def line_dance_mode(self):
         pass
+
+    def operate_maw(self, open, position):
+        if position == magic.CENTER:
+            if 10 < distance.get_distance() <= 400:
+                self.move_to_magic(position)
+            elif distance is not float("inf"):
+                if open:
+                    egg_maw.open_maw()
+                else:
+                    egg_maw.close_maw()
+        else:
+            self.move_to_magic(position)
+
+    def move_to_magic(self,magic):
+        {
+            magic.CENTER: lambda: self.move_forward(),
+            magic.LEFT: lambda: self.turn_left(),
+            magic.RIGHT: lambda: self.turn_right(),
+        }[magic]()
 
     def go_direction(self, direction):
         stats = self.stats_dict[direction]
