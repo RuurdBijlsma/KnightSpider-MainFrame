@@ -53,12 +53,9 @@ class LegMover(object):
             ),
         ]
 
-        past_index = self.current_walk_index
-
-        self.current_walk_index = self.execute_stance_sequence(stance_sequence)
-
-        if self.current_walk_index is not None and past_index != self.current_walk_index:
-            self.clear_interval(past_index)
+        self.sequence_amount += 1
+        self.current_walk_index = self.sequence_amount
+        self.execute_stance_sequence(stance_sequence)
 
     def walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
              crab=False):
@@ -174,8 +171,11 @@ class LegMover(object):
         index = len(stance_list) - 1 if index is None or index == -1 else index
 
         print("Sequence %s can run?:" % interval_index, interval_index == self.current_walk_index, "Because",
-              interval_index, "is not", self.current_walk_index)
+              interval_index, "?=", self.current_walk_index)
         if interval_index == self.current_walk_index:
             print("Executing stance sequence:", interval_index)
             self.set_stance(stance_list[index], interval_index, crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
+
+    def stop(self):
+        self.current_walk_index = -1

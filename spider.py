@@ -5,13 +5,13 @@ import signal
 
 import distance
 import egg_maw
+import movement.dance_sequence as dance_sequence
 import utils
 from audio.speech_synthesis import SpeechSynthesis
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
 from movement.dance_mover import DanceMover
-import movement.dance_sequence as dance_sequence
 from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
 from point import Point3D
@@ -313,7 +313,7 @@ class Spider(object):
             'step_length': step_length,
             'tip_distance': tip_distance['forward'],
             'step_height': step_height,
-            'rotate_angle': math.radians(0),
+            'rotate_angle': math.radians(180),
             'turn_modifier': 0.25,
             'crab': False,
         },
@@ -321,13 +321,16 @@ class Spider(object):
             'step_length': step_length,
             'tip_distance': tip_distance['forward'],
             'step_height': step_height,
-            'rotate_angle': math.radians(0),
+            'rotate_angle': math.radians(180),
             'turn_modifier': -0.25,
             'crab': False,
         },
     }
 
     def manual_mode(self, stick, vertical, left_button, right_button):
+        height_multiplier = 10
+        self.leg_mover.ground_clearance += vertical * height_multiplier
+
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
         threshold = 0.1
@@ -411,7 +414,7 @@ class Spider(object):
         else:
             self.move_to_magic(position)
 
-    def move_to_magic(self,magic_number):
+    def move_to_magic(self, magic_number):
         {
             magic.CENTER: lambda: self.move_forward(),
             magic.LEFT: lambda: self.turn_left(),
