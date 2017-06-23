@@ -9,7 +9,7 @@ ROTATE_RIGHT = 3
 ROTATE_LEFT = -3
 TURN_RIGHT = 4
 TURN_LEFT = -4
-keys = {
+KEYS = {
     UP: "UP",
     DOWN: "DOWN",
     RIGHT: "RIGHT",

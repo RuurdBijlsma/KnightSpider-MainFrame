@@ -12,9 +12,11 @@ class Vision:
     IMAGE_FOLDER_PATH = "vision/images/"
 
     def __init__(self):
+        print("Starting vision")
         self.server = pistreaming.server.Server()
         t = Thread(target=self.server.start)
         t.start()
+        # todo make not stupid
         time.sleep(1)
 
     def find_heart(self):

@@ -13,6 +13,10 @@ class DanceSequence(object):
         self.storage.append((stance, time, servo_speed))
         return self
 
+    def add_walk(self, f, time, servo_speed):
+        self.storage.append((f, time, servo_speed))
+        return self
+
     def concat_sequence(self, other_sequence):
         self.storage = self.storage + other_sequence.storage
         return self
@@ -188,7 +192,7 @@ PIROUETTE = DanceSequence([
 SAYONARA_MAXWELL_BPM = 62
 SAYONARA_MAXWELL_DELAY = SAYONARA_MAXWELL_BPM / 60
 
-def create_sayora_maxwell_dance():
+def create_sayora_maxwell_dance(spider):
     sequence = DanceSequence()
 
     # DO NOT RUN, KILLS PLASTIC
@@ -197,20 +201,12 @@ def create_sayora_maxwell_dance():
     #     .concat_sequence(LEG_WAVE_SEQUENCE)\
     #     .concat_sequence(LEG_WAVE_SEQUENCE)\
     #     .add_move(STANCES["stand_high"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
-    # sequence\
-    #     .concat_sequence(LAY_DOWN_GENTLY)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(PIROUETTE)\
-    #     .concat_sequence(LAY_DOWN_GENTLY)\
-    #     .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
+    sequence\
+        .concat_sequence(LAY_DOWN_GENTLY)\
+        .add_walk(spider.turn_left(), 5, 800)\
+        .concat_sequence(LAY_DOWN_GENTLY)\
+        .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
 
     print("Dance length", sequence.time())
 
     return sequence
-
-SAYONARA_MAXWELL_DANCE = create_sayora_maxwell_dance()

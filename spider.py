@@ -58,7 +58,7 @@ class Spider(object):
             }
         }
         self.leg_mover = LegMover(self)
-        self.dance_mover = DanceMover(self, dance_sequence.SAYONARA_MAXWELL_DANCE)
+        self.dance_mover = DanceMover(self, dance_sequence.create_sayora_maxwell_dance(self))
         signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
@@ -234,7 +234,7 @@ class Spider(object):
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         True if left_button == 1 else False, True if right_button == 1 else False),
             3: lambda: self.dance_mode(),
-            4: lambda: self.egg_mode(),
+            4: lambda: self.egg_mode(cards.SPADE, False),
             5: lambda: self.balloon_mode(),
             6: lambda: self.line_dance_mode(),
         }[mode]()
@@ -411,24 +411,26 @@ class Spider(object):
         else:
             self.move_to_magic(position)
 
-    def move_to_magic(self, magic):
+    def move_to_magic(self,magic_number):
         {
             magic.CENTER: lambda: self.move_forward(),
             magic.LEFT: lambda: self.turn_left(),
             magic.RIGHT: lambda: self.turn_right(),
-        }[magic]()
+        }[magic_number]()
 
     def go_direction(self, direction):
+        print("ik mot draaie", magic.KEYS[direction])
         stats = self.stats_dict[direction]
         if stats != self.current_stats:
+            print("heus")
             self.current_stats = stats
             self.update_walk(stats)
 
     def turn_left(self):
-        self.go_direction(magic.LEFT)
+        self.go_direction(magic.ROTATE_LEFT)
 
     def turn_right(self):
-        self.go_direction(magic.RIGHT)
+        self.go_direction(magic.ROTATE_RIGHT)
 
     def move_forward(self):
         self.go_direction(magic.UP)

@@ -147,7 +147,7 @@ class LegMover(object):
 
     legs_to_do = {}
 
-    def set_stance(self, stance, interval_index, crab=False, on_done=lambda: None):
+    def set_stance(self, stance, interval_index, crab=False, on_done=lambda: None, enable_ground_clearance=True):
         self.legs_to_do[interval_index] = 0
 
         for xp, dict in stance.points.items():
