@@ -3,6 +3,7 @@ import math
 import os
 import signal
 
+import distance
 import egg_maw
 import utils
 from audio.speech_synthesis import SpeechSynthesis
@@ -15,11 +16,9 @@ from movement.ik_cache import IKCache
 from movement.leg_mover import LegMover
 from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
-from vision import magic
 from vision import cards
+from vision import magic
 from visionclass import Vision
-import distance
-
 
 
 class Spider(object):
@@ -247,75 +246,81 @@ class Spider(object):
         # self.rotate_z += stick[1] * rotation_speed_multiplier
 
     current_stats = {}
+    tip_distance = {
+        'forward': 120,
+        'crab': 120
+    }
+    step_length = 60
+    step_height = 40
     stats_dict = {
         magic.CENTER: {
             'step_length': 0,
-            'tip_distance': 100,
+            'tip_distance': tip_distance['forward'],
             'step_height': 0,
             'rotate_angle': math.radians(180),
             'turn_modifier': 0,
             'crab': False,
         },
         magic.UP: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(180),
             'turn_modifier': 0,
             'crab': False,
         },
         magic.DOWN: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(0),
             'turn_modifier': 0,
             'crab': False,
         },
         magic.RIGHT: {
-            'step_length': 40,
-            'tip_distance': 120,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['crab'],
+            'step_height': step_height,
             'rotate_angle': math.radians(90),
             'turn_modifier': 1,
             'crab': True,
         },
         magic.LEFT: {
-            'step_length': 40,
-            'tip_distance': 120,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['crab'],
+            'step_height': step_height,
             'rotate_angle': math.radians(-90),
             'turn_modifier': 1,
             'crab': True,
         },
         magic.ROTATE_RIGHT: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(0),
             'turn_modifier': 1,
             'crab': False,
         },
         magic.ROTATE_LEFT: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(0),
             'turn_modifier': -1,
             'crab': False,
         },
         magic.TURN_RIGHT: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(0),
             'turn_modifier': 0.25,
             'crab': False,
         },
         magic.TURN_LEFT: {
-            'step_length': 40,
-            'tip_distance': 100,
-            'step_height': 50,
+            'step_length': step_length,
+            'tip_distance': tip_distance['forward'],
+            'step_height': step_height,
             'rotate_angle': math.radians(0),
             'turn_modifier': -0.25,
             'crab': False,
@@ -334,15 +339,24 @@ class Spider(object):
         elif direction == magic.CENTER:
             stats = self.stats_dict[rotation]
         else:
-            stats = self.stats_dict[magic.CENTER]
+            if (direction == magic.UP and rotation == magic.ROTATE_RIGHT):
+                stats = self.stats_dict[magic.TURN_RIGHT]
+            elif (direction == magic.UP and rotation == magic.ROTATE_LEFT):
+                stats = self.stats_dict[magic.TURN_LEFT]
+            else:
+                stats = self.stats_dict[magic.CENTER]
 
         if stats != self.current_stats:
             print({
-                      magic.UP: "up",
-                      magic.DOWN: "down",
-                      magic.RIGHT: "right",
-                      magic.LEFT: "left",
-                      magic.CENTER: "center",
+                      magic.UP: "UP",
+                      magic.DOWN: "DOWN",
+                      magic.RIGHT: "RIGHT",
+                      magic.LEFT: "LEFT",
+                      magic.CENTER: "CENTER",
+                      magic.ROTATE_LEFT: "ROTATE_LEFT",
+                      magic.ROTATE_RIGHT: "ROTATE_RIGHT",
+                      magic.TURN_LEFT: "TURN_LEFT",
+                      magic.TURN_RIGHT: "TURN_RIGHT",
                   }[direction])
             self.current_stats = stats
             self.update_walk(stats)
@@ -357,7 +371,6 @@ class Spider(object):
             self.leg_mover.stop()
             self.dance_mover.execute()
 
-
     def egg_mode(self, card, colored):
         if egg_maw.current_pwm == egg_maw.OPEN_PWM:
             if colored:
@@ -369,7 +382,7 @@ class Spider(object):
         else:
             if card == cards.SPADE:
                 position = self.vision.find_spades()
-                self.operate_maw(True,position)
+                self.operate_maw(True, position)
             elif card == cards.CLUB:
                 position = self.vision.find_club()
                 self.operate_maw(True, position)
@@ -398,7 +411,7 @@ class Spider(object):
         else:
             self.move_to_magic(position)
 
-    def move_to_magic(self,magic):
+    def move_to_magic(self, magic):
         {
             magic.CENTER: lambda: self.move_forward(),
             magic.LEFT: lambda: self.turn_left(),
