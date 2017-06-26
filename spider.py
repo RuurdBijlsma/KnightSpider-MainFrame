@@ -387,15 +387,18 @@ class Spider(object):
     is_on_circle = False
 
     def fury_mode(self):
-        wait_time_on_red = 30
-        if self.is_on_circle:
-            self.move_forward()
-        else:
-            if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
+        position = self.vision.find_road()
+        if position == magic.CENTER:
+            if self.is_on_circle:
                 self.move_forward()
             else:
-                self.is_on_circle = True
-                time.sleep(wait_time_on_red)
+                if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
+                    self.move_forward()
+                else:
+                    self.is_on_circle = True
+                    time.sleep(10)
+        else:
+            self.move_to_magic(position)
 
     def dance_mode(self):
         print("evacueer de dansvloer")
