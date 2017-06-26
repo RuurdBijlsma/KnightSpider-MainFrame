@@ -4,6 +4,8 @@ import os
 import signal
 import time
 
+import numpy as np
+
 import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
@@ -164,7 +166,7 @@ class Spider(object):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
-        self.speed = 500
+        self.speed = 1000
 
         self.rotate_angle = math.radians(180)
         self.step_height = 0
@@ -229,10 +231,6 @@ class Spider(object):
         for servo in self.servo_iter:
             servo.move_speed = value
             servo.step_interval = self.interval
-
-    @property
-    def gyro_angle(self):
-        return self.gyroscope.get_x_rotation(self.gyroscope.read_gyro())
 
     def parse_controller_update(self, data):
         if data == "stop":
@@ -405,8 +403,8 @@ class Spider(object):
                 print("circle no longer in view")
                 time.sleep(wait_time_on_circle)
                 self.lock_fury = False
-        # else:
-        #     self.move_to_magic(position)
+                # else:
+                #     self.move_to_magic(position)
 
     def dance_mode(self):
         print("evacueer de dansvloer")
@@ -440,10 +438,22 @@ class Spider(object):
             position = self.vision.find_diamond()
             self.operate_maw(True, position)
 
-    def balloon_mode(self, stick, vertical, left_button, right_button, joystick_button):
+    def balloon_mode(self, stick, _, left_button, right_button, _):
         # Call manual mode with a few options preset
         self.leg_mover.ground_clearance = 140
         self.rotate_body(0, math.radians(-50))
+        self.manual_mode(stick, 0, left_button, right_button, 0)
+
+    def hill_mode(self, stick, vertical, left_button, right_button, joystick_button):
+        # Call manual mode with a few options preset
+        self.leg_mover.ground_clearance = 140
+        self.balance()
+        self.manual_mode(stick, 0, left_button, right_button, 0)
+
+    def gap_mode(self, stick, vertical, left_button, right_button, joystick_button):
+        # Call manual mode with a few options preset
+        self.leg_mover.ground_clearance = 50
+        self.speed = 100
         self.manual_mode(stick, 0, left_button, right_button, 0)
 
     def line_dance_mode(self):
@@ -502,3 +512,26 @@ class Spider(object):
         self.rotate_body(0, math.radians(angle))
         self.leg_mover.stop()
         self.update_walk(self.stats_dict[magic.CENTER])
+
+    @property
+    def gyro_angle(self):
+        return self.gyroscope.get_y_rotation(self.gyroscope.read_gyro())
+
+    calibrated_angle = -1.5
+    angle_history = []
+
+    def balance(self):
+        round_to_nearest = 2
+        avg_items = 5
+
+        raw_angle = self.gyro_angle - self.calibrated_angle
+        raw_angle = round(raw_angle / round_to_nearest) * round_to_nearest
+
+        body_angle = math.degrees(self.rotate_x)
+        print("Gyro angle: ", raw_angle, "Body angle:", body_angle)
+        angle = -raw_angle
+
+        self.angle_history.append(angle)
+        self.angle_history = self.angle_history[-avg_items:]
+
+        self.rotate_body(math.radians(np.average(self.angle_history)), 0)

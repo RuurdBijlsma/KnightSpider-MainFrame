@@ -172,7 +172,7 @@ class LegMover(object):
         index = len(stance_list) - 1 if index is None or index == -1 else index
 
         if interval_index == self.current_walk_index:
-            print("Executing stance sequence:", interval_index)
+            # print("Executing stance sequence:", interval_index)
             self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:

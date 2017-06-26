@@ -1,6 +1,5 @@
-import smbus
-
 import math
+import smbus
 
 import utils
 
@@ -12,13 +11,13 @@ class Gyroscoop(object):
     POWER_MGMT_1 = 0x6b
     POWER_MGMT_2 = 0x6c
 
-    GYRO_X = 0x43
-    GYRO_Y = 0x45
-    GYRO_Z = 0x47
+    GYRO_X = 0x3b
+    GYRO_Y = 0x3d
+    GYRO_Z = 0x3f
 
-    ACCEL_X = 0x3b
-    ACCEL_Y = 0x3d
-    ACCEL_Z = 0x3f
+    ACCEL_X = 0x43
+    ACCEL_Y = 0x45
+    ACCEL_Z = 0x47
 
     ACCEL_SCALE_MAGIC = 16384.0
 
