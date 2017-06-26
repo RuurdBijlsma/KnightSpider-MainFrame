@@ -1,8 +1,5 @@
 import math
-
 import threading
-
-import time
 
 import ax12_serial
 import utils
@@ -164,9 +161,9 @@ class LegMover(object):
                         midpoint = stance.midpoints[xp]
 
                     leg.move_to_normalized(point, midpoint, crab)
+            threading.Timer(self.spider.interval, on_done).start()
         finally:
             ax12_serial.unlock()
-        threading.Timer(self.spider.interval, on_done).start()
 
     sequence_amount = 0
     current_walk_index = None

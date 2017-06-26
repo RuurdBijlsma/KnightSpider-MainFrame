@@ -60,7 +60,6 @@ class Server(object):
             except IOError as e:
                 print(e)
 
-
     def start_listen_thread(self):
         self.listen_thread = threading.Thread(target=self.listen_loop)
         self.listen_thread.start()
@@ -72,7 +71,7 @@ class Server(object):
                     connection, address = self.socket.accept()
                     print('Connected with ' + address[0] + ':' + str(address[1]))
                     connection.setblocking(True)
-                    connection.settimeout(1) # Block for 1 second before thorwing a timeout exception
+                    connection.settimeout(1)  # Block for 1 second before thorwing a timeout exception
 
                     connection.send(self.prepare_for_sending("henlo frend").encode())
 
@@ -144,7 +143,6 @@ class Server(object):
 
     def unregister_message_handler(self, identifier):
         del self.message_handlers[identifier]
-
 
     def broadcast(self, data):
         for connection in self.connections:

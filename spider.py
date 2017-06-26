@@ -2,12 +2,12 @@ import json
 import math
 import os
 import signal
+import time
 
 import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
 import utils
-from audio.speech_synthesis import SpeechSynthesis
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
@@ -18,8 +18,8 @@ from point import Point3D
 from socket_listener.app_communicator import AppCommunicator
 from vision import cards
 from vision import magic
-from visionclass import Vision
 from vision import road_detector
+from visionclass import Vision
 
 
 class Spider(object):
@@ -164,11 +164,11 @@ class Spider(object):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
-        self.speed = 1000
+        self.speed = 500
 
         self.rotate_angle = math.radians(180)
-        self.step_height = 50
-        self.step_length = 50
+        self.step_height = 0
+        self.step_length = 0
         self.tip_distance = 120
         self.turn_modifier = 0
         self.crab = False
@@ -229,6 +229,10 @@ class Spider(object):
         for servo in self.servo_iter:
             servo.move_speed = value
             servo.step_interval = self.interval
+
+    @property
+    def gyro_angle(self):
+        return self.gyroscope.get_x_rotation(self.gyroscope.read_gyro())
 
     def parse_controller_update(self, data):
         if data == "stop":
@@ -381,8 +385,9 @@ class Spider(object):
                 self.update_walk(stats)
 
     is_on_circle = False
-    def fury_mode(self):
 
+    def fury_mode(self):
+        wait_time_on_red = 30
         if self.is_on_circle:
             self.move_forward()
         else:
@@ -390,8 +395,7 @@ class Spider(object):
                 self.move_forward()
             else:
                 self.is_on_circle = True
-                time.sleep(10)
-
+                time.sleep(wait_time_on_red)
 
     def dance_mode(self):
         print("evacueer de dansvloer")
@@ -403,7 +407,7 @@ class Spider(object):
             print("dans execute")
 
     def egg_mode(self, card, colored):
-            self.speed = 200
+        self.speed = 200
         # if egg_maw.current_pwm == egg_maw.OPEN_PWM:
         #     if colored:
         #         position = self.vision.find_colored_egg()
@@ -412,18 +416,18 @@ class Spider(object):
         #         position = self.vision.find_white_egg()
         #         self.operate_maw(False, position)
         # else:
-            if card == cards.SPADE:
-                position = self.vision.find_spades()
-                self.operate_maw(True, position)
-            elif card == cards.CLUB:
-                position = self.vision.find_club()
-                self.operate_maw(True, position)
-            elif card == cards.HART:
-                position = self.vision.find_heart()
-                self.operate_maw(True, position)
-            else:
-                position = self.vision.find_diamond()
-                self.operate_maw(True, position)
+        if card == cards.SPADE:
+            position = self.vision.find_spades()
+            self.operate_maw(True, position)
+        elif card == cards.CLUB:
+            position = self.vision.find_club()
+            self.operate_maw(True, position)
+        elif card == cards.HART:
+            position = self.vision.find_heart()
+            self.operate_maw(True, position)
+        else:
+            position = self.vision.find_diamond()
+            self.operate_maw(True, position)
 
     def balloon_mode(self):
         pass
