@@ -149,7 +149,7 @@ class LegMover(object):
 
     legs_to_do = {}
 
-    def set_stance(self, stance, interval_index, crab=False, on_done=lambda: None, enable_ground_clearance=True):
+    def set_stance(self, stance, crab=False, on_done=lambda: None, enable_ground_clearance=True):
         ax12_serial.lock()
         try:
             for xp, dict in stance.points.items():
@@ -176,7 +176,7 @@ class LegMover(object):
 
         if interval_index == self.current_walk_index:
             print("Executing stance sequence:", interval_index)
-            self.set_stance(stance_list[index], interval_index, crab,
+            self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:
             print("Sequence %s has been cancelled!"%interval_index)

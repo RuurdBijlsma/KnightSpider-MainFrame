@@ -162,6 +162,7 @@ class Spider(object):
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 100
+        self.interval_at_max_speed = 0.1
         self.speed = 1000
 
         self.rotate_angle = math.radians(180)
@@ -226,6 +227,9 @@ class Spider(object):
             servo.step_interval = self.interval
 
     def parse_controller_update(self, data):
+        if data == "stop":
+            return
+
         max_stick_value = 14000
         stick_y, stick_x, up_button, down_button, left_button, right_button, joystick_button, mode = [int(value) for
                                                                                                       value in
@@ -380,7 +384,9 @@ class Spider(object):
         if not self.dance_mover.is_playing:
             print("lekker beginnen")
             self.leg_mover.stop()
+            print("gestupt")
             self.dance_mover.execute()
+            print("dans execute")
 
     def egg_mode(self, card, colored):
         # if egg_maw.current_pwm == egg_maw.OPEN_PWM:

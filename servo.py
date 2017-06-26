@@ -1,5 +1,7 @@
 import threading
 
+import time
+
 import ax12_serial
 from models import ServoReadings
 
@@ -48,6 +50,7 @@ class Servo(object):
             # pass
             if not TRANING_MODE:
                 ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
+                time.sleep(0.0004)
         except ValueError as e:
             print("Error moving servo:", e)
 
