@@ -1,5 +1,7 @@
 import math
 
+import threading
+
 import utils
 from movement.stance import Stance
 from point import Point3D
@@ -154,15 +156,14 @@ class LegMover(object):
                     point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
                 self.legs_to_do[interval_index] = self.legs_to_do[interval_index] + 1
-                midpoint = stance.midpoints[xp]
+                if stance.midpoints is None:
+                    midpoint = None
+                else:
+                    midpoint = stance.midpoints[xp]
 
-                def on_done_callback():
-                    self.legs_to_do[interval_index] = self.legs_to_do[interval_index] - 1
-                    if self.legs_to_do[interval_index] == 0:
-                        print("Calling callback intervalid:%s" % interval_index)
-                        on_done()
+                leg.move_to_normalized(point, midpoint, crab)
 
-                leg.move_to_normalized(point, midpoint, crab, on_done_callback)
+        threading.Timer(self.spider.interval, on_done).start()
 
     sequence_amount = 0
     current_walk_index = None

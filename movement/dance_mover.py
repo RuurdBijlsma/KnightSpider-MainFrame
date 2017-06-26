@@ -1,4 +1,5 @@
 import threading
+from time import sleep
 
 
 class DanceMover(object):
@@ -30,12 +31,12 @@ class DanceMover(object):
         if callable(action):
             # action is walk
             action()
-            time.sleep(time)
+            sleep(time)
             self.spider.leg_mover.stop()
             self.execute()
         else:
             # action is just a stance
-            self.spider.leg_mover.set_stance(action, enable_ground_clearance=False)
+            self.spider.leg_mover.set_stance(action, 0, enable_ground_clearance=False)
             threading.Timer(time, self.execute).start()
 
     def cancel(self):

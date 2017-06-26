@@ -1,5 +1,7 @@
 import threading
 
+import time
+
 import ax12_serial
 from models import ServoReadings
 
@@ -29,7 +31,7 @@ class Servo(object):
             id=id,
         )
 
-    def rotate_to(self, angle, on_done=lambda: None):
+    def rotate_to(self, angle):
         if angle < self.min_angle:
             angle = self.min_angle
         elif angle > self.max_angle:
@@ -48,10 +50,9 @@ class Servo(object):
             # pass
             if not TRANING_MODE:
                 ax12_serial.rotate_to(self.id, angle, speed=self.move_speed, degrees=True)
+                time.sleep(0.0004)
         except ValueError as e:
             print("Error moving servo:", e)
-
-        threading.Timer(self.step_interval, on_done).start()
 
     def update_readings(self):
         self._cached_readings = self.get_readings()

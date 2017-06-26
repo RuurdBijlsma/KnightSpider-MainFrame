@@ -57,7 +57,7 @@ class Server(object):
             try:
                 data, _ = self.udp_socket.recvfrom(self.RECV_SIZE)
                 self.udp_callback(data.decode("utf-8"))
-            except Exception as e:
+            except IOError as e:
                 print(e)
 
 

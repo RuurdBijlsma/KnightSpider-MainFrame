@@ -77,6 +77,22 @@ STANCES = {
             mid_right_point=Point3D(120, -100, 0),
             back_right_point=Point3D(120, -100, 0)
     ),
+    "raise_mid_up": Stance(
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            mid_left_point=Point3D(100, 150, 0),
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            mid_right_point=Point3D(100, 150, 0),
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0)
+    ),
+    "raise_mid_flat": Stance(
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            mid_left_point=point.OUT_OF_REACH,
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
+            mid_right_point=point.OUT_OF_REACH,
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0)
+    ),
     "upside_down": Stance(
             front_left_point=Point3D(100, -BASE_GROUND_CLEARANCE, 0),
             mid_left_point=Point3D(100, -BASE_GROUND_CLEARANCE, 0),
@@ -165,11 +181,27 @@ STANCES = {
             mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0),
             back_right_point=POINT_WAVE_LEG_RAISED
     ),
+    "body_wave-1": Stance(
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
+            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
+            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0)
+    ),
+    "body_wave-2": Stance(
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
+            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
+            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0)
+    ),
 }
 
 WAVE_DELAY = 0.2
 WAVE_SERVO_SPEED = 1000
-LEG_WAVE_SEQUENCE = DanceSequence([
+LEG_WAVE = DanceSequence([
     (STANCES["leg_wave-1"], WAVE_DELAY, WAVE_SERVO_SPEED),
     (STANCES["leg_wave-2"], WAVE_DELAY, WAVE_SERVO_SPEED),
     (STANCES["leg_wave-3"], WAVE_DELAY, WAVE_SERVO_SPEED),
@@ -178,19 +210,41 @@ LEG_WAVE_SEQUENCE = DanceSequence([
     (STANCES["leg_wave-6"], WAVE_DELAY, WAVE_SERVO_SPEED),
 ])
 
-LAY_DOWN_GENTLY = DanceSequence([
-    (STANCES["stand_low"], 0.7, 400),
-    (STANCES["flat"], 0.7, 200)
+BODY_WAVE = DanceSequence([
+    (STANCES["body_wave-1"], WAVE_DELAY, STANDARD_SERVO_SPEED),
+    (STANCES["stand"], WAVE_DELAY, STANDARD_SERVO_SPEED),
+    (STANCES["body_wave-2"], WAVE_DELAY, STANDARD_SERVO_SPEED),
+    (STANCES["stand"], WAVE_DELAY, STANDARD_SERVO_SPEED),
+    (STANCES["body_wave-1"], WAVE_DELAY, STANDARD_SERVO_SPEED),
+
 ])
 
-PIROUETTE = DanceSequence([
-    (STANCES["pirouette-1"], 1, 1000),
-    (STANCES["pirouette-2"], 1, 1000),
-    (STANCES["flat"], 1, 1000)
+LAY_DOWN_GENTLY = DanceSequence([
+    (STANCES["stand_low"], 0.7, 200),
+    (STANCES["flat"], 0.7, 200)
 ])
 
 SAYONARA_MAXWELL_BPM = 62
 SAYONARA_MAXWELL_DELAY = SAYONARA_MAXWELL_BPM / 60
+
+CHEER_BPM_DIVIDER = 4
+
+CHEER = DanceSequence([
+    (STANCES["stand"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_up"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["raise_mid_flat"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+    (STANCES["stand"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
+])
 
 def create_sayora_maxwell_dance(spider):
     sequence = DanceSequence()
@@ -201,11 +255,67 @@ def create_sayora_maxwell_dance(spider):
     #     .concat_sequence(LEG_WAVE_SEQUENCE)\
     #     .concat_sequence(LEG_WAVE_SEQUENCE)\
     #     .add_move(STANCES["stand_high"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
+    # .add_walk(spider.turn_left, 6.35, 1000)\
     sequence\
-        .concat_sequence(LAY_DOWN_GENTLY)\
-        .add_walk(spider.turn_left(), 5, 800)\
-        .concat_sequence(LAY_DOWN_GENTLY)\
-        .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+        .add_move(STANCES["stand"], 0.4, 1000)\
+        .add_move(STANCES["flat"], 0.4, 1000)\
+
+        # .add_move(STANCES["stand"], 0.5, 450)\
+        # .concat_sequence(CHEER)\
+        # .add_move(STANCES["stand"], 0.2, 1000) \
+        # .concat_sequence(BODY_WAVE)\
+        # .add_move(STANCES["stand"], 0.2, 1000) \
+        # .add_walk(spider.turn_left, 5.5, 1000) \
+        # .add_move(STANCES["stand"], 0.2, 1000) \
+        # .concat_sequence(LEG_WAVE)\
+        # .concat_sequence(LEG_WAVE)\
+        # .add_move(STANCES["stand"], 0.2, 1000) \
+        # .concat_sequence(LAY_DOWN_GENTLY)\
+        # .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
 
     print("Dance length", sequence.time())
 
