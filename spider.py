@@ -19,6 +19,7 @@ from socket_listener.app_communicator import AppCommunicator
 from vision import cards
 from vision import magic
 from visionclass import Vision
+from vision import road_detector
 
 
 class Spider(object):
@@ -376,8 +377,18 @@ class Spider(object):
             if not joystick_button:
                 self.update_walk(stats)
 
+    is_on_circle = False
     def fury_mode(self):
-        pass
+
+        if self.is_on_circle:
+            self.move_forward()
+        else:
+            if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
+                self.move_forward()
+            else:
+                self.is_on_circle = True
+                time.sleep(10)
+
 
     def dance_mode(self):
         print("evacueer de dansvloer")
