@@ -387,6 +387,7 @@ class Spider(object):
     is_on_circle = False
 
     def fury_mode(self):
+        wait_time_on_circle = 30
         position = self.vision.find_road()
         if position == magic.CENTER:
             if self.is_on_circle:
@@ -396,7 +397,7 @@ class Spider(object):
                     self.move_forward()
                 else:
                     self.is_on_circle = True
-                    time.sleep(10)
+                    time.sleep(wait_time_on_circle)
         else:
             self.move_to_magic(position)
 
