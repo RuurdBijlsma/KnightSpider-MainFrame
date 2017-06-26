@@ -13,6 +13,10 @@ resolution = 500
 # cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
 # cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
+UPPER = (17,255,255)
+LOWER = (0,100,100)
+
+
 
 # def midpoint(p1, p2):
 #     return (int((p1[0] + p2[0]) / 2), int((p1[1] + p2[1]) / 2))
@@ -90,3 +94,18 @@ def find_road(frame):
                 offset = np.subtract(mid, intersect)
                 cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
                 print('Actie: GO', 'RIGHT' if offset[0] < 0 else 'LEFT', 'by', round(abs(offset[0]), 1))
+
+def is_circle_on_screen(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    redMask = cv2.inRange(hsv, LOWER, UPPER)
+    _, thresh = cv2.threshold(redMask, 127, 255, 0)
+    _, contours, _ = cv2.findContours(thresh,cv2.RERT_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area > 100:
+            return true
+
+    return false
