@@ -438,7 +438,7 @@ class Spider(object):
             position = self.vision.find_diamond()
             self.operate_maw(True, position)
 
-    def balloon_mode(self, stick, _, left_button, right_button, _):
+    def balloon_mode(self, stick, _, left_button, right_button, __):
         # Call manual mode with a few options preset
         self.leg_mover.ground_clearance = 140
         self.rotate_body(0, math.radians(-50))
