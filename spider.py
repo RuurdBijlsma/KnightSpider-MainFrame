@@ -162,8 +162,7 @@ class Spider(object):
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 100
-        self.interval_at_max_speed = 0.1
-        self.speed = 600
+        self.speed = 1000
 
         self.rotate_angle = math.radians(180)
         self.step_height = 50
@@ -220,11 +219,11 @@ class Spider(object):
     @speed.setter
     def speed(self, value):
         max_servo_speed = 1023
-        interval = max_servo_speed * self.interval_at_max_speed / value
+        self.interval = max_servo_speed * self.interval_at_max_speed / value
         self._speed = value
         for servo in self.servo_iter:
             servo.move_speed = value
-            servo.step_interval = interval
+            servo.step_interval = self.interval
 
     def parse_controller_update(self, data):
         max_stick_value = 14000

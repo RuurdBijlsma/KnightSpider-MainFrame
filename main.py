@@ -15,8 +15,8 @@ spider.start(False)
 # spider.leg_mover.ground_clearance = 100
 # spider.leg_mover.walk(tip_distance=100, turn_modifier=1, rotate_angle=math.radians(-90), step_height=40, step_length=40, crab=True)
 
-# spider.leg_mover.stop()
-# spider.dance_mover.execute()
+spider.leg_mover.stop()
+spider.dance_mover.execute()
 
 # Keep awake
 while True:

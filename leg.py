@@ -49,13 +49,9 @@ class Leg(object):
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
 
-        ax12_serial.lock()
-        try:
-            self.beta.rotate_to(angles[2])
-            self.alpha.rotate_to(angles[1])
-            self.gamma.rotate_to(angles[0])
-        finally:
-            ax12_serial.unlock()
+        self.beta.rotate_to(angles[2])
+        self.alpha.rotate_to(angles[1])
+        self.gamma.rotate_to(angles[0])
 
     def shutdown(self):
         self.move_to(Point3D(130, -5, 0))

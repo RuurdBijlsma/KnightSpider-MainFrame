@@ -4,6 +4,7 @@ import threading
 
 import time
 
+import ax12_serial
 import utils
 from movement.stance import Stance
 from point import Point3D
@@ -149,23 +150,23 @@ class LegMover(object):
     legs_to_do = {}
 
     def set_stance(self, stance, interval_index, crab=False, on_done=lambda: None, enable_ground_clearance=True):
-        print("setting stance: %s"%interval_index)
+        ax12_serial.lock()
+        try:
+            for xp, dict in stance.points.items():
+                for yp, point in dict.items():
+                    leg = self.spider.legs[xp][yp]
+                    if enable_ground_clearance:
+                        point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
-        for xp, dict in stance.points.items():
-            for yp, point in dict.items():
-                leg = self.spider.legs[xp][yp]
-                if enable_ground_clearance:
-                    point = Point3D(point.x, point.y - self.ground_clearance, point.z)
+                    if stance.midpoints is None:
+                        midpoint = None
+                    else:
+                        midpoint = stance.midpoints[xp]
 
-                if stance.midpoints is None:
-                    midpoint = None
-                else:
-                    midpoint = stance.midpoints[xp]
-
-                print("Moving leg with interval_id:%s"%interval_index)
-                leg.move_to_normalized(point, midpoint, crab)
-
-        threading.Timer(self.spider.legs['left']['front'].alpha.step_interval, on_done).start()
+                    leg.move_to_normalized(point, midpoint, crab)
+        finally:
+            ax12_serial.unlock()
+        threading.Timer(self.spider.interval, on_done).start()
 
     sequence_amount = 0
     current_walk_index = None
@@ -173,8 +174,6 @@ class LegMover(object):
     def execute_stance_sequence(self, stance_list, interval_index=None, index=None, crab=False):
         index = len(stance_list) - 1 if index is None or index == -1 else index
 
-        print("Sequence %s can run?:" % interval_index, interval_index == self.current_walk_index, "Because",
-              interval_index, "?=", self.current_walk_index)
         if interval_index == self.current_walk_index:
             print("Executing stance sequence:", interval_index)
             self.set_stance(stance_list[index], interval_index, crab,
