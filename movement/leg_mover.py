@@ -1,5 +1,9 @@
 import math
 
+import threading
+
+import time
+
 import utils
 from movement.stance import Stance
 from point import Point3D
@@ -145,7 +149,7 @@ class LegMover(object):
     legs_to_do = {}
 
     def set_stance(self, stance, interval_index, crab=False, on_done=lambda: None, enable_ground_clearance=True):
-        self.legs_to_do[interval_index] = 0
+        print("setting stance: %s"%interval_index)
 
         for xp, dict in stance.points.items():
             for yp, point in dict.items():
@@ -153,16 +157,15 @@ class LegMover(object):
                 if enable_ground_clearance:
                     point = Point3D(point.x, point.y - self.ground_clearance, point.z)
 
-                self.legs_to_do[interval_index] = self.legs_to_do[interval_index] + 1
-                midpoint = stance.midpoints[xp]
+                if stance.midpoints is None:
+                    midpoint = None
+                else:
+                    midpoint = stance.midpoints[xp]
 
-                def on_done_callback():
-                    self.legs_to_do[interval_index] = self.legs_to_do[interval_index] - 1
-                    if self.legs_to_do[interval_index] == 0:
-                        print("Calling callback intervalid:%s" % interval_index)
-                        on_done()
+                print("Moving leg with interval_id:%s"%interval_index)
+                leg.move_to_normalized(point, midpoint, crab)
 
-                leg.move_to_normalized(point, midpoint, crab, on_done_callback)
+        threading.Timer(self.spider.legs['left']['front'].alpha.step_interval, on_done).start()
 
     sequence_amount = 0
     current_walk_index = None
@@ -176,6 +179,8 @@ class LegMover(object):
             print("Executing stance sequence:", interval_index)
             self.set_stance(stance_list[index], interval_index, crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
+        else:
+            print("Sequence %s has been cancelled!"%interval_index)
 
     def stop(self):
         self.current_walk_index = -1

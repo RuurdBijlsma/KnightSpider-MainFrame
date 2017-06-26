@@ -29,8 +29,8 @@ class Leg(object):
             point = point.rotate_around_y(midpoint, math.radians(self.angle))
         return point if self.is_left_leg else point.negate_z()
 
-    def move_to_normalized(self, point, midpoint, crab=False, on_done=lambda: None):
-        return self.move_to(self.point_to_normalized(point, midpoint, crab), on_done)
+    def move_to_normalized(self, point, midpoint, crab=False):
+        return self.move_to(self.point_to_normalized(point, midpoint, crab))
 
     def get_tip_point(self):
         gamma_angle = self.gamma.angle
@@ -41,7 +41,7 @@ class Leg(object):
     def get_body_to_tip_point(self):
         return self.body_position + self.get_tip_point()
 
-    def move_to(self, point, on_done=lambda: None):
+    def move_to(self, point):
         point.y += self.ground_height_offset * (-1 if self.is_left_leg else 1)
 
         # point.y = -1 if point.y >= 0 else point.y
@@ -49,18 +49,11 @@ class Leg(object):
         angles = self.actuator.inverse_kinematics(point)
         # print("angles", point, angles)
 
-        self.servos_to_do = 3
-
-        def on_done_callback():
-            self.servos_to_do -= 1
-            if (self.servos_to_do == 0):
-                on_done()
-
         ax12_serial.lock()
         try:
-            self.beta.rotate_to(angles[2], on_done_callback)
-            self.alpha.rotate_to(angles[1], on_done_callback)
-            self.gamma.rotate_to(angles[0], on_done_callback)
+            self.beta.rotate_to(angles[2])
+            self.alpha.rotate_to(angles[1])
+            self.gamma.rotate_to(angles[0])
         finally:
             ax12_serial.unlock()
 

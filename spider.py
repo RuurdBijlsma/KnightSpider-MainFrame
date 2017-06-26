@@ -7,6 +7,7 @@ import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
 import utils
+from audio.speech_synthesis import SpeechSynthesis
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
@@ -56,6 +57,9 @@ class Spider(object):
                 'back': legs[2]
             }
         }
+
+        self.interval_at_max_speed = 0.1
+
         self.leg_mover = LegMover(self)
         self.dance_mover = DanceMover(self, dance_sequence.create_sayora_maxwell_dance(self))
         signal.signal(signal.SIGINT, self.sigint_handler)
@@ -159,18 +163,18 @@ class Spider(object):
         self.all_systems_enabled = all_systems_enabled
         self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
-        self.speed = 250
+        self.speed = 600
 
         self.rotate_angle = math.radians(180)
-        self.step_height = 0
-        self.step_length = 0
+        self.step_height = 50
+        self.step_length = 50
         self.tip_distance = 120
         self.turn_modifier = 0
         self.crab = False
 
         self.rotate_body(math.radians(0), math.radians(0))
 
-        self.update_walk(self.stats_dict[magic.CENTER])
+        self.update_walk(self.stats_dict[magic.UP])
 
         self.gyroscope = Gyroscoop()
 
@@ -182,8 +186,6 @@ class Spider(object):
             # self.speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
             self.vision = Vision()
-            # self.stream_server = Server()
-            # Thread(target=self.stream_server.start)
 
     def close(self):
         try:
@@ -203,6 +205,7 @@ class Spider(object):
         os.kill(os.getpid(), signal.SIGTERM)
 
     def update_walk(self, stats):
+        self.current_stats = stats
         self.leg_mover.walk(rotate_angle=stats['rotate_angle'],
                             step_height=stats['step_height'],
                             step_length=stats['step_length'],
@@ -235,7 +238,7 @@ class Spider(object):
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
-            4: lambda: self.egg_mode(cards.SPADE, False),
+            4: lambda: self.egg_mode(cards.CLUB, True),
             5: lambda: self.balloon_mode(),
             6: lambda: self.line_dance_mode(),
         }[mode]()
@@ -367,7 +370,6 @@ class Spider(object):
                       magic.TURN_LEFT: "TURN_LEFT",
                       magic.TURN_RIGHT: "TURN_RIGHT",
                   }[direction])
-            self.current_stats = stats
             if not joystick_button:
                 self.update_walk(stats)
 
@@ -382,14 +384,14 @@ class Spider(object):
             self.dance_mover.execute()
 
     def egg_mode(self, card, colored):
-        if egg_maw.current_pwm == egg_maw.OPEN_PWM:
-            if colored:
-                position = self.vision.find_colored_egg()
-                self.operate_maw(False, position)
-            else:
-                position = self.vision.find_white_egg()
-                self.operate_maw(False, position)
-        else:
+        # if egg_maw.current_pwm == egg_maw.OPEN_PWM:
+        #     if colored:
+        #         position = self.vision.find_colored_egg()
+        #         self.operate_maw(False, position)
+        #     else:
+        #         position = self.vision.find_white_egg()
+        #         self.operate_maw(False, position)
+        # else:
             if card == cards.SPADE:
                 position = self.vision.find_spades()
                 self.operate_maw(True, position)
@@ -433,7 +435,6 @@ class Spider(object):
         stats = self.stats_dict[direction]
         if stats != self.current_stats:
             print("heus")
-            self.current_stats = stats
             self.update_walk(stats)
 
     def turn_left(self):
