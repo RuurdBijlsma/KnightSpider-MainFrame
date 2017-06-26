@@ -7,7 +7,6 @@ import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
 import utils
-from audio.speech_synthesis import SpeechSynthesis
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
@@ -62,6 +61,8 @@ class Spider(object):
         signal.signal(signal.SIGINT, self.sigint_handler)
 
     def rotate_body(self, x_angle, z_angle):
+        self.rotate_x = x_angle
+        self.rotate_z = z_angle
         for leg in self.leg_iter:
             just_the_tip = leg.get_body_to_tip_point()
             tip_y = just_the_tip.y
@@ -177,8 +178,8 @@ class Spider(object):
         egg_maw.open_maw()
 
         if all_systems_enabled:
-            self.speech_synthesis = SpeechSynthesis()
-            self.speech_synthesis.speak("Starting all systems")
+            # self.speech_synthesis = SpeechSynthesis()
+            # self.speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
             self.vision = Vision()
             # self.stream_server = Server()
@@ -232,7 +233,7 @@ class Spider(object):
         {
             1: lambda: self.fury_mode(),
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
-                                        True if left_button == 1 else False, True if right_button == 1 else False),
+                                        bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
             4: lambda: self.egg_mode(cards.SPADE, False),
             5: lambda: self.balloon_mode(),
@@ -327,9 +328,14 @@ class Spider(object):
         },
     }
 
-    def manual_mode(self, stick, vertical, left_button, right_button):
+    def manual_mode(self, stick, vertical, left_button, right_button, joystick_button):
         height_multiplier = 10
-        self.leg_mover.ground_clearance += vertical * height_multiplier
+
+        if (joystick_button):
+            rotate_multiplier = math.radians(5)
+            self.rotate_body(self.rotate_x + vertical * rotate_multiplier, self.rotate_z)
+        else:
+            self.leg_mover.ground_clearance += vertical * height_multiplier
 
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
@@ -362,7 +368,8 @@ class Spider(object):
                       magic.TURN_RIGHT: "TURN_RIGHT",
                   }[direction])
             self.current_stats = stats
-            self.update_walk(stats)
+            if not joystick_button:
+                self.update_walk(stats)
 
     def fury_mode(self):
         pass
