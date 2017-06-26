@@ -385,21 +385,28 @@ class Spider(object):
                 self.update_walk(stats)
 
     is_on_circle = False
+    lock_fury = False
 
     def fury_mode(self):
         wait_time_on_circle = 30
-        position = self.vision.find_road()
-        if position == magic.CENTER:
-            if self.is_on_circle:
+        # position = self.vision.find_road()
+        # if position == magic.CENTER:
+        if self.is_on_circle and not self.lock_fury:
+            print("past circle")
+            self.move_forward()
+        else:
+            if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
+                print("moving towards circle")
                 self.move_forward()
             else:
-                if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
-                    self.move_forward()
-                else:
-                    self.is_on_circle = True
-                    time.sleep(wait_time_on_circle)
-        else:
-            self.move_to_magic(position)
+                self.is_on_circle = True
+                self.lock_fury = True
+                self.go_direction(magic.CENTER)
+                print("circle no longer in view")
+                time.sleep(wait_time_on_circle)
+                self.lock_fury = False
+        # else:
+        #     self.move_to_magic(position)
 
     def dance_mode(self):
         print("evacueer de dansvloer")
@@ -433,8 +440,11 @@ class Spider(object):
             position = self.vision.find_diamond()
             self.operate_maw(True, position)
 
-    def balloon_mode(self):
-        pass
+    def balloon_mode(self, stick, vertical, left_button, right_button, joystick_button):
+        # Call manual mode with a few options preset
+        self.leg_mover.ground_clearance = 140
+        self.rotate_body(0, math.radians(-50))
+        self.manual_mode(stick, 0, left_button, right_button, 0)
 
     def line_dance_mode(self):
         pass
@@ -477,6 +487,11 @@ class Spider(object):
 
     def move_backward(self):
         self.go_direction(magic.DOWN)
+
+    def stand_tilted(self, x, y):
+        self.rotate_body(math.radians(x), math.radians(y))
+        self.leg_mover.stop()
+        self.update_walk(self.stats_dict[magic.CENTER])
 
     def stand_tilted_x(self, angle):
         self.rotate_body(math.radians(angle), 0)

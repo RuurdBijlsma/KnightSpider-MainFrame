@@ -62,12 +62,12 @@ STANCES = {
             back_right_point=Point3D(100, BASE_GROUND_CLEARANCE, 0)
     ),
     "stand_low": Stance(
-            front_left_point=Point3D(150, -30, 0),
-            mid_left_point=Point3D(150, -30, 0),
-            back_left_point=Point3D(150, -30, 0),
-            front_right_point=Point3D(150, -30, 0),
-            mid_right_point=Point3D(150, -30, 0),
-            back_right_point=Point3D(150, -30, 0)
+            front_left_point=Point3D(150, -40, 0),
+            mid_left_point=Point3D(150, -40, 0),
+            back_left_point=Point3D(150, -40, 0),
+            front_right_point=Point3D(150, -40, 0),
+            mid_right_point=Point3D(150, -40, 0),
+            back_right_point=Point3D(150, -40, 0)
     ),
     "stand_high": Stance(
             front_left_point=Point3D(120, -100, 0),
@@ -182,25 +182,33 @@ STANCES = {
             back_right_point=POINT_WAVE_LEG_RAISED
     ),
     "body_wave-1": Stance(
-            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
-            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
-            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
-            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
-            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
-            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0)
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0),
+            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0),
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0),
+            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0),
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0)
     ),
     "body_wave-2": Stance(
-            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
-            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
-            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 30, 0),
-            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
-            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0),
-            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 30, 0)
+            front_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0),
+            mid_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0),
+            back_left_point=Point3D(100, BASE_GROUND_CLEARANCE - 40, 0),
+            front_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0),
+            mid_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0),
+            back_right_point=Point3D(100, BASE_GROUND_CLEARANCE + 40, 0)
     ),
 }
 
 WAVE_DELAY = 0.2
 WAVE_SERVO_SPEED = 1000
+LEG_WAVE = DanceSequence([
+    (STANCES["leg_wave-1"], WAVE_DELAY, WAVE_SERVO_SPEED),
+    (STANCES["leg_wave-2"], WAVE_DELAY, WAVE_SERVO_SPEED),
+    (STANCES["leg_wave-3"], WAVE_DELAY, WAVE_SERVO_SPEED),
+    (STANCES["leg_wave-4"], WAVE_DELAY, WAVE_SERVO_SPEED),
+    (STANCES["leg_wave-5"], WAVE_DELAY, WAVE_SERVO_SPEED),
+    (STANCES["leg_wave-6"], WAVE_DELAY, WAVE_SERVO_SPEED),
+])
 
 BODY_WAVE = DanceSequence([
     (STANCES["body_wave-1"], WAVE_DELAY, STANDARD_SERVO_SPEED),
@@ -209,6 +217,11 @@ BODY_WAVE = DanceSequence([
     (STANCES["stand"], WAVE_DELAY, STANDARD_SERVO_SPEED),
     (STANCES["body_wave-1"], WAVE_DELAY, STANDARD_SERVO_SPEED),
 
+])
+
+BOUNCE = DanceSequence([
+    (STANCES["stand_high"], 0.2, 1000),
+    (STANCES["stand_low"], 0.2, 1000),
 ])
 
 LAY_DOWN_GENTLY = DanceSequence([
@@ -238,37 +251,34 @@ CHEER = DanceSequence([
     (STANCES["stand"], SAYONARA_MAXWELL_DELAY / CHEER_BPM_DIVIDER, 1000),
 ])
 
-WAVE_BPM_DIVIDER = 0.5
+WAVE_BPM_DIVIDER = 2
 
 def body_wave(spider):
     return DanceSequence()\
-        .add_walk(lambda: spider.stand_tilted_y(-20), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
-        .add_walk(lambda: spider.stand_tilted_y(0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
-        .add_walk(lambda: spider.stand_tilted_y(20), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
-        .add_walk(lambda: spider.stand_tilted_y(0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
-        .add_walk(lambda: spider.stand_tilted_y(-20), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
-        .add_walk(lambda: spider.stand_tilted_y(0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, 300)\
+        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(20, 10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, -10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(-20, -10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
 
 def create_sayora_maxwell_dance(spider):
     sequence = DanceSequence()
 
-    # DO NOT RUN, KILLS PLASTIC
-
-    # sequence\
-    #     .concat_sequence(LEG_WAVE_SEQUENCE)\
-    #     .concat_sequence(LEG_WAVE_SEQUENCE)\
-    #     .add_move(STANCES["stand_high"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
-    # .add_walk(spider.turn_left, 6.35, 1000)\
     sequence\
         .add_move(STANCES["stand"], 0.5, 450)\
         .concat_sequence(CHEER)\
         .add_move(STANCES["stand"], 0.2, 1000) \
+        .concat_sequence(LAY_DOWN_GENTLY)\
+        .add_move(STANCES["stand_high"], 0.2, 1000) \
+        .add_move(STANCES["stand"], 0.2, 1000) \
+        .concat_sequence(LEG_WAVE)\
+        .concat_sequence(LEG_WAVE)\
         .add_walk(spider.turn_left, 5.5, 1000) \
         .add_move(STANCES["stand"], 0.2, 1000) \
-        .concat_sequence(body_wave(spider))\
-        .concat_sequence(body_wave(spider))\
-        .concat_sequence(body_wave(spider))\
-        .concat_sequence(body_wave(spider))\
         .concat_sequence(body_wave(spider))\
         .add_move(STANCES["stand"], 0.2, 1000) \
         .concat_sequence(LAY_DOWN_GENTLY)\

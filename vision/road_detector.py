@@ -15,8 +15,8 @@ resolution = 500
 # cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
 # cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
-UPPER = (17,255,255)
-LOWER = (0,100,100)
+UPPER = (30,255,255)
+LOWER = (0,60,60)
 
 
 
@@ -45,9 +45,13 @@ def find_road(frame):
     # ret, frame = capture.read()
     # frame = cv2.flip(frame, 0)
 
-    low = cv2.getTrackbarPos('low', 'image')
-    high = cv2.getTrackbarPos('high', 'image')
-    a = cv2.getTrackbarPos('a', 'image')
+    # low = cv2.getTrackbarPos('low', 'image')
+    # high = cv2.getTrackbarPos('high', 'image')
+    # a = cv2.getTrackbarPos('a', 'image')
+
+    low = 110
+    high = 131
+    a = 150
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, low, high)
@@ -57,6 +61,7 @@ def find_road(frame):
         road_lines = []
         angles = []
 
+        print("mani lines", len(lines))
         for line in lines:
             for rho, theta in line:
                 a = np.cos(theta)
@@ -95,22 +100,30 @@ def find_road(frame):
                 mid = (width / 2, height / 2)
                 offset = np.subtract(mid, intersect)
                 cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
-                return magic.RIGHT if offset[0] <0 else magic.LEFT
+
+                centre_offset = 100
+                print("Found something, offset %s"%offset)
+                return magic.RIGHT if offset[0] <-centre_offset else magic.LEFT if offset[0] >centre_offset else magic.CENTER
+
+    print("Found nothing")
     return magic.DEFAULT_SIDE
 
 
 
 def is_circle_on_screen(frame):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     redMask = cv2.inRange(hsv, LOWER, UPPER)
     _, thresh = cv2.threshold(redMask, 127, 255, 0)
-    _, contours, _ = cv2.findContours(thresh,cv2.RERT_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, _ = cv2.findContours(thresh,cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
 
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area > 100:
-            return true
+        if(area>0):
+            print("Cunt area:",area)
+        if area > 2000:
+            return True
 
-    return false
+    return False
