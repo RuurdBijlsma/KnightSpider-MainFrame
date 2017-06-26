@@ -78,7 +78,7 @@ class ShapeDetector(object):
     #
     #     return False
 
-    CENTER_SIZE = 120
+    CENTER_SIZE = 210
 
     def on_screen(self, image, contour):
         height, width, *_ = image.shape

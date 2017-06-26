@@ -18,9 +18,11 @@ def get_distance():
     time.sleep(0.00001)  # Delay of 0.00001 seconds
     GPIO.output(TRIG, False)  # Set TRIG as LOW
 
+    pulse_start = time.time()
     while GPIO.input(ECHO) == 0:  # Check whether the ECHO is LOW
         pulse_start = time.time()  # Saves the last known time of LOW pulse
 
+    pulse_end = time.time()
     while GPIO.input(ECHO) == 1:  # Check whether the ECHO is HIGH
         pulse_end = time.time()  # Saves the last known time of HIGH pulse
 

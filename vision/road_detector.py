@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from threading import Thread
 
+from vision import magic
+
 resolution = 500
 
 # capture = cv2.VideoCapture(0)
@@ -93,7 +95,10 @@ def find_road(frame):
                 mid = (width / 2, height / 2)
                 offset = np.subtract(mid, intersect)
                 cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
-                print('Actie: GO', 'RIGHT' if offset[0] < 0 else 'LEFT', 'by', round(abs(offset[0]), 1))
+                return magic.RIGHT if offset[0] <0 else magic.LEFT
+    return magic.DEFAULT_SIDE
+
+
 
 def is_circle_on_screen(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

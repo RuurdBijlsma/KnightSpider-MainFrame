@@ -31,10 +31,10 @@ class Spider(object):
         legs = [
             Leg(self.ik_cache, leg_id=1, angle=-30, body_position=Point3D(-70.8, 0, 104.12)),
             Leg(self.ik_cache, leg_id=2, angle=0, body_position=Point3D(-83, 0, 0)),
-            Leg(self.ik_cache, leg_id=3, angle=30, body_position=Point3D(-71.09, 0, -108.50)),
-            Leg(self.ik_cache, leg_id=4, angle=30, body_position=Point3D(69.8, 0, 103.65)),
+            Leg(self.ik_cache, leg_id=3, angle=30, body_position=Point3D(-70.8, 0, -104.12)),
+            Leg(self.ik_cache, leg_id=4, angle=30, body_position=Point3D(70.8, 0, 104.12)),
             Leg(self.ik_cache, leg_id=5, angle=0, body_position=Point3D(83, 0, 0)),
-            Leg(self.ik_cache, leg_id=6, angle=-30, body_position=Point3D(69.58, 0, -108.97)),
+            Leg(self.ik_cache, leg_id=6, angle=-30, body_position=Point3D(70.8, 0, -104.12)),
         ]
 
         # legs = [
@@ -175,18 +175,21 @@ class Spider(object):
 
         self.rotate_body(math.radians(0), math.radians(0))
 
-        self.update_walk(self.stats_dict[magic.UP])
+        self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
         egg_maw.init()
         egg_maw.open_maw()
 
+        distance.init()
+
+        self.vision = Vision()
+
         if all_systems_enabled:
             # self.speech_synthesis = SpeechSynthesis()
             # self.speech_synthesis.speak("Starting all systems")
             self.app = AppCommunicator(self, False)
-            self.vision = Vision()
 
     def close(self):
         try:
@@ -400,6 +403,7 @@ class Spider(object):
             print("dans execute")
 
     def egg_mode(self, card, colored):
+            self.speed = 200
         # if egg_maw.current_pwm == egg_maw.OPEN_PWM:
         #     if colored:
         #         position = self.vision.find_colored_egg()
@@ -429,7 +433,8 @@ class Spider(object):
 
     def operate_maw(self, open, position):
         if position == magic.CENTER:
-            if 10 < distance.get_distance() <= 400:
+            if 10 < distance.get_distance():
+                print("moving forward towards target")
                 self.move_to_magic(position)
             elif distance is not float("inf"):
                 if open:
@@ -464,3 +469,13 @@ class Spider(object):
 
     def move_backward(self):
         self.go_direction(magic.DOWN)
+
+    def stand_tilted_x(self, angle):
+        self.rotate_body(math.radians(angle), 0)
+        self.leg_mover.stop()
+        self.update_walk(self.stats_dict[magic.CENTER])
+
+    def stand_tilted_y(self, angle):
+        self.rotate_body(0, math.radians(angle))
+        self.leg_mover.stop()
+        self.update_walk(self.stats_dict[magic.CENTER])

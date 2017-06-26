@@ -21,4 +21,6 @@ spider.dance_mover.execute()
 # Keep awake
 while True:
     # spider.vision.find_road()
-    time.sleep(1)
+    # spider.egg_mode(cards.CLUB, True)
+    time.sleep(0.1)
+
