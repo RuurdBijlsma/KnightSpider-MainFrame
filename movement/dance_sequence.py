@@ -199,7 +199,10 @@ STANCES = {
     ),
 }
 
-WAVE_DELAY = 0.2
+SAYONARA_MAXWELL_BPM = 62
+SAYONARA_MAXWELL_DELAY = SAYONARA_MAXWELL_BPM / 60
+
+WAVE_DELAY = SAYONARA_MAXWELL_DELAY / 4
 WAVE_SERVO_SPEED = 1000
 LEG_WAVE = DanceSequence([
     (STANCES["leg_wave-1"], WAVE_DELAY, WAVE_SERVO_SPEED),
@@ -220,17 +223,14 @@ BODY_WAVE = DanceSequence([
 ])
 
 BOUNCE = DanceSequence([
-    (STANCES["stand_high"], 0.2, 1000),
-    (STANCES["stand_low"], 0.2, 1000),
+    (STANCES["stand_high"], SAYONARA_MAXWELL_DELAY / 4, 1000),
+    (STANCES["stand_low"], SAYONARA_MAXWELL_DELAY / 4, 1000),
 ])
 
 LAY_DOWN_GENTLY = DanceSequence([
-    (STANCES["stand_low"], 0.7, 200),
-    (STANCES["flat"], 0.7, 200)
+    (STANCES["stand_low"], SAYONARA_MAXWELL_DELAY, 200),
+    (STANCES["flat"], SAYONARA_MAXWELL_DELAY, 200)
 ])
-
-SAYONARA_MAXWELL_BPM = 62
-SAYONARA_MAXWELL_DELAY = SAYONARA_MAXWELL_BPM / 60
 
 CHEER_BPM_DIVIDER = 4
 
@@ -252,35 +252,55 @@ CHEER = DanceSequence([
 ])
 
 WAVE_BPM_DIVIDER = 2
+WAVE_MULTI_AXIS_DIVIDER = WAVE_BPM_DIVIDER * 2
+
+def body_wave_multi_axis(spider):
+    return DanceSequence()\
+        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 10), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(20, 10), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(20, 0), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, -10), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(-20, -10), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_MULTI_AXIS_DIVIDER, WAVE_SERVO_SPEED)\
 
 def body_wave(spider):
     return DanceSequence()\
-        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(0, 10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(20, 10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(0, -10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(-20, -10), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(-20, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
-        .add_walk(lambda: spider.stand_tilted(0, 0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
 
 def create_sayora_maxwell_dance(spider):
     sequence = DanceSequence()
 
     sequence\
-        .add_move(STANCES["stand"], 0.5, 450)\
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 2, 450)\
         .concat_sequence(CHEER)\
-        .add_move(STANCES["stand"], 0.2, 1000) \
-        .concat_sequence(LAY_DOWN_GENTLY)\
-        .add_move(STANCES["stand_high"], 0.2, 1000) \
-        .add_move(STANCES["stand"], 0.2, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .add_walk(spider.turn_left, SAYONARA_MAXWELL_DELAY * 3, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(LEG_WAVE)\
         .concat_sequence(LEG_WAVE)\
-        .add_walk(spider.turn_left, 5.5, 1000) \
-        .add_move(STANCES["stand"], 0.2, 1000) \
+        .add_walk(spider.turn_left, SAYONARA_MAXWELL_DELAY * 6, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .concat_sequence(body_wave_multi_axis(spider))\
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .concat_sequence(CHEER)\
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .add_walk(spider.move_backward, SAYONARA_MAXWELL_DELAY * 3, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(body_wave(spider))\
-        .add_move(STANCES["stand"], 0.2, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .add_walk(spider.move_forward, SAYONARA_MAXWELL_DELAY * 3, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(LAY_DOWN_GENTLY)\
         .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
 

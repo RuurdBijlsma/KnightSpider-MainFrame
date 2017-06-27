@@ -171,7 +171,7 @@ class Spider(object):
         self.reset_stats()
         self.rotate_body(math.radians(0), math.radians(0))
 
-        self.update_walk(self.stats_dict[magic.UP])
+        self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
@@ -440,8 +440,8 @@ class Spider(object):
 
     def balloon_mode(self, stick, left_button, right_button):
         # Call manual mode with a few options preset
-        self.leg_mover.ground_clearance = 140
-        self.rotate_body(0, math.radians(-50))
+        self.leg_mover.ground_clearance = 160
+        self.rotate_body(math.radians(-20), 0)
         self.manual_mode(stick, 0, left_button, right_button, 0)
 
     def hill_mode(self, stick, vertical, left_button, right_button, joystick_button):
@@ -472,20 +472,22 @@ class Spider(object):
 
     locked = False
     def operate_maw(self, open, position):
-        if locked is False:
+        if self.locked is False:
             if position == magic.CENTER:
-                locked = True
-        elif 10 < distance.get_distance():
+                self.locked = True
+            else:
+                self.move_to_magic(position)
+        else: # 10 < distance.get_distance():
             print("moving forward towards target")
             self.move_to_magic(position)
-        elif distance is not float("inf"):
-            if open:
-                egg_maw.open_maw()
-            else:
-                egg_maw.close_maw()
-            locked = False
-        else:
-            self.move_to_magic(position)
+        # elif distance is not float("inf"):
+        #     if open:
+        #         egg_maw.open_maw()
+        #     else:
+        #         egg_maw.close_maw()
+        #     # self.locked = False
+        # else:
+        #     self.move_to_magic(position)
 
     def move_to_magic(self, magic_number):
         {
