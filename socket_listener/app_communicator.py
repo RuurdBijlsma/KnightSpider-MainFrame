@@ -24,7 +24,7 @@ class AppCommunicator(object):
 
     mag = 0
     def udp_callback(self, data):
-        print("UDP",data)
+        # print("UDP",data)
         # if self.t_last is None or self.t_last + self.CONTROLLER_UPDATE_INTERVAL < time.time():
         #     self.t_last = time.time()
         #     self.spider.parse_controller_update(data)
