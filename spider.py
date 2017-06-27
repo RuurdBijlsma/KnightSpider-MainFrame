@@ -167,9 +167,8 @@ class Spider(object):
 
         self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
-        self.speed = 1000
-        self.reset_stats()
         self.rotate_body(math.radians(0), math.radians(0))
+        self.reset_stats()
 
         self.update_walk(self.stats_dict[magic.CENTER])
 
@@ -241,7 +240,7 @@ class Spider(object):
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
-            4: lambda: self.egg_mode(cards.CLUB, True),
+            4: lambda: self.egg_mode(cards.SPADE, True),
             5: lambda: self.balloon_mode((stick_x, stick_y), bool(left_button), bool(right_button)),
             6: lambda: self.line_dance_mode(),
             7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
@@ -260,8 +259,12 @@ class Spider(object):
             'forward': 120,
             'crab': 120
         }
-        self.step_length = 60
+        self.step_length = {
+            'forward': 60,
+            'crab': 60
+        }
         self.step_height = 40
+        self.speed = 700
 
     @property
     def stats_dict(self):
@@ -275,7 +278,7 @@ class Spider(object):
                 'crab': False,
             },
             magic.UP: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(180),
@@ -283,7 +286,7 @@ class Spider(object):
                 'crab': False,
             },
             magic.DOWN: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(0),
@@ -291,7 +294,7 @@ class Spider(object):
                 'crab': False,
             },
             magic.RIGHT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['crab'],
                 'tip_distance': self.tip_distance['crab'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(90),
@@ -299,7 +302,7 @@ class Spider(object):
                 'crab': True,
             },
             magic.LEFT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['crab'],
                 'tip_distance': self.tip_distance['crab'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(-90),
@@ -307,7 +310,7 @@ class Spider(object):
                 'crab': True,
             },
             magic.ROTATE_RIGHT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(0),
@@ -315,7 +318,7 @@ class Spider(object):
                 'crab': False,
             },
             magic.ROTATE_LEFT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(0),
@@ -323,19 +326,19 @@ class Spider(object):
                 'crab': False,
             },
             magic.TURN_RIGHT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(180),
-                'turn_modifier': 0.25,
+                'turn_modifier': -0.4,
                 'crab': False,
             },
             magic.TURN_LEFT: {
-                'step_length': self.step_length,
+                'step_length': self.step_length['forward'],
                 'tip_distance': self.tip_distance['forward'],
                 'step_height': self.step_height,
                 'rotate_angle': math.radians(180),
-                'turn_modifier': -0.25,
+                'turn_modifier': 0.4,
                 'crab': False,
             },
         }
@@ -343,11 +346,18 @@ class Spider(object):
     def manual_mode(self, stick, vertical, left_button, right_button, joystick_button):
         height_multiplier = 10
 
-        if (joystick_button):
+        if joystick_button:
             rotate_multiplier = math.radians(5)
             self.rotate_body(self.rotate_x + vertical * rotate_multiplier, self.rotate_z)
         else:
             self.leg_mover.ground_clearance += vertical * height_multiplier
+
+        self.step_height = 60
+        self.step_length = {
+            'forward': 50,
+            'crab': 70
+        }
+        self.speed = 500
 
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
@@ -360,9 +370,9 @@ class Spider(object):
         elif direction == magic.CENTER:
             stats = self.stats_dict[rotation]
         else:
-            if (direction == magic.UP and rotation == magic.ROTATE_RIGHT):
+            if direction == magic.UP and rotation == magic.ROTATE_RIGHT:
                 stats = self.stats_dict[magic.TURN_RIGHT]
-            elif (direction == magic.UP and rotation == magic.ROTATE_LEFT):
+            elif direction == magic.UP and rotation == magic.ROTATE_LEFT:
                 stats = self.stats_dict[magic.TURN_LEFT]
             else:
                 stats = self.stats_dict[magic.CENTER]
@@ -387,7 +397,7 @@ class Spider(object):
 
     def fury_mode(self):
         wait_time_on_circle = 30
-        # position = self.vision.find_road()
+        #
         # if position == magic.CENTER:
         if self.is_on_circle and not self.lock_fury:
             print("past circle")
@@ -453,6 +463,7 @@ class Spider(object):
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
+        print("gap mode")
         if (joystick_button):
             self.balancing_mode = not self.balancing_mode
         if (self.balancing_mode):
@@ -475,19 +486,19 @@ class Spider(object):
         if self.locked is False:
             if position == magic.CENTER:
                 self.locked = True
-        elif self.locked:
-            if 10 < distance.get_distance():
-                print("moving forward towards target")
+            else:
                 self.move_to_magic(position)
-            elif distance is not float("inf"):
-                if open:
-                    egg_maw.open_maw()
-                else:
-                    egg_mag.close_maw()
-                self.locked = False
-        else:
+        else:  # 10 < distance.get_distance():
+            print("moving forward towards target")
             self.move_to_magic(position)
-
+            # elif distance is not float("inf"):
+            #     if open:
+            #         egg_maw.open_maw()
+            #     else:
+            #         egg_maw.close_maw()
+            #     # self.locked = False
+            # else:
+            #     self.move_to_magic(position)
 
     def move_to_magic(self, magic_number):
         {

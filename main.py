@@ -1,6 +1,5 @@
 import time
 
-from vision import cards
 import ax12_serial
 import utils
 from spider import Spider
@@ -20,11 +19,7 @@ spider.start(True)
 
 # Keep awake
 while True:
-    # print("eieren")
-    # spider.egg_mode(cards.SPADE, True)
     # spider.fury_mode()
     # spider.egg_mode(cards.CLUB, True)
     # spider.balance()
-
-    time.sleep(0.1)
-
+    time.sleep(0.3)

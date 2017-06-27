@@ -23,8 +23,9 @@ class AppCommunicator(object):
             self.data_broadcaster = DataBroadcaster(spider, self.server, self.UPDATE_FREQUENCY, send_readings=False)
 
     mag = 0
+
     def udp_callback(self, data):
-        # print("UDP",data)
+        print("UDP", data)
         # if self.t_last is None or self.t_last + self.CONTROLLER_UPDATE_INTERVAL < time.time():
         #     self.t_last = time.time()
         #     self.spider.parse_controller_update(data)

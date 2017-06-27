@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from threading import Thread
 
 from vision import magic
 
@@ -15,9 +14,8 @@ resolution = 500
 # cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
 # cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
-UPPER = (30,255,255)
-LOWER = (0,60,60)
-
+UPPER = (30, 255, 255)
+LOWER = (0, 60, 60)
 
 
 # def midpoint(p1, p2):
@@ -61,7 +59,7 @@ def find_road(frame):
         road_lines = []
         angles = []
 
-        print("mani lines", len(lines))
+        print("Road lines count: ", len(lines))
         for line in lines:
             for rho, theta in line:
                 a = np.cos(theta)
@@ -79,35 +77,42 @@ def find_road(frame):
                 angle = np.math.atan2(from_pos[1] - to_pos[1], from_pos[0] - to_pos[0])
                 angle = np.math.degrees(angle)
                 angle = angle + 180 if angle < 0 else angle
-                if 40 < angle < 85 or 120 < angle < 175:
+                if 40 < int(angle) < 85 or 120 < int(angle) < 175:
                     stop = False
                     for road_angle in angles:
                         if road_angle > 90 and angle > 90:
                             stop = True
 
                     if not stop:
-                        cv2.line(frame, from_pos, to_pos, (0, 0, 255), 2)
-                        cv2.putText(frame, str(angle), to_pos, cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0))
+                        # cv2.line(frame, from_pos, to_pos, (0, 0, 255), 2)
+                        # cv2.putText(frame, str(angle), to_pos, cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 0))
                         road_lines.append((from_pos, to_pos))
                         angles.append(angle)
 
         if len(road_lines) > 1:
-            intersect = line_intersection(road_lines[0], road_lines[1])
+            intersect = False
+            index = 0
+            while (True):
+                intersect = line_intersection(road_lines[index], road_lines[index + 1])
+                index += 1
+                if (intersect):
+                    break
+
             if intersect:
-                cv2.circle(frame, (int(intersect[0]), int(intersect[1])), 3, (0, 255, 0))
+                # cv2.circle(frame, (int(intersect[0]), int(intersect[1])), 3, (0, 255, 0))
 
                 height, width, channels = frame.shape
                 mid = (width / 2, height / 2)
                 offset = np.subtract(mid, intersect)
-                cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
+                # cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
 
                 centre_offset = 100
-                print("Found something, offset %s"%offset)
-                return magic.RIGHT if offset[0] <-centre_offset else magic.LEFT if offset[0] >centre_offset else magic.CENTER
+                print("Found something, offset %s" % offset)
+                return magic.RIGHT if offset[0] < -centre_offset else magic.LEFT if offset[
+                                                                                        0] > centre_offset else magic.CENTER
 
     print("Found nothing")
-    return magic.DEFAULT_SIDE
-
+    return magic.CENTER
 
 
 def is_circle_on_screen(frame):
@@ -116,13 +121,12 @@ def is_circle_on_screen(frame):
 
     redMask = cv2.inRange(hsv, LOWER, UPPER)
     _, thresh = cv2.threshold(redMask, 127, 255, 0)
-    _, contours, _ = cv2.findContours(thresh,cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+    _, contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if(area>0):
-            print("Cunt area:",area)
+        if (area > 0):
+            print("Cunt area:", area)
         if area > 2000:
             return True
 
