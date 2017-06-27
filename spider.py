@@ -398,17 +398,17 @@ class Spider(object):
     lock_fury = False
 
     def fury_mode(self):
-        self.speed = 100
+        self.speed = 200
         wait_time_on_circle = 30
         #
         # if position == magic.CENTER:
         if self.is_on_circle and not self.lock_fury:
             print("past circle")
-            self.move_forward()
+            self.fury_forward()
         else:
             if road_detector.is_circle_on_screen(self.vision.server.get_capture()):
                 print("moving towards circle")
-                self.move_forward()
+                self.fury_forward()
             else:
                 self.is_on_circle = True
                 self.lock_fury = True
@@ -418,6 +418,16 @@ class Spider(object):
                 self.lock_fury = False
                 # else:
                 #     self.move_to_magic(position)
+
+    def fury_forward(self):
+        position=self.vision.find_road()
+        print(magic.KEYS[position])
+        if(position==magic.CENTER):
+            self.move_forward()
+        elif(position==magic.RIGHT):
+            self.corner_left()
+        elif(position==magic.LEFT):
+            self.corner_right()
 
     def dance_mode(self):
         print("evacueer de dansvloer")
@@ -515,10 +525,9 @@ class Spider(object):
         }[magic_number]()
 
     def go_direction(self, direction):
-        print("ik mot draaie", magic.KEYS[direction])
+        print("Going direction", magic.KEYS[direction])
         stats = self.stats_dict[direction]
         if stats != self.current_stats:
-            print("heus")
             self.update_walk(stats)
 
     def stand_still(self):
@@ -529,6 +538,12 @@ class Spider(object):
 
     def turn_right(self):
         self.go_direction(magic.ROTATE_RIGHT)
+
+    def corner_left(self):
+        self.go_direction(magic.TURN_LEFT)
+
+    def corner_right(self):
+        self.go_direction(magic.TURN_RIGHT)
 
     def move_forward(self):
         self.go_direction(magic.UP)

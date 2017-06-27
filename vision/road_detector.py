@@ -14,8 +14,8 @@ resolution = 500
 # cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
 # cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
-UPPER = (30, 255, 255)
-LOWER = (0, 60, 60)
+UPPER = (30, 210, 210)
+LOWER = (0, 100, 100)
 
 
 # def midpoint(p1, p2):
@@ -127,7 +127,7 @@ def is_circle_on_screen(frame):
         area = cv2.contourArea(cnt)
         # if (area > 0):
         #     print("Cunt area:", area)
-        if area > 2000:
+        if area > 3000:
             return True
 
     return False

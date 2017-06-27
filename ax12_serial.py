@@ -21,7 +21,8 @@ def init(port='/dev/serial0', baudrate=1000000, timeout=0.2,
 def catch_wrap(action):
     try:
         return action()
-    except:
+    except Exception as e:
+        print(e)
         pass
 
 def lock():
