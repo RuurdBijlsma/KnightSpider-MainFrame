@@ -475,19 +475,19 @@ class Spider(object):
         if self.locked is False:
             if position == magic.CENTER:
                 self.locked = True
-            else:
+        elif self.locked:
+            if 10 < distance.get_distance():
+                print("moving forward towards target")
                 self.move_to_magic(position)
-        else: # 10 < distance.get_distance():
-            print("moving forward towards target")
+            elif distance is not float("inf"):
+                if open:
+                    egg_maw.open_maw()
+                else:
+                    egg_mag.close_maw()
+                self.locked = False
+        else:
             self.move_to_magic(position)
-        # elif distance is not float("inf"):
-        #     if open:
-        #         egg_maw.open_maw()
-        #     else:
-        #         egg_maw.close_maw()
-        #     # self.locked = False
-        # else:
-        #     self.move_to_magic(position)
+
 
     def move_to_magic(self, magic_number):
         {
