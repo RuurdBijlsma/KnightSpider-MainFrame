@@ -10,6 +10,7 @@ import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
 import utils
+# from gyroscoop import Gyroscoop
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
@@ -170,7 +171,7 @@ class Spider(object):
         self.rotate_body(math.radians(0), math.radians(0))
         self.reset_stats()
 
-        self.update_walk(self.stats_dict[magic.UP])
+        self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
@@ -355,10 +356,10 @@ class Spider(object):
 
         self.step_height = 60
         self.step_length = {
-            'forward': 50,
+            'forward': 100,
             'crab': 70
         }
-        self.speed = 500
+        self.speed = 1000
 
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
@@ -397,6 +398,7 @@ class Spider(object):
     lock_fury = False
 
     def fury_mode(self):
+        self.speed = 100
         wait_time_on_circle = 30
         #
         # if position == magic.CENTER:

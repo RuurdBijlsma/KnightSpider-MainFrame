@@ -125,8 +125,8 @@ def is_circle_on_screen(frame):
 
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if (area > 0):
-            print("Cunt area:", area)
+        # if (area > 0):
+        #     print("Cunt area:", area)
         if area > 2000:
             return True
 

@@ -29,22 +29,21 @@ class Gyroscoop(object):
         x = self.read_word_2c(self.GYRO_X)
         y = self.read_word_2c(self.GYRO_Y)
         z = self.read_word_2c(self.GYRO_Z)
-        return (x,y,z)
+        return (x, y, z)
 
     def read_accel(self):
         x = self.read_word_2c(self.ACCEL_X)
         y = self.read_word_2c(self.ACCEL_Y)
         z = self.read_word_2c(self.ACCEL_Z)
-        return (x,y,z)
+        return (x, y, z)
 
     def read_accel_scaled(self):
-        x,y,z = self.read_accel()
+        x, y, z = self.read_accel()
         return (
             x / self.ACCEL_SCALE_MAGIC,
             y / self.ACCEL_SCALE_MAGIC,
             z / self.ACCEL_SCALE_MAGIC
         )
-
 
     def read_byte(self, adr):
         return self.bus.read_byte_data(self.ADDRESS, adr)
@@ -62,15 +61,14 @@ class Gyroscoop(object):
         else:
             return val
 
-
     @staticmethod
     def get_y_rotation(rotation):
-        x,y,z = rotation
+        x, y, z = rotation
         radians = math.atan2(x, utils.dist(y, z))
         return -math.degrees(radians)
 
     @staticmethod
     def get_x_rotation(rotation):
-        x,y,z = rotation
+        x, y, z = rotation
         radians = math.atan2(y, utils.dist(x, z))
         return math.degrees(radians)
