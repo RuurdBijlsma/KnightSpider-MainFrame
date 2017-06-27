@@ -170,7 +170,7 @@ class Spider(object):
         self.rotate_body(math.radians(0), math.radians(0))
         self.reset_stats()
 
-        self.update_walk(self.stats_dict[magic.CENTER])
+        self.update_walk(self.stats_dict[magic.UP])
 
         self.gyroscope = Gyroscoop()
 
@@ -227,6 +227,7 @@ class Spider(object):
 
     def parse_controller_update(self, data):
         if data == "stop":
+            self.stand_still()
             return
 
         max_stick_value = 14000
@@ -463,9 +464,9 @@ class Spider(object):
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
-        print("gap mode")
         if (joystick_button):
             self.balancing_mode = not self.balancing_mode
+            print("SWITCHING MODE")
         if (self.balancing_mode):
             self.balance()
             self.leg_mover.ground_clearance = 140
@@ -475,6 +476,10 @@ class Spider(object):
             self.speed = 100
             self.step_length = 140
             self.step_height = 20
+            self.tip_distance = {
+                "forward": 90,
+                "crab": 90
+            }
 
         self.manual_mode(stick, 0, left_button, right_button, 0)
 
@@ -482,6 +487,7 @@ class Spider(object):
         pass
 
     locked = False
+
     def operate_maw(self, open, position):
         if self.locked is False:
             if position == magic.CENTER:
@@ -494,7 +500,7 @@ class Spider(object):
                 if open:
                     egg_maw.open_maw()
                 else:
-                    egg_mag.close_maw()
+                    egg_maw.close_maw()
                 self.locked = False
         else:
             self.move_to_magic(position)
@@ -512,6 +518,9 @@ class Spider(object):
         if stats != self.current_stats:
             print("heus")
             self.update_walk(stats)
+
+    def stand_still(self):
+        self.go_direction(magic.CENTER)
 
     def turn_left(self):
         self.go_direction(magic.ROTATE_LEFT)
