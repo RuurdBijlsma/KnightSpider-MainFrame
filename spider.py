@@ -164,20 +164,14 @@ class Spider(object):
 
     def start(self, all_systems_enabled=True):
         self.all_systems_enabled = all_systems_enabled
+
         self.leg_mover.ground_clearance = 100
         self.interval_at_max_speed = 0.1
         self.speed = 1000
-
-        self.rotate_angle = math.radians(180)
-        self.step_height = 0
-        self.step_length = 0
-        self.tip_distance = 120
-        self.turn_modifier = 0
-        self.crab = False
-
+        self.reset_stats()
         self.rotate_body(math.radians(0), math.radians(0))
 
-        self.update_walk(self.stats_dict[magic.CENTER])
+        self.update_walk(self.stats_dict[magic.UP])
 
         self.gyroscope = Gyroscoop()
 
@@ -248,8 +242,9 @@ class Spider(object):
                                         bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
             4: lambda: self.egg_mode(cards.CLUB, True),
-            5: lambda: self.balloon_mode(),
+            5: lambda: self.balloon_mode((stick_x, stick_y), bool(left_button), bool(right_button)),
             6: lambda: self.line_dance_mode(),
+            7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
         }[mode]()
 
     def lowrider_mode(self, stick):
@@ -259,86 +254,91 @@ class Spider(object):
         # self.rotate_z += stick[1] * rotation_speed_multiplier
 
     current_stats = {}
-    tip_distance = {
-        'forward': 120,
-        'crab': 120
-    }
-    step_length = 60
-    step_height = 40
-    stats_dict = {
-        magic.CENTER: {
-            'step_length': 0,
-            'tip_distance': tip_distance['forward'],
-            'step_height': 0,
-            'rotate_angle': math.radians(180),
-            'turn_modifier': 0,
-            'crab': False,
-        },
-        magic.UP: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(180),
-            'turn_modifier': 0,
-            'crab': False,
-        },
-        magic.DOWN: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(0),
-            'turn_modifier': 0,
-            'crab': False,
-        },
-        magic.RIGHT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['crab'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(90),
-            'turn_modifier': 1,
-            'crab': True,
-        },
-        magic.LEFT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['crab'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(-90),
-            'turn_modifier': 1,
-            'crab': True,
-        },
-        magic.ROTATE_RIGHT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(0),
-            'turn_modifier': 1,
-            'crab': False,
-        },
-        magic.ROTATE_LEFT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(0),
-            'turn_modifier': -1,
-            'crab': False,
-        },
-        magic.TURN_RIGHT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(180),
-            'turn_modifier': 0.25,
-            'crab': False,
-        },
-        magic.TURN_LEFT: {
-            'step_length': step_length,
-            'tip_distance': tip_distance['forward'],
-            'step_height': step_height,
-            'rotate_angle': math.radians(180),
-            'turn_modifier': -0.25,
-            'crab': False,
-        },
-    }
+
+    def reset_stats(self):
+        self.tip_distance = {
+            'forward': 120,
+            'crab': 120
+        }
+        self.step_length = 60
+        self.step_height = 40
+
+    @property
+    def stats_dict(self):
+        return {
+            magic.CENTER: {
+                'step_length': 0,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': 0,
+                'rotate_angle': math.radians(180),
+                'turn_modifier': 0,
+                'crab': False,
+            },
+            magic.UP: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(180),
+                'turn_modifier': 0,
+                'crab': False,
+            },
+            magic.DOWN: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(0),
+                'turn_modifier': 0,
+                'crab': False,
+            },
+            magic.RIGHT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['crab'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(90),
+                'turn_modifier': 1,
+                'crab': True,
+            },
+            magic.LEFT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['crab'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(-90),
+                'turn_modifier': 1,
+                'crab': True,
+            },
+            magic.ROTATE_RIGHT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(0),
+                'turn_modifier': 1,
+                'crab': False,
+            },
+            magic.ROTATE_LEFT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(0),
+                'turn_modifier': -1,
+                'crab': False,
+            },
+            magic.TURN_RIGHT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(180),
+                'turn_modifier': 0.25,
+                'crab': False,
+            },
+            magic.TURN_LEFT: {
+                'step_length': self.step_length,
+                'tip_distance': self.tip_distance['forward'],
+                'step_height': self.step_height,
+                'rotate_angle': math.radians(180),
+                'turn_modifier': -0.25,
+                'crab': False,
+            },
+        }
 
     def manual_mode(self, stick, vertical, left_button, right_button, joystick_button):
         height_multiplier = 10
@@ -438,7 +438,7 @@ class Spider(object):
             position = self.vision.find_diamond()
             self.operate_maw(True, position)
 
-    def balloon_mode(self, stick, _, left_button, right_button, __):
+    def balloon_mode(self, stick, left_button, right_button):
         # Call manual mode with a few options preset
         self.leg_mover.ground_clearance = 140
         self.rotate_body(0, math.radians(-50))
@@ -448,12 +448,23 @@ class Spider(object):
         # Call manual mode with a few options preset
         self.leg_mover.ground_clearance = 140
         self.balance()
-        self.manual_mode(stick, 0, left_button, right_button, 0)
 
-    def gap_mode(self, stick, vertical, left_button, right_button, joystick_button):
+    balancing_mode = False
+
+    def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
-        self.leg_mover.ground_clearance = 50
-        self.speed = 100
+        if (joystick_button):
+            self.balancing_mode = not self.balancing_mode
+        if (self.balancing_mode):
+            self.balance()
+            self.leg_mover.ground_clearance = 140
+            self.speed = 300
+        else:
+            self.leg_mover.ground_clearance = 40
+            self.speed = 100
+            self.step_length = 140
+            self.step_height = 20
+
         self.manual_mode(stick, 0, left_button, right_button, 0)
 
     def line_dance_mode(self):
@@ -498,6 +509,12 @@ class Spider(object):
     def move_backward(self):
         self.go_direction(magic.DOWN)
 
+    def move_left(self):
+        self.go_direction(magic.LEFT)
+
+    def move_right(self):
+        self.go_direction(magic.RIGHT)
+
     def stand_tilted(self, x, y):
         self.rotate_body(math.radians(x), math.radians(y))
         self.leg_mover.stop()
@@ -521,17 +538,18 @@ class Spider(object):
     angle_history = []
 
     def balance(self):
-        round_to_nearest = 2
+        round_to_nearest = 5
         avg_items = 5
 
         raw_angle = self.gyro_angle - self.calibrated_angle
-        raw_angle = round(raw_angle / round_to_nearest) * round_to_nearest
 
         body_angle = math.degrees(self.rotate_x)
-        print("Gyro angle: ", raw_angle, "Body angle:", body_angle)
+        # print("Gyro angle: ", raw_angle, "Body angle:", body_angle)
         angle = -raw_angle
 
         self.angle_history.append(angle)
         self.angle_history = self.angle_history[-avg_items:]
 
-        self.rotate_body(math.radians(np.average(self.angle_history)), 0)
+        avg_angle = math.radians(round(np.average(self.angle_history) / round_to_nearest) * round_to_nearest)
+
+        self.rotate_body(avg_angle, 0)

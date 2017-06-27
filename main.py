@@ -21,7 +21,7 @@ spider.start(True)
 while True:
     # spider.fury_mode()
     # spider.egg_mode(cards.CLUB, True)
-    # spider.balance()
+    spider.balance()
 
     time.sleep(0.1)
 
