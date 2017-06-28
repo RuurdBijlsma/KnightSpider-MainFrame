@@ -334,7 +334,7 @@ def create_sayora_maxwell_dance(spider):
         .add_walk(spider.move_forward, SAYONARA_MAXWELL_DELAY * 3, 1000) \
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(body_wave(spider))\
-        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY * 2, 1000) \
         .concat_sequence(LAY_DOWN_GENTLY)\
         .add_move(STANCES["dead"], SAYONARA_MAXWELL_DELAY, STANDARD_SERVO_SPEED)\
 
