@@ -10,6 +10,7 @@ import distance
 import egg_maw
 import movement.dance_sequence as dance_sequence
 import utils
+from audio.beat_detection import BeatDetection
 # from gyroscoop import Gyroscoop
 from gyroscoop import Gyroscoop
 from leg import Leg
@@ -246,7 +247,7 @@ class Spider(object):
             4: lambda: self.egg_mode_dumb((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                           bool(left_button), bool(right_button), bool(joystick_button)),
             5: lambda: self.balloon_mode((stick_x, stick_y), bool(left_button), bool(right_button)),
-            6: lambda: self.line_dance_mode(),
+            6: lambda: self.line_dance_mode(bool(right_button)),
             # 7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
             7: lambda: self.gap_mode_dumb((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                           bool(left_button), bool(right_button), bool(joystick_button))
@@ -531,6 +532,11 @@ class Spider(object):
         elif vertical == -1:
             self.gap_angle = -15
         self.rotate_body(math.radians(self.gap_angle), 0)
+        self.step_length = {
+            'forward': 110,
+            'crab': 70
+        }
+        self.speed = 250
         self.manual_mode(stick, 0, left_button, right_button, False, False)
 
     balancing_mode = True
@@ -569,16 +575,24 @@ class Spider(object):
 
     clapping = False
 
-    def line_dance_mode(self):
+    def line_dance_mode(self, right_button):
+        if not self.clapping:
+            self.leg_mover.ground_clearance = 170
+            beet = BeatDetection()
+            beet.block_till_beat()
+            self.clap_mode()
+
+        if right_button:
+            self.clap_mode()
+
+    def clap_mode(self):
         if not self.clapping:
             self.clapping = True
-            self.leg_mover.ground_clearance = 170
-
             sec_between_beat = 1.371
             clap_duration = 10
 
-            magicruurd = 116.703136
-            self.speed = sec_between_beat * magicruurd
+            magic_ruurd = 116.703136
+            self.speed = sec_between_beat * magic_ruurd
             self.leg_mover.clap(tip_distance=70)
             threading.Timer(clap_duration, lambda: self.leg_mover.stop()).start()
 
