@@ -1,11 +1,10 @@
-import threading
-
 import time
 
 import ax12_serial
 from models import ServoReadings
 
-TRANING_MODE=False
+TRANING_MODE = False
+
 
 class Servo(object):
     def __init__(self, id, offset_angle=0, min_angle=-150, max_angle=150, flip_angles=False, move_speed=300,
