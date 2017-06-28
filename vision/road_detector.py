@@ -17,6 +17,8 @@ resolution = 500
 UPPER = (10, 255, 255)
 LOWER = (0, 100, 100)
 
+BLACK_UPPER = (180,255,45)
+BLACK_LOWER = (0, 0, 0)
 
 # def midpoint(p1, p2):
 #     return (int((p1[0] + p2[0]) / 2), int((p1[1] + p2[1]) / 2))
@@ -52,7 +54,10 @@ def find_road(frame):
     a = 150
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(gray, low, high)
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, BLACK_LOWER, BLACK_UPPER)
+
+    edges = cv2.Canny(mask, low, high)
     lines = cv2.HoughLines(edges, 1, np.pi / 180, a)
 
     if lines is not None:
