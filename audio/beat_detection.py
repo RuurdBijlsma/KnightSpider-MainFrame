@@ -2,7 +2,7 @@
 import RPi.GPIO as gpio
 import time
 
-PIN = 4
+PIN = 25
 MAX_BEAT_TIME = 5
 MAX_BEAT_COUNT = 3
 

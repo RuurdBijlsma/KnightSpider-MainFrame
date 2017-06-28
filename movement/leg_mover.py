@@ -21,7 +21,7 @@ class LegMover(object):
 
         clap_radius = 240
         clap_height = 200
-        closed_x_pos = -50
+        closed_x_pos = 0
         clap_points = [
             Point3D(clap_radius, clap_height, clap_radius),  # open clap
             Point3D(closed_x_pos, clap_height, clap_radius)  # closed clap
@@ -52,6 +52,7 @@ class LegMover(object):
                 midpoints=midpoints
             ),
         ]
+
 
         self.sequence_amount += 1
         self.current_walk_index = self.sequence_amount
