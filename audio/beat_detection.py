@@ -33,4 +33,8 @@ class BeatDetection(object):
 
         return True
 
+    def block_till_beat(self):
+        while True:
+            if gpio.input(PIN):
+                return True
 
