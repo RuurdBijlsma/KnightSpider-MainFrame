@@ -1,6 +1,7 @@
 import time
 
 import ax12_serial
+import egg_maw
 import utils
 from spider import Spider
 
@@ -19,7 +20,9 @@ spider.start(True)
 
 # Keep awake
 while True:
-    # spider.fury_mode()
+    # egg_maw.open_maw()
+    # spider.fury_mode_downs_syndrome()
     # spider.egg_mode(cards.CLUB, True)
     # spider.balance()
+    # egg_maw.close_maw()
     time.sleep(0.3)

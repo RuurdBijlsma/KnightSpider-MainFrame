@@ -1,6 +1,6 @@
 import RPi.GPIO as gpio
 
-PIN_ID = 15
+PIN_ID = 5
 PWM_HZ = 50
 
 pin = None

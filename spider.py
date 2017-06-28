@@ -409,6 +409,30 @@ class Spider(object):
             if not joystick_button:
                 self.update_walk(stats)
 
+    walk_start = None
+    WALK_TIME = 12
+    WAIT_TIME = 30
+    lock_fury_dumb = False
+    has_passed_circle = None
+    def fury_mode_downs_syndrome(self):
+        print("Stupid")
+        if self.walk_start is None:
+            self.walk_start = time.time()
+
+        if not self.lock_fury_dumb:
+            # noinspection PyTypeChecker
+            if not self.has_passed_circle and time.time() > self.walk_start + self.WALK_TIME:
+                    self.lock_fury_dumb = True
+                    print("Stopping")
+                    self.go_direction(magic.CENTER)
+                    # chill in circle
+                    time.sleep(self.WAIT_TIME)
+                    print("Done stopping")
+                    self.lock_fury_dumb = False
+                    self.has_passed_circle = True
+
+            self.fury_forward()
+
     is_on_circle = False
     lock_fury = False
 
@@ -504,18 +528,22 @@ class Spider(object):
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
-        # if (joystick_button):
-        #     self.balancing_mode = not self.balancing_mode
-        #     print("SWITCHING MODE")
+        if (joystick_button):
+            self.balancing_mode = not self.balancing_mode
+            print("SWITCHING MODE")
         if (self.balancing_mode):
             self.balance()
             self.leg_mover.ground_clearance = 140
+            self.speed = 300
             self.step_height = 70
             self.step_length = {
                 'forward': 30,
                 'crab': 70
             }
-            self.speed = 300
+            self.tip_distance = {
+                "forward": 90,
+                "crab": 90
+            }
         else:
             self.leg_mover.ground_clearance = 40
             self.speed = 100

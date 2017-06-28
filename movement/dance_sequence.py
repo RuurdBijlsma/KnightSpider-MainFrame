@@ -277,6 +277,14 @@ def body_wave(spider):
         .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
         .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
         .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(-35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
+        .add_walk(lambda: spider.stand_tilted_x(35), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
         .add_walk(lambda: spider.stand_tilted_x(0), SAYONARA_MAXWELL_DELAY / WAVE_BPM_DIVIDER, WAVE_SERVO_SPEED)\
 
 def create_sayora_maxwell_dance(spider):
@@ -298,15 +306,23 @@ def create_sayora_maxwell_dance(spider):
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 2, 450)\
         .concat_sequence(CHEER)\
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .concat_sequence(body_wave(spider))\
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(LEG_WAVE)\
         .concat_sequence(LEG_WAVE)\
-        .add_walk(spider.turn_left, SAYONARA_MAXWELL_DELAY * 6, 1000) \
+        .add_walk(spider.turn_left, SAYONARA_MAXWELL_DELAY * 8, 1000) \
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(body_wave_multi_axis(spider))\
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(CHEER)\
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .add_walk(spider.move_backward, SAYONARA_MAXWELL_DELAY * 3, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .concat_sequence(LEG_WAVE)\
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .add_walk(spider.turn_left, SAYONARA_MAXWELL_DELAY * 8, 1000) \
+        .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
+        .concat_sequence(LEG_WAVE)\
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
         .concat_sequence(body_wave(spider))\
         .add_move(STANCES["stand"], SAYONARA_MAXWELL_DELAY / 4, 1000) \
