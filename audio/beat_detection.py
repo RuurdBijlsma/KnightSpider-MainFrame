@@ -3,7 +3,7 @@ import RPi.GPIO as gpio
 import time
 
 PIN = 4
-MAX_BEAT_TIME = 10
+MAX_BEAT_TIME = 5
 MAX_BEAT_COUNT = 3
 
 class BeatDetection(object):
@@ -29,6 +29,8 @@ class BeatDetection(object):
 
         if len(beats) == 0 or len(beats) == 1:
             print("no beat detected")
-            return -1
+            return False
+
+        return True
 
 
