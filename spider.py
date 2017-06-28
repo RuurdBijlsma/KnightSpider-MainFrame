@@ -1,27 +1,27 @@
 import json
 import math
-import movement.dance_sequence as dance_sequence
 import numpy as np
 import os
 import signal
 import threading
 import time
-from movement.dance_mover import DanceMover
-from movement.ik_cache import IKCache
-from movement.leg_mover import LegMover
-from socket_listener.app_communicator import AppCommunicator
-from vision import cards
-from vision import magic
-from vision import road_detector
 
 import distance
 import egg_maw
+import movement.dance_sequence as dance_sequence
 import utils
 # from gyroscoop import Gyroscoop
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
+from movement.dance_mover import DanceMover
+from movement.ik_cache import IKCache
+from movement.leg_mover import LegMover
 from point import Point3D
+from socket_listener.app_communicator import AppCommunicator
+from vision import cards
+from vision import magic
+from vision import road_detector
 from visionclass import Vision
 
 
@@ -172,7 +172,7 @@ class Spider(object):
         self.reset_stats()
 
         clap = False
-        if (clap):
+        if clap:
             self.leg_mover.ground_clearance = 170
 
             sec_between_beat = 1.371
@@ -368,13 +368,13 @@ class Spider(object):
         else:
             self.leg_mover.ground_clearance += vertical * height_multiplier
 
-        if (set_props):
+        if set_props:
             self.step_height = 60
             self.step_length = {
-                'forward': 100,
+                'forward': 90,
                 'crab': 70
             }
-            self.speed = 1000
+            self.speed = 700
 
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
@@ -464,11 +464,11 @@ class Spider(object):
     def fury_forward(self):
         position = self.vision.find_road()
         print("FURY", magic.KEYS[position])
-        if (position == magic.CENTER):
+        if position == magic.CENTER:
             self.move_forward()
-        elif (position == magic.RIGHT):
+        elif position == magic.RIGHT:
             self.corner_left()
-        elif (position == magic.LEFT):
+        elif position == magic.LEFT:
             self.corner_right()
 
     def dance_mode(self):
@@ -481,14 +481,20 @@ class Spider(object):
             print("dans execute")
 
     def egg_mode_dumb(self, stick, vertical, left_button, right_button, joystick_button):
-        if (joystick_button):
+        if joystick_button:
             pwm = egg_maw.current_pwm
-            if (pwm == egg_maw.OPEN_PWM):
+            if pwm == egg_maw.CLOSE_PWM:
                 egg_maw.open_maw()
-            elif (pwm == egg_maw.CLOSE_PWM):
+            elif pwm == egg_maw.OPEN_PWM:
                 egg_maw.close_maw()
 
-        self.manual_mode(stick, vertical, left_button, right_button, 0)
+        self.speed = 300
+        self.step_length = {
+            'forward': 70,
+            'crab': 50
+        }
+
+        self.manual_mode(stick, vertical, left_button, right_button, False, set_props=False)
 
     def egg_mode(self, card, colored):
         self.speed = 200
@@ -528,13 +534,12 @@ class Spider(object):
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
-        if (joystick_button):
-            self.balancing_mode = not self.balancing_mode
-            print("SWITCHING MODE")
-        if (self.balancing_mode):
+        # if (joystick_button):
+        #     self.balancing_mode = not self.balancing_mode
+        #     print("SWITCHING MODE")
+        if self.balancing_mode:
             self.balance()
             self.leg_mover.ground_clearance = 140
-            self.speed = 300
             self.step_height = 70
             self.step_length = {
                 'forward': 30,
