@@ -14,7 +14,7 @@ resolution = 500
 # cv2.createTrackbar('high', 'image', 131, 255, lambda x: None)
 # cv2.createTrackbar('a', 'image', 150, 255, lambda x: None)
 
-UPPER = (30, 210, 210)
+UPPER = (10, 255, 255)
 LOWER = (0, 100, 100)
 
 
@@ -106,7 +106,7 @@ def find_road(frame):
                 offset = np.subtract(mid, intersect)
                 # cv2.circle(frame, (int(mid[0]), int(intersect[1])), 3, (255, 0, 255))
 
-                centre_offset = 100
+                centre_offset = 50
                 print("Found something, offset %s" % offset)
                 return magic.RIGHT if offset[0] < -centre_offset else magic.LEFT if offset[
                                                                                         0] > centre_offset else magic.CENTER
@@ -125,9 +125,9 @@ def is_circle_on_screen(frame):
 
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        # if (area > 0):
-        #     print("Cunt area:", area)
-        if area > 3000:
+        if (area > 0):
+            print("Cunt area:", area)
+        if area > 2000:
             return True
 
     return False

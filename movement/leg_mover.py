@@ -1,9 +1,9 @@
 import math
 import threading
+from movement.stance import Stance
 
 import ax12_serial
 import utils
-from movement.stance import Stance
 from point import Point3D
 
 
@@ -12,9 +12,7 @@ class LegMover(object):
         self.spider = spider
         self.ground_clearance = ground_clearance
 
-    def clap(self, bpm=120, tip_distance=140, mid_leg_front_pos=30):
-        claps_per_second = bpm / 60
-
+    def clap(self, tip_distance=140, mid_leg_front_pos=100):
         leg_pos = Point3D(tip_distance, 0, 0)
         mid_leg_pos = Point3D(tip_distance, 0, mid_leg_front_pos)
 
@@ -25,7 +23,7 @@ class LegMover(object):
         clap_height = 200
         closed_x_pos = -50
         clap_points = [
-            Point3D(clap_radius, clap_height, 0),  # open clap
+            Point3D(clap_radius, clap_height, clap_radius),  # open clap
             Point3D(closed_x_pos, clap_height, clap_radius)  # closed clap
         ]
 
@@ -57,7 +55,7 @@ class LegMover(object):
 
         self.sequence_amount += 1
         self.current_walk_index = self.sequence_amount
-        self.execute_stance_sequence(stance_sequence)
+        self.execute_stance_sequence(stance_sequence, interval_index=self.current_walk_index)
 
     def walk(self, rotate_angle=math.radians(0), step_length=0, step_height=0, tip_distance=140, turn_modifier=0,
              crab=False):
@@ -176,7 +174,7 @@ class LegMover(object):
             self.set_stance(stance_list[index], crab,
                             lambda: self.execute_stance_sequence(stance_list, interval_index, index - 1, crab))
         else:
-            print("Sequence %s has been cancelled!"%interval_index)
+            print("Sequence %s has been cancelled!" % interval_index)
 
     def stop(self):
         self.current_walk_index = -1

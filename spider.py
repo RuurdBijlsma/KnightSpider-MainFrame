@@ -1,27 +1,27 @@
 import json
 import math
+import movement.dance_sequence as dance_sequence
+import numpy as np
 import os
 import signal
+import threading
 import time
-
-import numpy as np
+from movement.dance_mover import DanceMover
+from movement.ik_cache import IKCache
+from movement.leg_mover import LegMover
+from socket_listener.app_communicator import AppCommunicator
+from vision import cards
+from vision import magic
+from vision import road_detector
 
 import distance
 import egg_maw
-import movement.dance_sequence as dance_sequence
 import utils
 # from gyroscoop import Gyroscoop
 from gyroscoop import Gyroscoop
 from leg import Leg
 from models import SpiderInfo
-from movement.dance_mover import DanceMover
-from movement.ik_cache import IKCache
-from movement.leg_mover import LegMover
 from point import Point3D
-from socket_listener.app_communicator import AppCommunicator
-from vision import cards
-from vision import magic
-from vision import road_detector
 from visionclass import Vision
 
 
@@ -171,7 +171,19 @@ class Spider(object):
         self.rotate_body(math.radians(0), math.radians(0))
         self.reset_stats()
 
-        self.update_walk(self.stats_dict[magic.CENTER])
+        clap = False
+        if (clap):
+            self.leg_mover.ground_clearance = 170
+
+            sec_between_beat = 1.371
+            clap_duration = 10
+
+            self.speed = sec_between_beat * 116.703136
+            self.speed = 16
+            self.leg_mover.clap(tip_distance=70)
+            threading.Timer(clap_duration, lambda: self.leg_mover.stop()).start()
+        else:
+            self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
@@ -345,7 +357,7 @@ class Spider(object):
             },
         }
 
-    def manual_mode(self, stick, vertical, left_button, right_button, joystick_button):
+    def manual_mode(self, stick, vertical, left_button, right_button, joystick_button, set_props=True):
         height_multiplier = 10
 
         if joystick_button:
@@ -354,12 +366,13 @@ class Spider(object):
         else:
             self.leg_mover.ground_clearance += vertical * height_multiplier
 
-        self.step_height = 60
-        self.step_length = {
-            'forward': 100,
-            'crab': 70
-        }
-        self.speed = 1000
+        if (set_props):
+            self.step_height = 60
+            self.step_length = {
+                'forward': 100,
+                'crab': 70
+            }
+            self.speed = 1000
 
         y, x = utils.rotate((0, 0), stick, math.radians(30))
         y *= -1
@@ -400,6 +413,9 @@ class Spider(object):
     def fury_mode(self):
         self.speed = 200
         wait_time_on_circle = 30
+        self.step_length = {'forward': 110, 'crab': 70}
+        self.leg_mover.ground_clearance = 90
+        self.rotate_body(math.radians(10), 0)
         #
         # if position == magic.CENTER:
         if self.is_on_circle and not self.lock_fury:
@@ -420,13 +436,13 @@ class Spider(object):
                 #     self.move_to_magic(position)
 
     def fury_forward(self):
-        position=self.vision.find_road()
-        print(magic.KEYS[position])
-        if(position==magic.CENTER):
+        position = self.vision.find_road()
+        print("FURY", magic.KEYS[position])
+        if (position == magic.CENTER):
             self.move_forward()
-        elif(position==magic.RIGHT):
+        elif (position == magic.RIGHT):
             self.corner_left()
-        elif(position==magic.LEFT):
+        elif (position == magic.LEFT):
             self.corner_right()
 
     def dance_mode(self):
@@ -472,28 +488,36 @@ class Spider(object):
         self.leg_mover.ground_clearance = 140
         self.balance()
 
-    balancing_mode = False
+    balancing_mode = True
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
         # Call manual mode with a few options preset
-        if (joystick_button):
-            self.balancing_mode = not self.balancing_mode
-            print("SWITCHING MODE")
+        # if (joystick_button):
+        #     self.balancing_mode = not self.balancing_mode
+        #     print("SWITCHING MODE")
         if (self.balancing_mode):
             self.balance()
             self.leg_mover.ground_clearance = 140
+            self.step_height = 70
+            self.step_length = {
+                'forward': 30,
+                'crab': 70
+            }
             self.speed = 300
         else:
             self.leg_mover.ground_clearance = 40
             self.speed = 100
-            self.step_length = 140
-            self.step_height = 20
+            self.step_height = 50
+            self.step_length = {
+                'forward': 80,
+                'crab': 70
+            }
             self.tip_distance = {
                 "forward": 90,
                 "crab": 90
             }
 
-        self.manual_mode(stick, 0, left_button, right_button, 0)
+        self.manual_mode(stick, 0, left_button, right_button, 0, False)
 
     def line_dance_mode(self):
         pass
