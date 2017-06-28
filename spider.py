@@ -171,19 +171,7 @@ class Spider(object):
         self.rotate_body(math.radians(0), math.radians(0))
         self.reset_stats()
 
-        clap = False
-        if clap:
-            self.leg_mover.ground_clearance = 170
-
-            sec_between_beat = 1.371
-            clap_duration = 10
-
-            self.speed = sec_between_beat * 116.703136
-            self.speed = 16
-            self.leg_mover.clap(tip_distance=70)
-            threading.Timer(clap_duration, lambda: self.leg_mover.stop()).start()
-        else:
-            self.update_walk(self.stats_dict[magic.CENTER])
+        self.update_walk(self.stats_dict[magic.CENTER])
 
         self.gyroscope = Gyroscoop()
 
@@ -250,7 +238,7 @@ class Spider(object):
         stick_x /= max_stick_value
         stick_y /= max_stick_value
         {
-            1: lambda: self.fury_mode(),
+            1: lambda: self.fury_mode_downs_syndrome(),
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
@@ -259,7 +247,9 @@ class Spider(object):
                                           bool(left_button), bool(right_button), bool(joystick_button)),
             5: lambda: self.balloon_mode((stick_x, stick_y), bool(left_button), bool(right_button)),
             6: lambda: self.line_dance_mode(),
-            7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
+            # 7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
+            7: lambda: self.gap_mode_dumb((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
+                                          bool(left_button), bool(right_button), bool(joystick_button))
         }[mode]()
 
     def lowrider_mode(self, stick):
@@ -414,6 +404,7 @@ class Spider(object):
     WAIT_TIME = 30
     lock_fury_dumb = False
     has_passed_circle = None
+
     def fury_mode_downs_syndrome(self):
         print("Stupid")
         if self.walk_start is None:
@@ -422,14 +413,14 @@ class Spider(object):
         if not self.lock_fury_dumb:
             # noinspection PyTypeChecker
             if not self.has_passed_circle and time.time() > self.walk_start + self.WALK_TIME:
-                    self.lock_fury_dumb = True
-                    print("Stopping")
-                    self.go_direction(magic.CENTER)
-                    # chill in circle
-                    time.sleep(self.WAIT_TIME)
-                    print("Done stopping")
-                    self.lock_fury_dumb = False
-                    self.has_passed_circle = True
+                self.lock_fury_dumb = True
+                print("Stopping")
+                self.go_direction(magic.CENTER)
+                # chill in circle
+                time.sleep(self.WAIT_TIME)
+                print("Done stopping")
+                self.lock_fury_dumb = False
+                self.has_passed_circle = True
 
             self.fury_forward()
 
@@ -530,6 +521,18 @@ class Spider(object):
         self.leg_mover.ground_clearance = 140
         self.balance()
 
+    gap_angle = 0
+
+    def gap_mode_dumb(self, stick, vertical, left_button, right_button, joystick_button):
+        if joystick_button:
+            self.gap_angle = 0
+        elif vertical == 1:
+            self.gap_angle = 15
+        elif vertical == -1:
+            self.gap_angle = -15
+        self.rotate_body(math.radians(self.gap_angle), 0)
+        self.manual_mode(stick, 0, left_button, right_button, False, False)
+
     balancing_mode = True
 
     def gap_mode(self, stick, left_button, right_button, joystick_button):
@@ -564,8 +567,20 @@ class Spider(object):
 
         self.manual_mode(stick, 0, left_button, right_button, 0, False)
 
+    clapping = False
+
     def line_dance_mode(self):
-        pass
+        if not self.clapping:
+            self.clapping = True
+            self.leg_mover.ground_clearance = 170
+
+            sec_between_beat = 1.371
+            clap_duration = 10
+
+            magicruurd = 116.703136
+            self.speed = sec_between_beat * magicruurd
+            self.leg_mover.clap(tip_distance=70)
+            threading.Timer(clap_duration, lambda: self.leg_mover.stop()).start()
 
     locked = False
 
