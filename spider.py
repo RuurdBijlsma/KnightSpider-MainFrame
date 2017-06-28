@@ -254,7 +254,9 @@ class Spider(object):
             2: lambda: self.manual_mode((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
                                         bool(left_button), bool(right_button), bool(joystick_button)),
             3: lambda: self.dance_mode(),
-            4: lambda: self.egg_mode(cards.SPADE, True),
+            # 4: lambda: self.egg_mode(cards.SPADE, True),
+            4: lambda: self.egg_mode_dumb((stick_x, stick_y), 1 if up_button == 1 else -1 if down_button == 1 else 0,
+                                          bool(left_button), bool(right_button), bool(joystick_button)),
             5: lambda: self.balloon_mode((stick_x, stick_y), bool(left_button), bool(right_button)),
             6: lambda: self.line_dance_mode(),
             7: lambda: self.gap_mode((stick_x, stick_y), bool(left_button), bool(right_button), bool(joystick_button)),
@@ -453,6 +455,16 @@ class Spider(object):
             print("gestupt")
             self.dance_mover.execute()
             print("dans execute")
+
+    def egg_mode_dumb(self, stick, vertical, left_button, right_button, joystick_button):
+        if (joystick_button):
+            pwm = egg_maw.current_pwm
+            if (pwm == egg_maw.OPEN_PWM):
+                egg_maw.open_maw()
+            elif (pwm == egg_maw.CLOSE_PWM):
+                egg_maw.close_maw()
+
+        self.manual_mode(stick, vertical, left_button, right_button, 0)
 
     def egg_mode(self, card, colored):
         self.speed = 200
