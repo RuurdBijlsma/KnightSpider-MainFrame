@@ -1,10 +1,11 @@
 # KnightSpider-MainFrame
+[![f](https://github.com/ruurdbijlsma/KnightSpider-MainFrame/blob/master/.gh/spider.gif?raw=true)](https://www.youtube.com/embed/-7goAt89zZw?start=125&end=138&autoplay=1)
 
 Python version >= 3
 
 ### Required packages
 * https://pypi.python.org/pypi/numpy (Must be 1.12 or higher, 
-    version in default repository is too low, jessie-backports has a updated version)
+    version in default repository is too low, jessie-backports has an updated version)
 
 
 ## Configuring the Raspberry Pi
